@@ -5,6 +5,7 @@ Everything in this video applies except obfuscation, which has been removed.
 ### COMMAND TO PERFORM A RELEASE BUILD
 
 Output goes to bin\ReleaseObfusc
+
 `msbuild BismNormalizer.csproj /verbosity:m /target:Rebuild /property:Configuration=Release`
 
 ### SET UP NEW DEVELOPMENT MACHINE

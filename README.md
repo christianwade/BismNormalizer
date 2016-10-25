@@ -12,7 +12,7 @@ Output goes to bin\ReleaseObfusc
 
 Requires VS SDK (comes with installer for VS 2015). See _Installing SDK from Solution_ section [here](https://msdn.microsoft.com/en-us/library/mt683786.aspx) for more info.
 
-May need to temporarily comment out following from BismNormalizer.csproj to load project into VS for 1st time. After 1st successful load, add it back.
+May need to temporarily comment out following at bottom of BismNormalizer.csproj to load project into VS for 1st time. After 1st successful load, add it back.
 
 `Import Project="..\packages\MSBuild.Extension.Pack.1.8.0\build\net40\MSBuild.Extension.Pack.targets"`
 

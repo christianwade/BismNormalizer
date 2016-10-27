@@ -1,6 +1,10 @@
-Everything in this video applies except obfuscation, which has been removed.
+This video covers BISM Normalizer 3 use cases and demo.
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=r3eGK-dSYuw" target="_blank"><img src="http://img.youtube.com/vi/r3eGK-dSYuw/0.jpg" alt="BISM Normalizer Internals" border="10" /></a>
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/LZdOwfJqFrM/0.jpg)](http://www.youtube.com/watch?v=LZdOwfJqFrM)
+
+This video shows the internals of BISM Normalizer 3 including the object model and build process. Everything still applies except obfuscation, which has been removed.
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/r3eGK-dSYuw/0.jpg)](http://www.youtube.com/watch?v=r3eGK-dSYuw)
 
 ### COMMAND TO PERFORM A RELEASE BUILD
 

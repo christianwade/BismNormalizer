@@ -1,20 +1,24 @@
-For general use in SSDT, download from the BISM Normalizer 3 [Visual Studio Gallery page](https://visualstudiogallery.msdn.microsoft.com/f7ebe632-878c-4640-b035-a143d1dd1cf3). New releases will be uploaded to this page.
+### General Usage
+
+Download from the BISM Normalizer 3 [Visual Studio Gallery page](https://visualstudiogallery.msdn.microsoft.com/f7ebe632-878c-4640-b035-a143d1dd1cf3). New releases will be uploaded to this page.
 
 This video covers BISM Normalizer 3 use cases and demo.
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/LZdOwfJqFrM/0.jpg)](http://www.youtube.com/watch?v=LZdOwfJqFrM)
 
+### Object Model & Build Process
+
 This video shows the internals of BISM Normalizer 3 including the object model and build process. Everything still applies except obfuscation, which has been removed.
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/r3eGK-dSYuw/0.jpg)](http://www.youtube.com/watch?v=r3eGK-dSYuw)
 
-### COMMAND TO PERFORM A RELEASE BUILD
+### Command to Perform a Release Build
 
 Output goes to bin\ReleaseObfusc
 
 `msbuild BismNormalizer.csproj /verbosity:m /target:Rebuild /property:Configuration=Release`
 
-### SET UP NEW DEVELOPMENT MACHINE
+### Set Up New Development Machine
 
 Requires VS SDK (comes with installer for VS 2015). See _Installing SDK from Solution_ section [here](https://msdn.microsoft.com/en-us/library/mt683786.aspx) for more info.
 

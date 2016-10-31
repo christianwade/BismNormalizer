@@ -8,7 +8,7 @@ This video covers BISM Normalizer 3 use cases and demo.
 
 ### Object Model & Build Process
 
-This video shows the internals of BISM Normalizer 3 including the object model and build process. Everything still applies except obfuscation, which has been removed.
+This video shows the internals of BISM Normalizer 3. Everything still applies except obfuscation, which has been removed.
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/r3eGK-dSYuw/0.jpg)](http://www.youtube.com/watch?v=r3eGK-dSYuw)
 

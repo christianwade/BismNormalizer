@@ -1,3 +1,5 @@
+For general use in SSDT, download from the BISM Normalizer 3 [Visual Studio Gallery page](https://visualstudiogallery.msdn.microsoft.com/f7ebe632-878c-4640-b035-a143d1dd1cf3). New releases will be uploaded to this page.
+
 This video covers BISM Normalizer 3 use cases and demo.
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/LZdOwfJqFrM/0.jpg)](http://www.youtube.com/watch?v=LZdOwfJqFrM)

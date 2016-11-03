@@ -78,7 +78,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             foreach (ModelRole role in _database.Model.Roles)
             {
-                //Workaround for AAD role members - todo delete when fixed in Azure AS
+                //Workaround for AAD role members - todo delete if changed in Azure AS
                 if (_parentComparison?.TargetTabularModel?.ConnectionInfo?.ServerName.Substring(0, 7) == "asazure")
                 {
                     List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();

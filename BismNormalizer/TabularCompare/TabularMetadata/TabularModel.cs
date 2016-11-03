@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Microsoft.AnalysisServices.Tabular;
-using Tom=Microsoft.AnalysisServices.Tabular;
+using Tom = Microsoft.AnalysisServices.Tabular;
 using Amo = Microsoft.AnalysisServices;
 using Newtonsoft.Json.Linq;
 using BismNormalizer.TabularCompare.Core;
@@ -13,7 +13,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     /// <summary>
     /// Abstraction of a tabular model table with properties and methods for comparison purposes. This class can represent a database on a server, or a project in Visual Studio.
     /// </summary>
-    public class TabularModel: IDisposable
+    public class TabularModel : IDisposable
     {
         #region Private Members
 
@@ -56,7 +56,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _server = new Server();
             _server.Connect($"DATA SOURCE={_connectionInfo.ServerName}");
-            
+
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_database == null)
             {
@@ -68,7 +68,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (DataSource datasource in _database.Model.DataSources)
             {
                 if (datasource.Type == DataSourceType.Provider)
-                { 
+                {
                     _connections.Add(new Connection(this, (ProviderDataSource)datasource));
                 }
             }
@@ -78,7 +78,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             foreach (ModelRole role in _database.Model.Roles)
             {
-                //cbw placeholder
+                //Workaround for AAD role members - todo delete when fixed in Azure AS
+                if (_parentComparison?.TargetTabularModel?.ConnectionInfo?.ServerName.Substring(0, 7) == "asazure")
+                {
+                    List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
+                    foreach (ModelRoleMember member in role.Members)
+                    {
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null) //AAD
+                        {
+                            ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
+                            ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
+                            externalMemberOld.CopyTo(externalMemberToAdd);
+                            externalMemberToAdd.MemberID = null;
+                            membersToAdd.Add(externalMemberToAdd);
+                        }
+                    }
+                    foreach (ExternalModelRoleMember memberToAdd in membersToAdd)
+                    {
+                        role.Members.Remove(memberToAdd.Name);
+                        role.Members.Add(memberToAdd);
+                    }
+                }
+
+
                 _roles.Add(new Role(this, role));
             }
             foreach (Tom.Perspective perspective in _database.Model.Perspectives)
@@ -96,7 +118,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// </summary>
         public void Disconnect()
         {
-            if (_server != null) _server.Disconnect();
+            try
+            {
+                if (_server != null) _server.Disconnect();
+            }
+            catch { }
         }
 
         #region Properties
@@ -308,7 +334,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     //decouple from original table to the current one
                     tomRelationshipToAddBack.FromColumn = fromTable.TomTable.Columns.Find(tomRelationshipToAddBack.FromColumn.Name);
                     tomRelationshipToAddBack.ToColumn = toTable.TomTable.Columns.Find(tomRelationshipToAddBack.ToColumn.Name);
-                    
+
                     fromTable.CreateRelationship(tomRelationshipToAddBack);
                 }
             }
@@ -379,7 +405,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         ValidationMessageType.Relationship,
                         ValidationMessageStatus.Warning));
                 }
-                else 
+                else
                 {
                     // link.FilteringRelationship is the one that was already in the target.  So need to remove the other one that leads to the same table (which must have been copied from source)
                     otherLink.FilteringRelationship.TomRelationship.IsActive = false;
@@ -614,7 +640,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                             }
 
-                            if (perspectiveColumnTarget == null) 
+                            if (perspectiveColumnTarget == null)
                             {
                                 perspectiveColumnTarget = new PerspectiveColumn();
                                 perspectiveTableTarget.PerspectiveColumns.Add(perspectiveColumnTarget);
@@ -670,7 +696,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                             }
 
-                            if (perspectiveMeasureTarget == null) 
+                            if (perspectiveMeasureTarget == null)
                             {
                                 perspectiveMeasureTarget = new PerspectiveMeasure();
                                 perspectiveTableTarget.PerspectiveMeasures.Add(perspectiveMeasureTarget);
@@ -852,7 +878,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (levelSource.Hierarchy?.Table?.Name == tomTableTarget.Name)
                                 {
                                     foreach (Hierarchy hierarchyTarget in tomTableTarget.Hierarchies)
-                                    { 
+                                    {
                                         if (levelSource.Hierarchy?.Name == hierarchyTarget.Name)
                                         {
                                             foreach (Level levelTarget in hierarchyTarget.Levels)
@@ -1055,7 +1081,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             else
             {   //Database deployement
-                
+
                 if (_comparisonInfo.PromptForDatabaseProcessing)
                 {
                     //Call back to show deployment form
@@ -1109,7 +1135,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         #region Database deployment and processing methods
-        
+
         private const string _deployRowWorkItem = "Deploy metadata";
         private ProcessingTableCollection _tablesToProcess;
 

@@ -78,7 +78,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             foreach (ModelRole role in _database.Model.Roles)
             {
-                //cbw placeholder
+                //Workaround for AAD role members - todo delete when fixed in Azure AS
+                if (_parentComparison?.TargetTabularModel?.ConnectionInfo?.ServerName.Substring(0, 7) == "asazure")
+                {
+                    List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
+                    foreach (ModelRoleMember member in role.Members)
+                    {
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null) //AAD
+                        {
+                            ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
+                            ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
+                            externalMemberOld.CopyTo(externalMemberToAdd);
+                            externalMemberToAdd.MemberID = null;
+                            membersToAdd.Add(externalMemberToAdd);
+                        }
+                    }
+                    foreach (ExternalModelRoleMember memberToAdd in membersToAdd)
+                    {
+                        role.Members.Remove(memberToAdd.Name);
+                        role.Members.Add(memberToAdd);
+                    }
+                }
+
+
                 _roles.Add(new Role(this, role));
             }
             foreach (Tom.Perspective perspective in _database.Model.Perspectives)
@@ -96,7 +118,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// </summary>
         public void Disconnect()
         {
-            if (_server != null) _server.Disconnect();
+            try
+            {
+                if (_server != null) _server.Disconnect();
+            }
+            catch { }
         }
 
         #region Properties

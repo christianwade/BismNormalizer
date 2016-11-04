@@ -7,6 +7,7 @@ using Microsoft.AnalysisServices;
 using EnvDTE;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace BismNormalizer.TabularCompare
 {
@@ -323,7 +324,42 @@ namespace BismNormalizer.TabularCompare
             }
 
             Server amoServer = new Server();
-            amoServer.Connect("DATA SOURCE=" + this.ServerName);
+            try
+            {
+                amoServer.Connect("DATA SOURCE=" + this.ServerName);
+            }
+            catch (ConnectionException) when (UseProject)
+            {
+                //See if can find integrated workspace server
+
+                bool foundServer = false;
+
+                string tempDataDir = Path.GetTempPath() + @"Microsoft\Microsoft SQL Server\OLAP\LocalServer\Data";
+                if (Directory.Exists(tempDataDir))
+                {
+                    var subDirs = Directory.GetDirectories(tempDataDir).OrderByDescending(d => new DirectoryInfo(d).CreationTime); //Need to order by descending in case old folders hanging around when VS was killed and SSDT didn't get a chance to clean up after itself
+                    foreach (string subDir in subDirs)
+                    {
+                        string[] iniFilePath = Directory.GetFiles(subDir, "msmdsrv.ini");
+                        if (iniFilePath.Length == 1 && File.ReadAllText(iniFilePath[0]).Contains("<DataDir>" + _projectDirectoryInfo.FullName + @"\bin\Data</DataDir>")) //Todo: proper xml lookup
+                        {
+                            //Assuming this must be the folder, so now get the port number
+                            string[] portFilePath = Directory.GetFiles(subDir, "msmdsrv.port.txt");
+                            if (portFilePath.Length == 1)
+                            {
+                                string port = File.ReadAllText(portFilePath[0]).Replace("\0", "");
+                                this.ServerName = $"localhost:{Convert.ToString(port)}";
+                                amoServer.Connect("DATA SOURCE=" + this.ServerName);
+                                foundServer = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!foundServer)
+                    throw;
+            }
 
             ////non-admins can't see any ServerProperties: social.msdn.microsoft.com/Forums/sqlserver/en-US/3d0bf49c-9034-4416-9c51-77dc32bf8b73/determine-current-user-permissionscapabilities-via-amo-or-xmla
             //if (!(amoServer.ServerProperties.Count > 0)) //non-admins can't see any ServerProperties

@@ -84,8 +84,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
                     foreach (ModelRoleMember member in role.Members)
                     {
-                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null) //AAD
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null)
                         {
+                            //AAD member from SSAS to Azure AS
                             ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
                             ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
                             externalMemberOld.CopyTo(externalMemberToAdd);
@@ -99,7 +100,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         role.Members.Add(memberToAdd);
                     }
                 }
-
+                else
+                {
+                    List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
+                    foreach (ModelRoleMember member in role.Members)
+                    {
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && String.IsNullOrEmpty(member.MemberID))
+                        {
+                            //AAD member from Azure AS to SSAS
+                            ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
+                            ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
+                            externalMemberOld.CopyTo(externalMemberToAdd);
+                            externalMemberToAdd.MemberID = member.MemberName; //***
+                            membersToAdd.Add(externalMemberToAdd);
+                        }
+                    }
+                    foreach (ExternalModelRoleMember memberToAdd in membersToAdd)
+                    {
+                        role.Members.Remove(memberToAdd.Name);
+                        role.Members.Add(memberToAdd);
+                    }
+                }
 
                 _roles.Add(new Role(this, role));
             }
@@ -1092,7 +1113,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 else
                 {
                     //Simple update target without setting passwords or processing
-                    _database.Update(Microsoft.AnalysisServices.UpdateOptions.ExpandFull);
+                    _database.Update(Amo.UpdateOptions.ExpandFull);
                 }
             }
 
@@ -1189,25 +1210,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
                 }
-
-                #region Todo delete
-
-                //if (_tablesToProcess.Count > 0)
-                //{
-                //    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
-                //    processAsyncCaller.BeginInvoke(null, null);
-                //}
-                //else
-                //{
-                //    if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                //    {
-                //        _server.CommitTransaction();
-                //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                //    }
-                //    _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
-                //}
-
-                #endregion
 
                 if (!_comparisonInfo.OptionsInfo.OptionTransaction)
                 {

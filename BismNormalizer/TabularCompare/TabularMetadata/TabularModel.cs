@@ -1112,8 +1112,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    //Simple update target without setting passwords or processing
-                    _database.Update(Amo.UpdateOptions.ExpandFull);
+                    //Simple update target without setting passwords or processing (mainly for command-line execution)
+                    UpdateWithScript();
                 }
             }
 
@@ -1122,7 +1122,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         private void UpdateProject()
         {
-            _database.Update(Amo.UpdateOptions.ExpandFull);
+            UpdateWithScript();
 
             if (_connectionInfo.Project != null)
             {
@@ -1170,6 +1170,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 _tablesToProcess = tablesToProcess;
 
+                //Todo: do passwords first, then UpdateWithScript(), then add passwords back, then OnDeloymentMessage, so can back out of deployment
+                UpdateWithScript();
+                _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+
                 //Set passwords ready for processing
                 foreach (DataSource dataSource in _database.Model.DataSources)
                 {
@@ -1200,27 +1204,31 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    _server.BeginTransaction();
-                }
+                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    _server.BeginTransaction();
+                //}
 
-                _database.Update(Amo.UpdateOptions.ExpandFull);
-                if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                }
+                //_database.Update(Amo.UpdateOptions.ExpandFull);
+                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+                //}
 
-                if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
-                    processAsyncCaller.BeginInvoke(null, null);
-                }
-                else
-                {
-                    _server.CommitTransaction();
-                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                }
+                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
+                //    processAsyncCaller.BeginInvoke(null, null);
+                //}
+                //else
+                //{
+                //    _server.CommitTransaction();
+                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+                //}
+
+                ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
+                processAsyncCaller.BeginInvoke(null, null);
+
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
             }
             catch (Exception exc)
@@ -1232,6 +1240,22 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Error, exc.Message));
             }
+        }
+
+        private void UpdateWithScript()
+        {
+            //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
+
+            string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database);
+            //_server.Reconnect(); //doesn't cut it ...
+            _server.Disconnect();
+            _server = new Server();
+            _server.Connect("DATA SOURCE=" + _connectionInfo.ServerName);
+            Amo.XmlaResultCollection results = _server.Execute(tmslCommand);
+            if (results.ContainsErrors)
+                throw new Amo.OperationException(results);
+
+            _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
         }
 
         private bool _stopProcessing;
@@ -1281,19 +1305,19 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _database.Model.SaveChanges();
 
-                if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    if (_stopProcessing)
-                    {
-                        //already dealt with rolling back tran and error messages
-                        return;
-                    }
-                    else
-                    {
-                        _server.CommitTransaction();
-                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                    }
-                }
+                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    if (_stopProcessing)
+                //    {
+                //        //already dealt with rolling back tran and error messages
+                //        return;
+                //    }
+                //    else
+                //    {
+                //        _server.CommitTransaction();
+                //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+                //    }
+                //}
 
                 // Show row count for each table
                 foreach (ProcessingTable table in _tablesToProcess)

@@ -1234,6 +1234,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 throw new Amo.OperationException(results);
 
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
+
+            //From this point onwards use only TOM as have not bothered re-hydrating the BismNorm object model
         }
 
         private bool _stopProcessing;

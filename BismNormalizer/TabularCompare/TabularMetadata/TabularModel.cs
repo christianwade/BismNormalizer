@@ -1172,7 +1172,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 //Todo: do passwords first, then UpdateWithScript(), then add passwords back, then OnDeloymentMessage, so can back out of deployment
                 UpdateWithScript();
-                _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
 
                 //Set passwords ready for processing
                 foreach (DataSource dataSource in _database.Model.DataSources)
@@ -1204,28 +1203,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                //{
-                //    _server.BeginTransaction();
-                //}
-
-                //_database.Update(Amo.UpdateOptions.ExpandFull);
-                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                //{
-                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                //}
-
-                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                //{
-                //    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
-                //    processAsyncCaller.BeginInvoke(null, null);
-                //}
-                //else
-                //{
-                //    _server.CommitTransaction();
-                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                //}
-
+                _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
                 ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
                 processAsyncCaller.BeginInvoke(null, null);
 
@@ -1247,7 +1225,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
 
             string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database);
-            //_server.Reconnect(); //doesn't cut it ...
+
             _server.Disconnect();
             _server = new Server();
             _server.Connect("DATA SOURCE=" + _connectionInfo.ServerName);
@@ -1291,10 +1269,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     foreach (ProcessingTable tableToProcess in _tablesToProcess)
                     {
-                        Table table = this.Tables.FindByName(tableToProcess.Name);
+                        Tom.Table table = _database.Model.Tables.Find(tableToProcess.Name);
                         if (table != null)
                         {
-                            table.TomTable.RequestRefresh(refreshType);
+                            table.RequestRefresh(refreshType);
                         }
                     }
                 }
@@ -1304,20 +1282,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     _database.Model.RequestRefresh(RefreshType.Calculate);
                 }
                 _database.Model.SaveChanges();
-
-                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                //{
-                //    if (_stopProcessing)
-                //    {
-                //        //already dealt with rolling back tran and error messages
-                //        return;
-                //    }
-                //    else
-                //    {
-                //        _server.CommitTransaction();
-                //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                //    }
-                //}
 
                 // Show row count for each table
                 foreach (ProcessingTable table in _tablesToProcess)

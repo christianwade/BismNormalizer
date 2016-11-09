@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Microsoft.AnalysisServices.Tabular;
-using Tom=Microsoft.AnalysisServices.Tabular;
+using Tom = Microsoft.AnalysisServices.Tabular;
 using Amo = Microsoft.AnalysisServices;
 using Newtonsoft.Json.Linq;
 using BismNormalizer.TabularCompare.Core;
@@ -13,7 +13,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     /// <summary>
     /// Abstraction of a tabular model table with properties and methods for comparison purposes. This class can represent a database on a server, or a project in Visual Studio.
     /// </summary>
-    public class TabularModel: IDisposable
+    public class TabularModel : IDisposable
     {
         #region Private Members
 
@@ -56,7 +56,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _server = new Server();
             _server.Connect($"DATA SOURCE={_connectionInfo.ServerName}");
-            
+
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_database == null)
             {
@@ -68,7 +68,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (DataSource datasource in _database.Model.DataSources)
             {
                 if (datasource.Type == DataSourceType.Provider)
-                { 
+                {
                     _connections.Add(new Connection(this, (ProviderDataSource)datasource));
                 }
             }
@@ -78,14 +78,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             foreach (ModelRole role in _database.Model.Roles)
             {
-                //Workaround for AAD role members - todo delete when fixed in Azure AS
+                //Workaround for AAD role members - todo delete if changed in Azure AS
                 if (_parentComparison?.TargetTabularModel?.ConnectionInfo?.ServerName.Substring(0, 7) == "asazure")
                 {
                     List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
                     foreach (ModelRoleMember member in role.Members)
                     {
-                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null) //AAD
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && member.MemberID != null)
                         {
+                            //AAD member from SSAS to Azure AS
                             ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
                             ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
                             externalMemberOld.CopyTo(externalMemberToAdd);
@@ -99,7 +100,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         role.Members.Add(memberToAdd);
                     }
                 }
-
+                else
+                {
+                    List<ExternalModelRoleMember> membersToAdd = new List<ExternalModelRoleMember>();
+                    foreach (ModelRoleMember member in role.Members)
+                    {
+                        if (member is ExternalModelRoleMember && ((ExternalModelRoleMember)member).IdentityProvider == "AzureAD" && String.IsNullOrEmpty(member.MemberID))
+                        {
+                            //AAD member from Azure AS to SSAS
+                            ExternalModelRoleMember externalMemberOld = (ExternalModelRoleMember)member;
+                            ExternalModelRoleMember externalMemberToAdd = new ExternalModelRoleMember();
+                            externalMemberOld.CopyTo(externalMemberToAdd);
+                            externalMemberToAdd.MemberID = member.MemberName; //***
+                            membersToAdd.Add(externalMemberToAdd);
+                        }
+                    }
+                    foreach (ExternalModelRoleMember memberToAdd in membersToAdd)
+                    {
+                        role.Members.Remove(memberToAdd.Name);
+                        role.Members.Add(memberToAdd);
+                    }
+                }
 
                 _roles.Add(new Role(this, role));
             }
@@ -334,7 +355,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     //decouple from original table to the current one
                     tomRelationshipToAddBack.FromColumn = fromTable.TomTable.Columns.Find(tomRelationshipToAddBack.FromColumn.Name);
                     tomRelationshipToAddBack.ToColumn = toTable.TomTable.Columns.Find(tomRelationshipToAddBack.ToColumn.Name);
-                    
+
                     fromTable.CreateRelationship(tomRelationshipToAddBack);
                 }
             }
@@ -405,7 +426,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         ValidationMessageType.Relationship,
                         ValidationMessageStatus.Warning));
                 }
-                else 
+                else
                 {
                     // link.FilteringRelationship is the one that was already in the target.  So need to remove the other one that leads to the same table (which must have been copied from source)
                     otherLink.FilteringRelationship.TomRelationship.IsActive = false;
@@ -640,7 +661,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                             }
 
-                            if (perspectiveColumnTarget == null) 
+                            if (perspectiveColumnTarget == null)
                             {
                                 perspectiveColumnTarget = new PerspectiveColumn();
                                 perspectiveTableTarget.PerspectiveColumns.Add(perspectiveColumnTarget);
@@ -696,7 +717,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                             }
 
-                            if (perspectiveMeasureTarget == null) 
+                            if (perspectiveMeasureTarget == null)
                             {
                                 perspectiveMeasureTarget = new PerspectiveMeasure();
                                 perspectiveTableTarget.PerspectiveMeasures.Add(perspectiveMeasureTarget);
@@ -878,7 +899,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (levelSource.Hierarchy?.Table?.Name == tomTableTarget.Name)
                                 {
                                     foreach (Hierarchy hierarchyTarget in tomTableTarget.Hierarchies)
-                                    { 
+                                    {
                                         if (levelSource.Hierarchy?.Name == hierarchyTarget.Name)
                                         {
                                             foreach (Level levelTarget in hierarchyTarget.Levels)
@@ -1081,7 +1102,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             else
             {   //Database deployement
-                
+
                 if (_comparisonInfo.PromptForDatabaseProcessing)
                 {
                     //Call back to show deployment form
@@ -1091,8 +1112,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    //Simple update target without setting passwords or processing
-                    _database.Update(Microsoft.AnalysisServices.UpdateOptions.ExpandFull);
+                    //Simple update target without setting passwords or processing (mainly for command-line execution)
+                    UpdateWithScript();
                 }
             }
 
@@ -1101,7 +1122,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         private void UpdateProject()
         {
-            _database.Update(Amo.UpdateOptions.ExpandFull);
+            UpdateWithScript();
 
             if (_connectionInfo.Project != null)
             {
@@ -1135,7 +1156,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         #region Database deployment and processing methods
-        
+
         private const string _deployRowWorkItem = "Deploy metadata";
         private ProcessingTableCollection _tablesToProcess;
 
@@ -1148,6 +1169,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             try
             {
                 _tablesToProcess = tablesToProcess;
+
+                //Todo: do passwords first, then UpdateWithScript(), then add passwords back, then OnDeloymentMessage, so can back out of deployment
+                UpdateWithScript();
+                _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
 
                 //Set passwords ready for processing
                 foreach (DataSource dataSource in _database.Model.DataSources)
@@ -1179,46 +1204,31 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    _server.BeginTransaction();
-                }
+                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    _server.BeginTransaction();
+                //}
 
-                _database.Update(Amo.UpdateOptions.ExpandFull);
-                if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                }
+                //_database.Update(Amo.UpdateOptions.ExpandFull);
+                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+                //}
 
-                #region Todo delete
-
-                //if (_tablesToProcess.Count > 0)
+                //if (!_comparisonInfo.OptionsInfo.OptionTransaction)
                 //{
                 //    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
                 //    processAsyncCaller.BeginInvoke(null, null);
                 //}
                 //else
                 //{
-                //    if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                //    {
-                //        _server.CommitTransaction();
-                //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                //    }
-                //    _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
+                //    _server.CommitTransaction();
+                //    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
                 //}
 
-                #endregion
+                ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
+                processAsyncCaller.BeginInvoke(null, null);
 
-                if (!_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
-                    processAsyncCaller.BeginInvoke(null, null);
-                }
-                else
-                {
-                    _server.CommitTransaction();
-                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
             }
             catch (Exception exc)
@@ -1230,6 +1240,22 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Error, exc.Message));
             }
+        }
+
+        private void UpdateWithScript()
+        {
+            //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
+
+            string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database);
+            //_server.Reconnect(); //doesn't cut it ...
+            _server.Disconnect();
+            _server = new Server();
+            _server.Connect("DATA SOURCE=" + _connectionInfo.ServerName);
+            Amo.XmlaResultCollection results = _server.Execute(tmslCommand);
+            if (results.ContainsErrors)
+                throw new Amo.OperationException(results);
+
+            _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
         }
 
         private bool _stopProcessing;
@@ -1279,19 +1305,19 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _database.Model.SaveChanges();
 
-                if (_comparisonInfo.OptionsInfo.OptionTransaction)
-                {
-                    if (_stopProcessing)
-                    {
-                        //already dealt with rolling back tran and error messages
-                        return;
-                    }
-                    else
-                    {
-                        _server.CommitTransaction();
-                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-                    }
-                }
+                //if (_comparisonInfo.OptionsInfo.OptionTransaction)
+                //{
+                //    if (_stopProcessing)
+                //    {
+                //        //already dealt with rolling back tran and error messages
+                //        return;
+                //    }
+                //    else
+                //    {
+                //        _server.CommitTransaction();
+                //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+                //    }
+                //}
 
                 // Show row count for each table
                 foreach (ProcessingTable table in _tablesToProcess)

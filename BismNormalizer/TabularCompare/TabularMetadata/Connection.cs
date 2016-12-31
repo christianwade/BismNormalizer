@@ -10,14 +10,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     public class Connection : TabularObject
     {
         private TabularModel _parentTabularModel;
-        private ProviderDataSource _tomConnection;
+        private DataSource _tomConnection;
 
         /// <summary>
         /// Initializes a new instance of the Connection class using multiple parameters.
         /// </summary>
         /// <param name="parentTabularModel">TabularModel object that the Connection object belongs to.</param>
         /// <param name="datasource">Tabular Object Model ProviderDataSource object abtstracted by the Connection class.</param>
-        public Connection(TabularModel parentTabularModel, ProviderDataSource dataSource) : base(dataSource)
+        public Connection(TabularModel parentTabularModel, DataSource dataSource) : base(dataSource)
         {
             _parentTabularModel = parentTabularModel;
             _tomConnection = dataSource;
@@ -31,7 +31,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// Tabular Object Model ProviderDataSource object abtstracted by the Connection class.
         /// </summary>
-        public ProviderDataSource TomConnection => _tomConnection;
+        public DataSource TomConnection => _tomConnection;
 
         public override string ToString() => this.GetType().FullName;
     }

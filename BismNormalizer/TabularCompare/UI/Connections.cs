@@ -386,7 +386,7 @@ namespace BismNormalizer.TabularCompare.UI
                 string currentDb = cboCatalog.Text;
 
                 Server server = new Server();
-                server.Connect("DATA SOURCE=" + serverName);
+                server.Connect("Provider=MSOLAP;Data Source=" + serverName);
                 List<string> databases = new List<string>();
                 foreach (Database database in server.Databases)
                 {

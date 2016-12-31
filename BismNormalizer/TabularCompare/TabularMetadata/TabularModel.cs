@@ -55,7 +55,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             this.Disconnect();
 
             _server = new Server();
-            _server.Connect($"DATA SOURCE={_connectionInfo.ServerName}");
+            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName}");
 
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_database == null)
@@ -67,9 +67,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //Shell model
             foreach (DataSource datasource in _database.Model.DataSources)
             {
-                if (datasource.Type == DataSourceType.Provider)
+                if (datasource.Type == DataSourceType.Provider || datasource.Type == DataSourceType.Structured)
                 {
-                    _connections.Add(new Connection(this, (ProviderDataSource)datasource));
+                    _connections.Add(new Connection(this, datasource));
                 }
             }
             foreach (Tom.Table table in _database.Model.Tables)
@@ -252,13 +252,26 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="connectionSource">Connection object from the source tabular model to be created in the target.</param>
         public void CreateConnection(Connection connectionSource)
         {
-            ProviderDataSource tomConnectionTarget = new ProviderDataSource();
-            connectionSource.TomConnection.CopyTo(tomConnectionTarget);
+            if (connectionSource.TomConnection is ProviderDataSource)
+            {
+                ProviderDataSource providerTarget = new ProviderDataSource();
+                connectionSource.TomConnection.CopyTo(providerTarget);
 
-            _database.Model.DataSources.Add(tomConnectionTarget);
+                _database.Model.DataSources.Add(providerTarget);
+                
+                // shell model
+                _connections.Add(new Connection(this, providerTarget));
+            }
+            else
+            {
+                StructuredDataSource structuredTarget = new StructuredDataSource();
+                connectionSource.TomConnection.CopyTo(structuredTarget);
 
-            // shell model
-            _connections.Add(new Connection(this, tomConnectionTarget));
+                _database.Model.DataSources.Add(structuredTarget);
+
+                // shell model
+                _connections.Add(new Connection(this, structuredTarget));
+            }
         }
 
         /// <summary>
@@ -268,10 +281,31 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="connectionTarget">Connection object in the target tabular model to be updated.</param>
         public void UpdateConnection(Connection connectionSource, Connection connectionTarget)
         {
-            connectionTarget.TomConnection.ConnectionString = connectionSource.TomConnection.ConnectionString;
-            connectionTarget.TomConnection.ImpersonationMode = connectionSource.TomConnection.ImpersonationMode;
-            connectionTarget.TomConnection.Account = connectionSource.TomConnection.Account;
-            connectionTarget.TomConnection.Description = connectionSource.TomConnection.Description;
+            if (connectionSource.TomConnection is ProviderDataSource && connectionTarget.TomConnection is ProviderDataSource)
+            {
+                ProviderDataSource providerSource = (ProviderDataSource)connectionSource.TomConnection;
+                ProviderDataSource providerTarget = (ProviderDataSource)connectionTarget.TomConnection;
+
+                providerTarget.Description = providerSource.Description;
+                providerTarget.ConnectionString = providerSource.ConnectionString;
+                providerTarget.ImpersonationMode = providerSource.ImpersonationMode;
+                providerTarget.Account = providerSource.Account;
+            }
+            else if (connectionSource.TomConnection is StructuredDataSource && connectionTarget.TomConnection is StructuredDataSource)
+            {
+                StructuredDataSource structuredSource = (StructuredDataSource)connectionSource.TomConnection;
+                StructuredDataSource structuredTarget = (StructuredDataSource)connectionTarget.TomConnection;
+                
+                structuredTarget.Description = structuredSource.Description;
+                structuredTarget.ConnectionDetails = structuredSource.ConnectionDetails;
+                structuredTarget.Credential = structuredSource.Credential;
+            }
+            else
+            {
+                //Todo: perform validation to say can't perform update becaues of different connection types? (then wouldn't even get here)
+                throw new NotImplementedException();
+                throw new NotSupportedException();
+            }
         }
 
         #endregion
@@ -1228,7 +1262,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _server.Disconnect();
             _server = new Server();
-            _server.Connect("DATA SOURCE=" + _connectionInfo.ServerName);
+            _server.Connect("Provider=MSOLAP;Data Source=" + _connectionInfo.ServerName);
             Amo.XmlaResultCollection results = _server.Execute(tmslCommand);
             if (results.ContainsErrors)
                 throw new Amo.OperationException(results);

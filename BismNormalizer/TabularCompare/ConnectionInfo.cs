@@ -326,7 +326,7 @@ namespace BismNormalizer.TabularCompare
             Server amoServer = new Server();
             try
             {
-                amoServer.Connect("DATA SOURCE=" + this.ServerName);
+                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
             }
             catch (ConnectionException) when (UseProject)
             {
@@ -349,7 +349,7 @@ namespace BismNormalizer.TabularCompare
                             {
                                 string port = File.ReadAllText(portFilePath[0]).Replace("\0", "");
                                 this.ServerName = $"localhost:{Convert.ToString(port)}";
-                                amoServer.Connect("DATA SOURCE=" + this.ServerName);
+                                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
                                 foundServer = true;
                                 break;
                             }

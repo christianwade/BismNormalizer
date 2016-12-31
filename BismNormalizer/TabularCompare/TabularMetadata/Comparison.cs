@@ -85,7 +85,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                     #region Tables for Connection that is Missing in Target (to be created in target)
 
-                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnectionName(connectionSource.Name))
+                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnection(connectionSource.TomConnection))
                     {
                         ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, null, UpdateAction.Create);
                         comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
@@ -140,18 +140,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                     #region Tables where source/target connections exist
 
-                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnectionName(connectionSource.Name))
+                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnection(connectionSource.TomConnection))
                     {
                         // check if source is not in target
-                        TableCollection targetTablesForComparison = _targetTabularModel.Tables.FilterByConnectionName(connectionTarget.Name);
+                        TableCollection targetTablesForComparison = _targetTabularModel.Tables.FilterByConnection(connectionTarget.TomConnection);
 
                         CompareSourceTableToTargetTables(comparisonObjectConnection.ChildComparisonObjects, tblSource, targetTablesForComparison);
                     }
 
-                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByConnectionName(connectionTarget.Name))
+                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByConnection(connectionTarget.TomConnection))
                     {
                         // check if target is not in source
-                        if (!_sourceTabularModel.Tables.FilterByConnectionName(connectionSource.Name).ContainsName(tblTarget.Name))
+                        if (!_sourceTabularModel.Tables.FilterByConnection(connectionSource.TomConnection).ContainsName(tblTarget.Name))
                         {
                             CaptureTargetTableMissingInSource(comparisonObjectConnection.ChildComparisonObjects, tblTarget);
                         }
@@ -171,7 +171,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                     #region Tables for Connection that is Missing in Source
 
-                    foreach (Table tableTarget in _targetTabularModel.Tables.FilterByConnectionName(connectionTarget.Name))
+                    foreach (Table tableTarget in _targetTabularModel.Tables.FilterByConnection(connectionTarget.TomConnection))
                     {
                         CaptureTargetTableMissingInSource(comparisonObjectConnection.ChildComparisonObjects, tableTarget);
                     }
@@ -184,18 +184,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #region Calculated tables (don't have a connection)
 
-            foreach (Table tblSource in _sourceTabularModel.Tables.WithoutConnection())
+            foreach (Table tblSource in _sourceTabularModel.Tables.WithoutConnection(_sourceTabularModel.TomDatabase.Model))
             {
                 // check if source is not in target
-                TableCollection targetTablesForComparison = _targetTabularModel.Tables.WithoutConnection();
+                TableCollection targetTablesForComparison = _targetTabularModel.Tables.WithoutConnection(_targetTabularModel.TomDatabase.Model);
 
                 CompareSourceTableToTargetTables(_comparisonObjects, tblSource, targetTablesForComparison);
             }
 
-            foreach (Table tblTarget in _targetTabularModel.Tables.WithoutConnection())
+            foreach (Table tblTarget in _targetTabularModel.Tables.WithoutConnection(_targetTabularModel.TomDatabase.Model))
             {
                 // check if target is not in source
-                if (!_sourceTabularModel.Tables.WithoutConnection().ContainsName(tblTarget.Name))
+                if (!_sourceTabularModel.Tables.WithoutConnection(_sourceTabularModel.TomDatabase.Model).ContainsName(tblTarget.Name))
                 {
                     CaptureTargetTableMissingInSource(_comparisonObjects, tblTarget);
                 }

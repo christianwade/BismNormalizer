@@ -59,7 +59,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             this.Disconnect();
 
             _amoServer = new Server();
-            _amoServer.Connect("DATA SOURCE=" + _connectionInfo.ServerName);
+            _amoServer.Connect("Provider=MSOLAP;Data Source=" + _connectionInfo.ServerName);
 
             _amoDatabase = _amoServer.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_amoDatabase == null)

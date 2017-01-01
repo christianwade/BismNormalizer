@@ -1204,10 +1204,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 _tablesToProcess = tablesToProcess;
 
-                //Todo: do passwords first, then UpdateWithScript(), then add passwords back, then OnDeloymentMessage, so can back out of deployment
-                UpdateWithScript();
+                //For each impersonated account ...
+                //   1. Prompt for password and validate. If invalid back out of deployment. If valid, apply passwords.
+                //   2. Deploy with script (using UpdateWithScript), which will lose the passwords.
+                //   3. Re-apply the passwords.
+                //Above steps allow backing out of deployment.
 
-                //Set passwords ready for processing
+                List<PasswordPromptEventArgs> argsAllConnections = new List<PasswordPromptEventArgs>();
+
+                //Set passwords
                 foreach (DataSource dataSource in _database.Model.DataSources)
                 {
                     if (dataSource.Type == DataSourceType.Provider)
@@ -1233,11 +1238,37 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             }
                             providerDataSource.Account = args.Username;
                             providerDataSource.Password = args.Password;
+                            argsAllConnections.Add(args);
                         }
                     }
                 }
 
+                UpdateWithScript();
                 _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
+
+                //Reset passwords
+                foreach (DataSource dataSource in _database.Model.DataSources)
+                {
+                    if (dataSource.Type == DataSourceType.Provider)
+                    {
+                        ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
+
+                        if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
+                        {
+                            foreach (PasswordPromptEventArgs args in argsAllConnections)
+                            {
+                                if (dataSource.Name == args.ConnectionName && providerDataSource.Account == args.Username)
+                                {
+                                    providerDataSource.Account = args.Username;
+                                    providerDataSource.Password = args.Password;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //Kick off processing
                 ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
                 processAsyncCaller.BeginInvoke(null, null);
 
@@ -1269,7 +1300,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
 
-            //From this point onwards use only TOM as have not bothered re-hydrating the BismNorm object model
+            //FROM THIS POINT ONWARDS use only TOM as have not bothered re-hydrating the BismNorm object model
         }
 
         private bool _stopProcessing;

@@ -31,5 +31,5 @@ Ensure NuGet packages are installed (should display warning in Package Manager C
 Do a Release build from the command-line to set up cross project references for the 1st time (see command above).
 
 Set BismNormalizer as startup project, and in project properities > Debug tab, set
-* Start External Program: C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe
+* Start External Program (assuming Enterprise edition): C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe
 * Command Line Arguments: /rootsuffix Exp

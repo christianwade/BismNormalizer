@@ -32,4 +32,5 @@ Do a Release build from the command-line to set up cross project references for 
 
 Set BismNormalizer as startup project, and in project properities > Debug tab, set
 * Start External Program (assuming Enterprise edition): C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe
+
 * Command Line Arguments: /rootsuffix Exp

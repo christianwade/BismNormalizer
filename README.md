@@ -20,13 +20,13 @@ Output goes to bin\ReleaseObfusc
 
 ### Set Up New Development Machine
 
-Requires VS SDK (comes with installer for VS 2015). See _Installing SDK from Solution_ section [here](https://msdn.microsoft.com/en-us/library/mt683786.aspx) for more info.
+Built in VS 2017. Workloads installed include .NET desktop development and VS extension development.
 
 May need to temporarily comment out following at bottom of BismNormalizer.csproj to load project into VS for 1st time. After 1st successful load, add it back.
 
 `Import Project="..\packages\MSBuild.Extension.Pack.1.8.0\build\net40\MSBuild.Extension.Pack.targets"`
 
-Ensure NuGet packages are installed (should display warning in Package Manager Console).
+Needs AMO libraries installed (see links [here](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers)). Project reference hint paths point to C:\Program Files (x86)\Microsoft SQL Server\140\SDK\Assemblies\...
 
 Do a Release build from the command-line to set up cross project references for the 1st time (see command above).
 

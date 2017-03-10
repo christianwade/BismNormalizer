@@ -493,8 +493,11 @@ $@"{{
                     }
                 }
 
-                //need next 2 lines in case just created the db using the Execute method
-                amoServer.Refresh();
+                //need next lines in case just created the db using the Execute method
+                //amoServer.Refresh(); //todo workaround for bug 9719887 on 3/10/17 need to disconnect and reconnect
+                amoServer.Disconnect();
+                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
+
                 tabularDatabase = amoServer.Databases.FindByName(this.DatabaseName);
             }
 

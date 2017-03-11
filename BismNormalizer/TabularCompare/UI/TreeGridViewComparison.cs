@@ -354,7 +354,7 @@ namespace BismNormalizer.TabularCompare.UI
             typeLabelColumn.HeaderText = "Type";
             typeLabelColumn.ReadOnly = true;
             typeLabelColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            typeLabelColumn.Width = 161;
+            typeLabelColumn.Width = this.Width / 601 * 161; //hdpi
             this.Columns.Add(typeLabelColumn);
 
             //1
@@ -363,7 +363,7 @@ namespace BismNormalizer.TabularCompare.UI
             sourceNameColumn.HeaderText = "Source Name";
             sourceNameColumn.ReadOnly = true;
             sourceNameColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            sourceNameColumn.Width = 301;
+            sourceNameColumn.Width = this.Width / 601 * 301; //hdpi..
             this.Columns.Add(sourceNameColumn);
 
             //2
@@ -373,7 +373,7 @@ namespace BismNormalizer.TabularCompare.UI
             sourceIdColumn.ReadOnly = true;
             sourceIdColumn.Visible = false;
             sourceIdColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            sourceIdColumn.Width = 200;
+            sourceIdColumn.Width = this.Width / 601 * 200;
             this.Columns.Add(sourceIdColumn);
 
             //3
@@ -383,7 +383,7 @@ namespace BismNormalizer.TabularCompare.UI
             equalityColumn.ReadOnly = true;
             equalityColumn.Visible = false;
             equalityColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            equalityColumn.Width = 17;
+            equalityColumn.Width = this.Width / 601 * 17;
             //equalityColumn.Resizable = DataGridViewTriState.False;
             //equalityColumn.DefaultCellStyle.Font = new Font("Times New Roman", 11);
             this.Columns.Add(equalityColumn);
@@ -394,7 +394,7 @@ namespace BismNormalizer.TabularCompare.UI
             statusColumn.HeaderText = "Status";
             statusColumn.ReadOnly = true;
             statusColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            statusColumn.Width = 103;
+            statusColumn.Width = this.Width / 601 * 103;
             this.Columns.Add(statusColumn);
 
             //5
@@ -403,7 +403,7 @@ namespace BismNormalizer.TabularCompare.UI
             targetNameColumn.HeaderText = "Target Name";
             targetNameColumn.ReadOnly = true;
             targetNameColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            targetNameColumn.Width = 301;
+            targetNameColumn.Width = this.Width / 601 * 301;
             this.Columns.Add(targetNameColumn);
 
             //6
@@ -413,7 +413,7 @@ namespace BismNormalizer.TabularCompare.UI
             targetIdColumn.ReadOnly = true;
             targetIdColumn.Visible = false;
             targetIdColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            targetIdColumn.Width = 200;
+            targetIdColumn.Width = this.Width / 601 * 200;
             this.Columns.Add(targetIdColumn);
 
             //7
@@ -421,7 +421,7 @@ namespace BismNormalizer.TabularCompare.UI
             actionImageColumn.Name = "";
             actionImageColumn.HeaderText = "";
             actionImageColumn.ReadOnly = true;
-            actionImageColumn.Width = 18;
+            actionImageColumn.Width = this.Width / 601 * 18;
             actionImageColumn.Resizable = DataGridViewTriState.False;
             actionImageColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
             actionImageColumn.Visible = true;
@@ -434,7 +434,7 @@ namespace BismNormalizer.TabularCompare.UI
             updateActionColumn.MaxDropDownItems = 4;
             updateActionColumn.FlatStyle = FlatStyle.Flat;
             updateActionColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            updateActionColumn.Width = 83;
+            updateActionColumn.Width = this.Width / 601 * 83;
             this.Columns.Add(updateActionColumn);
 
             //9

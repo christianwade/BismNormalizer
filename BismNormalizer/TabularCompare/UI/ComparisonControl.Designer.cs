@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ComparisonControl));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtSource = new System.Windows.Forms.TextBox();
@@ -88,9 +88,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 4);
+            this.label1.Location = new System.Drawing.Point(4, 25);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(80, 25);
             this.label1.TabIndex = 39;
             this.label1.Text = "Source";
             // 
@@ -99,9 +100,10 @@
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 4);
+            this.label2.Location = new System.Drawing.Point(6, 25);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
+            this.label2.Size = new System.Drawing.Size(74, 25);
             this.label2.TabIndex = 40;
             this.label2.Text = "Target";
             // 
@@ -111,9 +113,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSource.BackColor = System.Drawing.SystemColors.Control;
             this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtSource.Location = new System.Drawing.Point(49, 2);
+            this.txtSource.Location = new System.Drawing.Point(98, 21);
+            this.txtSource.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(269, 20);
+            this.txtSource.Size = new System.Drawing.Size(536, 31);
             this.txtSource.TabIndex = 41;
             this.txtSource.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
@@ -123,18 +126,19 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTarget.BackColor = System.Drawing.SystemColors.Control;
             this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtTarget.Location = new System.Drawing.Point(45, 2);
+            this.txtTarget.Location = new System.Drawing.Point(90, 21);
+            this.txtTarget.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(280, 20);
+            this.txtTarget.Size = new System.Drawing.Size(558, 31);
             this.txtTarget.TabIndex = 42;
             this.txtTarget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
             // spltSourceTarget
             // 
-            this.spltSourceTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.spltSourceTarget.Dock = System.Windows.Forms.DockStyle.Top;
             this.spltSourceTarget.IsSplitterFixed = true;
-            this.spltSourceTarget.Location = new System.Drawing.Point(0, 28);
+            this.spltSourceTarget.Location = new System.Drawing.Point(0, 39);
+            this.spltSourceTarget.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.spltSourceTarget.Name = "spltSourceTarget";
             // 
             // spltSourceTarget.Panel1
@@ -146,23 +150,26 @@
             // 
             this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
             this.spltSourceTarget.Panel2.Controls.Add(this.label2);
-            this.spltSourceTarget.Size = new System.Drawing.Size(653, 24);
-            this.spltSourceTarget.SplitterDistance = 321;
+            this.spltSourceTarget.Size = new System.Drawing.Size(1306, 57);
+            this.spltSourceTarget.SplitterDistance = 642;
+            this.spltSourceTarget.SplitterWidth = 8;
             this.spltSourceTarget.TabIndex = 45;
             // 
             // pnlHeader
             // 
             this.pnlHeader.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlHeader.Controls.Add(this.toolStrip1);
             this.pnlHeader.Controls.Add(this.spltSourceTarget);
+            this.pnlHeader.Controls.Add(this.toolStrip1);
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnlHeader.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(653, 56);
+            this.pnlHeader.Size = new System.Drawing.Size(1306, 108);
             this.pnlHeader.TabIndex = 46;
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnCompareTabularModels,
             this.ddSelectActions,
@@ -174,7 +181,8 @@
             this.btnReportDifferences});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(653, 25);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip1.Size = new System.Drawing.Size(1306, 39);
             this.toolStrip1.TabIndex = 46;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -183,7 +191,7 @@
             this.btnCompareTabularModels.Image = ((System.Drawing.Image)(resources.GetObject("btnCompareTabularModels.Image")));
             this.btnCompareTabularModels.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompareTabularModels.Name = "btnCompareTabularModels";
-            this.btnCompareTabularModels.Size = new System.Drawing.Size(85, 22);
+            this.btnCompareTabularModels.Size = new System.Drawing.Size(163, 36);
             this.btnCompareTabularModels.Text = "Compare...";
             this.btnCompareTabularModels.ToolTipText = "Compare (Shift+Alt+C)";
             this.btnCompareTabularModels.Click += new System.EventHandler(this.btnCompareTabularModels_Click);
@@ -204,67 +212,67 @@
             this.ddSelectActions.Image = ((System.Drawing.Image)(resources.GetObject("ddSelectActions.Image")));
             this.ddSelectActions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ddSelectActions.Name = "ddSelectActions";
-            this.ddSelectActions.Size = new System.Drawing.Size(110, 22);
+            this.ddSelectActions.Size = new System.Drawing.Size(218, 36);
             this.ddSelectActions.Text = "Select Actions";
             // 
             // mnuHideSkipObjects
             // 
             this.mnuHideSkipObjects.Name = "mnuHideSkipObjects";
-            this.mnuHideSkipObjects.Size = new System.Drawing.Size(303, 22);
+            this.mnuHideSkipObjects.Size = new System.Drawing.Size(583, 38);
             this.mnuHideSkipObjects.Text = "Hide Skip Objects";
             this.mnuHideSkipObjects.Click += new System.EventHandler(this.mnuHideSkipObjects_Click);
             // 
             // mnuShowSkipObjects
             // 
             this.mnuShowSkipObjects.Name = "mnuShowSkipObjects";
-            this.mnuShowSkipObjects.Size = new System.Drawing.Size(303, 22);
+            this.mnuShowSkipObjects.Size = new System.Drawing.Size(583, 38);
             this.mnuShowSkipObjects.Text = "Show Skip Objects";
             this.mnuShowSkipObjects.Click += new System.EventHandler(this.mnuShowSkipObjects_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(300, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(580, 6);
             // 
             // mnuSkipAllObjectsMissingInSource
             // 
             this.mnuSkipAllObjectsMissingInSource.Name = "mnuSkipAllObjectsMissingInSource";
-            this.mnuSkipAllObjectsMissingInSource.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsMissingInSource.Size = new System.Drawing.Size(583, 38);
             this.mnuSkipAllObjectsMissingInSource.Text = "Skip all objects Missing in Source";
             this.mnuSkipAllObjectsMissingInSource.Click += new System.EventHandler(this.mnuSkipAllObjectsMissingInSource_Click);
             // 
             // mnuDeleteAllObjectsMissingInSource
             // 
             this.mnuDeleteAllObjectsMissingInSource.Name = "mnuDeleteAllObjectsMissingInSource";
-            this.mnuDeleteAllObjectsMissingInSource.Size = new System.Drawing.Size(303, 22);
+            this.mnuDeleteAllObjectsMissingInSource.Size = new System.Drawing.Size(583, 38);
             this.mnuDeleteAllObjectsMissingInSource.Text = "Delete all objects Missing in Source";
             this.mnuDeleteAllObjectsMissingInSource.Click += new System.EventHandler(this.mnuDeleteAllObjectsMissingInSource_Click);
             // 
             // mnuSkipAllObjectsMissingInTarget
             // 
             this.mnuSkipAllObjectsMissingInTarget.Name = "mnuSkipAllObjectsMissingInTarget";
-            this.mnuSkipAllObjectsMissingInTarget.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsMissingInTarget.Size = new System.Drawing.Size(583, 38);
             this.mnuSkipAllObjectsMissingInTarget.Text = "Skip all objects Missing in Target";
             this.mnuSkipAllObjectsMissingInTarget.Click += new System.EventHandler(this.mnuSkipAllObjectsMissingInTarget_Click);
             // 
             // mnuCreateAllObjectsMissingInTarget
             // 
             this.mnuCreateAllObjectsMissingInTarget.Name = "mnuCreateAllObjectsMissingInTarget";
-            this.mnuCreateAllObjectsMissingInTarget.Size = new System.Drawing.Size(303, 22);
+            this.mnuCreateAllObjectsMissingInTarget.Size = new System.Drawing.Size(583, 38);
             this.mnuCreateAllObjectsMissingInTarget.Text = "Create all objects Missing in Target";
             this.mnuCreateAllObjectsMissingInTarget.Click += new System.EventHandler(this.mnuCreateAllObjectsMissingInTarget_Click);
             // 
             // mnuSkipAllObjectsWithDifferentDefinitions
             // 
             this.mnuSkipAllObjectsWithDifferentDefinitions.Name = "mnuSkipAllObjectsWithDifferentDefinitions";
-            this.mnuSkipAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(583, 38);
             this.mnuSkipAllObjectsWithDifferentDefinitions.Text = "Skip all objects with Different Definitions";
             this.mnuSkipAllObjectsWithDifferentDefinitions.Click += new System.EventHandler(this.mnuSkipAllObjectsWithDifferentDefinitions_Click);
             // 
             // mnuUpdateAllObjectsWithDifferentDefinitions
             // 
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Name = "mnuUpdateAllObjectsWithDifferentDefinitions";
-            this.mnuUpdateAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(303, 22);
+            this.mnuUpdateAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(583, 38);
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Text = "Update all objects with Different Definitions";
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Click += new System.EventHandler(this.mnuUpdateAllObjectsWithDifferentDefinitions_Click);
             // 
@@ -274,7 +282,7 @@
             this.btnValidateSelection.Image = ((System.Drawing.Image)(resources.GetObject("btnValidateSelection.Image")));
             this.btnValidateSelection.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnValidateSelection.Name = "btnValidateSelection";
-            this.btnValidateSelection.Size = new System.Drawing.Size(120, 22);
+            this.btnValidateSelection.Size = new System.Drawing.Size(240, 36);
             this.btnValidateSelection.Text = "Validate Selection";
             this.btnValidateSelection.Click += new System.EventHandler(this.btnValidateSelection_Click);
             // 
@@ -284,7 +292,7 @@
             this.btnUpdate.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Image")));
             this.btnUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(65, 22);
+            this.btnUpdate.Size = new System.Drawing.Size(128, 36);
             this.btnUpdate.Text = "Update";
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
@@ -294,21 +302,21 @@
             this.btnGenerateScript.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerateScript.Image")));
             this.btnGenerateScript.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGenerateScript.Name = "btnGenerateScript";
-            this.btnGenerateScript.Size = new System.Drawing.Size(107, 22);
+            this.btnGenerateScript.Size = new System.Drawing.Size(215, 36);
             this.btnGenerateScript.Text = "Generate Script";
             this.btnGenerateScript.Click += new System.EventHandler(this.btnGenerateScript_Click);
             // 
             // toolStripButton1
             // 
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 39);
             // 
             // btnOptions
             // 
             this.btnOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnOptions.Image")));
             this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(69, 22);
+            this.btnOptions.Size = new System.Drawing.Size(135, 36);
             this.btnOptions.Text = "Options";
             this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
@@ -318,7 +326,7 @@
             this.btnReportDifferences.Image = ((System.Drawing.Image)(resources.GetObject("btnReportDifferences.Image")));
             this.btnReportDifferences.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnReportDifferences.Name = "btnReportDifferences";
-            this.btnReportDifferences.Size = new System.Drawing.Size(124, 20);
+            this.btnReportDifferences.Size = new System.Drawing.Size(249, 36);
             this.btnReportDifferences.Text = "Report Differences";
             this.btnReportDifferences.Click += new System.EventHandler(this.btnReportDifferences_Click);
             // 
@@ -327,7 +335,8 @@
             this.scDifferenceResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.scDifferenceResults.Location = new System.Drawing.Point(0, 56);
+            this.scDifferenceResults.Location = new System.Drawing.Point(0, 108);
+            this.scDifferenceResults.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.scDifferenceResults.Name = "scDifferenceResults";
             this.scDifferenceResults.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -339,8 +348,9 @@
             // scDifferenceResults.Panel2
             // 
             this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
-            this.scDifferenceResults.Size = new System.Drawing.Size(653, 507);
-            this.scDifferenceResults.SplitterDistance = 307;
+            this.scDifferenceResults.Size = new System.Drawing.Size(1306, 975);
+            this.scDifferenceResults.SplitterDistance = 590;
+            this.scDifferenceResults.SplitterWidth = 8;
             this.scDifferenceResults.TabIndex = 2;
             // 
             // pnlProgressBar
@@ -348,60 +358,64 @@
             this.pnlProgressBar.BackColor = System.Drawing.SystemColors.Control;
             this.pnlProgressBar.Controls.Add(this.progressBar);
             this.pnlProgressBar.Controls.Add(this.lblProgressBar);
-            this.pnlProgressBar.Location = new System.Drawing.Point(60, 21);
+            this.pnlProgressBar.Location = new System.Drawing.Point(120, 40);
+            this.pnlProgressBar.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pnlProgressBar.Name = "pnlProgressBar";
-            this.pnlProgressBar.Size = new System.Drawing.Size(280, 54);
+            this.pnlProgressBar.Size = new System.Drawing.Size(560, 104);
             this.pnlProgressBar.TabIndex = 1;
             this.pnlProgressBar.Visible = false;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(120, 16);
+            this.progressBar.Location = new System.Drawing.Point(240, 31);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(137, 18);
+            this.progressBar.Size = new System.Drawing.Size(274, 35);
             this.progressBar.Step = 1;
             this.progressBar.TabIndex = 1;
             // 
             // lblProgressBar
             // 
             this.lblProgressBar.AutoSize = true;
-            this.lblProgressBar.Location = new System.Drawing.Point(13, 18);
+            this.lblProgressBar.Location = new System.Drawing.Point(26, 35);
+            this.lblProgressBar.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblProgressBar.Name = "lblProgressBar";
-            this.lblProgressBar.Size = new System.Drawing.Size(101, 13);
+            this.lblProgressBar.Size = new System.Drawing.Size(204, 25);
             this.lblProgressBar.TabIndex = 0;
             this.lblProgressBar.Text = "Generating report ...";
             // 
-            // treeGridDiffResults
+            // treeGridComparisonResults
             // 
             this.treeGridComparisonResults.AllowUserToAddRows = false;
             this.treeGridComparisonResults.AllowUserToDeleteRows = false;
             this.treeGridComparisonResults.AllowUserToResizeRows = false;
-            this.treeGridComparisonResults.Comparison = null;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.treeGridComparisonResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle2;
+            this.treeGridComparisonResults.Comparison = null;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle4;
             this.treeGridComparisonResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeGridComparisonResults.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.treeGridComparisonResults.ImageList = this.TreeGridImageList;
             this.treeGridComparisonResults.Location = new System.Drawing.Point(0, 0);
-            this.treeGridComparisonResults.Name = "treeGridDiffResults";
+            this.treeGridComparisonResults.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.treeGridComparisonResults.Name = "treeGridComparisonResults";
             this.treeGridComparisonResults.RowHeadersVisible = false;
             this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 307);
+            this.treeGridComparisonResults.Size = new System.Drawing.Size(1306, 590);
             this.treeGridComparisonResults.TabIndex = 0;
             this.treeGridComparisonResults.Unloading = false;
             this.treeGridComparisonResults.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeGridComparisonResults_MouseUp);
@@ -437,6 +451,7 @@
             // 
             this.scObjectDefinitions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scObjectDefinitions.Location = new System.Drawing.Point(0, 0);
+            this.scObjectDefinitions.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.scObjectDefinitions.Name = "scObjectDefinitions";
             // 
             // scObjectDefinitions.Panel1
@@ -450,8 +465,9 @@
             this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
             this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
-            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 196);
-            this.scObjectDefinitions.SplitterDistance = 328;
+            this.scObjectDefinitions.Size = new System.Drawing.Size(1306, 377);
+            this.scObjectDefinitions.SplitterDistance = 656;
+            this.scObjectDefinitions.SplitterWidth = 8;
             this.scObjectDefinitions.TabIndex = 0;
             // 
             // txtSourceObjectDefinition
@@ -461,10 +477,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSourceObjectDefinition.BackColor = System.Drawing.Color.White;
             this.txtSourceObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 20);
+            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 38);
+            this.txtSourceObjectDefinition.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
             this.txtSourceObjectDefinition.ReadOnly = true;
-            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(328, 176);
+            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(652, 335);
             this.txtSourceObjectDefinition.TabIndex = 1;
             this.txtSourceObjectDefinition.Text = "";
             this.txtSourceObjectDefinition.WordWrap = false;
@@ -474,9 +491,10 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 4);
+            this.label4.Location = new System.Drawing.Point(8, 8);
+            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(122, 13);
+            this.label4.Size = new System.Drawing.Size(244, 25);
             this.label4.TabIndex = 0;
             this.label4.Text = "Source Object Definition";
             // 
@@ -487,10 +505,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTargetObjectDefinition.BackColor = System.Drawing.Color.White;
             this.txtTargetObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 20);
+            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 38);
+            this.txtTargetObjectDefinition.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
             this.txtTargetObjectDefinition.ReadOnly = true;
-            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(321, 176);
+            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(638, 335);
             this.txtTargetObjectDefinition.TabIndex = 2;
             this.txtTargetObjectDefinition.Text = "";
             this.txtTargetObjectDefinition.WordWrap = false;
@@ -500,20 +519,22 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 4);
+            this.label5.Location = new System.Drawing.Point(6, 8);
+            this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(119, 13);
+            this.label5.Size = new System.Drawing.Size(238, 25);
             this.label5.TabIndex = 1;
             this.label5.Text = "Target Object Definition";
             // 
-            // BismNormalizerForm
+            // ComparisonControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.scDifferenceResults);
             this.Controls.Add(this.pnlHeader);
-            this.Name = "BismNormalizerForm";
-            this.Size = new System.Drawing.Size(653, 565);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Name = "ComparisonControl";
+            this.Size = new System.Drawing.Size(1306, 1087);
             this.Load += new System.EventHandler(this.BismNormalizer_Load);
             this.spltSourceTarget.Panel1.ResumeLayout(false);
             this.spltSourceTarget.Panel1.PerformLayout();

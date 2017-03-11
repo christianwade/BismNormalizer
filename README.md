@@ -28,7 +28,7 @@ May need to temporarily comment out following at bottom of BismNormalizer.csproj
 
 Needs AMO libraries installed (see links [here](https://docs.microsoft.com/en-us/azure/analysis-services/analysis-services-data-providers) if necessary). Project reference hint paths point to C:\Program Files (x86)\Microsoft SQL Server\140\SDK\Assemblies\...
 
-Do a Release build from the command-line to set up cross project references for the 1st time (see command above). The automated tests depend on a localhost SSAS tabular server.
+Do a Release build from the command-line to set up cross project references for the 1st time (see command above). The automated tests refer to a localhost SSAS tabular server.
 
 Set BismNormalizer as startup project, and in project properities > Debug tab, set
 * Start External Program (assuming Enterprise edition): C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe

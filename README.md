@@ -20,7 +20,7 @@ Output goes to bin\ReleaseObfusc
 
 ### Set Up New Development Machine
 
-Built in VS 2017. Workloads installed include .NET desktop development and VS extension development.
+Built in VS 2017. Workloads installed must include .NET desktop development and VS extension development.
 
 May need to temporarily comment out following at bottom of BismNormalizer.csproj to load project into VS for 1st time. After 1st successful load, add it back.
 

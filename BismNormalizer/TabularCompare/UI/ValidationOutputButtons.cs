@@ -134,7 +134,7 @@ namespace BismNormalizer.TabularCompare.UI
             _informationalMessageButton.Text = informationalMessageCount + " Informational Messages";
 
             //---------------------------------------------------------------
-            //The width and hieght of the "buttons" (it's really a tab strip) cannot be set; they are automatic based on how much text and font is in them.
+            //The width and hieght of the "buttons" (it's really a tab strip) cannot be set; they are automatic based on font size & how much text is in them.
             //All you can do is set the left position of the "informational messages" button to hide the hidden counter button for the warning button (that is pressed when warning is depressed),
             //and the left position of the filler panel that covers up the hidden button that is pressed when informational is not - so it looks like 2 buttons
             //---------------------------------------------------------------

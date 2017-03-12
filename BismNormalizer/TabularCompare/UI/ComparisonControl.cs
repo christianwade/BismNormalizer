@@ -63,7 +63,7 @@ namespace BismNormalizer.TabularCompare.UI
         #region DPI
 
         // DPI at design time
-        private const float DpiAtDesign = 96F; // * 1.83F;
+        private const float DpiAtDesign = 96F;
 
         // Old (previous) DPI
         private float _dpiOld = 0;
@@ -288,7 +288,7 @@ namespace BismNormalizer.TabularCompare.UI
         // Adjust location, size and font size of Controls according to new DPI.
         private void AdjustWindowInitial()
         {
-            _dpiOld = DpiAtDesign; //this.CurrentAutoScaleDimensions.Width;
+            _dpiOld = DpiAtDesign;
             _dpiNew = GetDpiWindowMonitor();
 
             AdjustWindow();
@@ -298,9 +298,10 @@ namespace BismNormalizer.TabularCompare.UI
         private void AdjustWindow()
         {
             if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
-            _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign;
+            float fudgeFactor = 0.76f;
+            _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign * fudgeFactor;
 
-            float scaleFactor = _dpiNew / _dpiOld;
+            float scaleFactor = _dpiNew / _dpiOld * fudgeFactor;
             _dpiOld = _dpiNew;
 
             // Adjust location and size of Controls (except location of this window itself).
@@ -312,30 +313,37 @@ namespace BismNormalizer.TabularCompare.UI
                                  this.Font.Style);
 
             // Adjust font sizes
-            foreach (Control c in GetChildInControl(this)) //.OfType<Button>())
-            {
-                if (c is SplitContainer)
-                {
-                    c.Font = new Font(c.Font.FontFamily,
-                                      c.Font.Size * scaleFactor,
-                                      c.Font.Style);
-                }
-            }
-
+            //foreach (Control c in GetChildInControl(this)) //.OfType<Button>())
+            //{
+            //    if (c is SplitContainer)
+            //    {
+            //        c.Font = new Font(c.Font.FontFamily,
+            //                          c.Font.Size * scaleFactor,
+            //                          c.Font.Style);
+            //    }
+            //}
+            pnlHeader.Font = new Font(pnlHeader.Font.FontFamily,
+                                      pnlHeader.Font.Size * scaleFactor,
+                                      pnlHeader.Font.Style);
+            scDifferenceResults.Font = new Font(scDifferenceResults.Font.FontFamily,
+                                                scDifferenceResults.Font.Size * scaleFactor,
+                                                scDifferenceResults.Font.Style);
+            
             // set up splitter distance/widths/visibility
             spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
-            scDifferenceResults.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scDifferenceResults.Height) * 0.8);
+            scDifferenceResults.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scDifferenceResults.Height) * 0.74);
             scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
             scDifferenceResults.IsSplitterFixed = false;
 
+            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.51);
             txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
-            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.68);
             txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
-            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.68);
             txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
-            txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.78);
+            txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.86);
             txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
-            txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.78);
+            txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.86);
 
             treeGridComparisonResults.ResetColumnWidths(scaleFactor);
             if (_comparison != null && _bismNormalizerPackage.ValidationOutput != null)

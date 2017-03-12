@@ -151,7 +151,7 @@ namespace BismNormalizer.TabularCompare.UI
         {
             foreach (DataGridViewColumn col in this.Columns)
             {
-                col.Width = Convert.ToInt32(col.Width * scaleFactor);
+                col.Width = Convert.ToInt32(col.Width * scaleFactor * 1.4);
             }
         }
         #endregion

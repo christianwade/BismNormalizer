@@ -26,10 +26,10 @@ namespace BismNormalizer.TabularCompare.UI
         {
             switch (m.Msg)
             {
-                case NativeMethods.WM_LBUTTONDOWN:
-                case NativeMethods.WM_RBUTTONDOWN:
-                case NativeMethods.WM_MBUTTONDOWN:
-                case NativeMethods.WM_LBUTTONDBLCLK:
+                case BismNormalizer.NativeMethods.WM_LBUTTONDOWN:
+                case BismNormalizer.NativeMethods.WM_RBUTTONDOWN:
+                case BismNormalizer.NativeMethods.WM_MBUTTONDOWN:
+                case BismNormalizer.NativeMethods.WM_LBUTTONDBLCLK:
                     if (m_FilterMouseClickMessages)
                     {
                         Focus();

@@ -40,7 +40,7 @@ namespace BismNormalizer.TabularCompare.UI
             typeLabelColumn.HeaderText = "";
             typeLabelColumn.ReadOnly = true;
             typeLabelColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            typeLabelColumn.Width = 82;
+            typeLabelColumn.Width = this.Width / 601 * 98; //hdpi
             typeLabelColumn.Resizable = DataGridViewTriState.False;
             this.Columns.Add(typeLabelColumn);
 
@@ -50,18 +50,17 @@ namespace BismNormalizer.TabularCompare.UI
             messageColumn.HeaderText = "Message";
             messageColumn.ReadOnly = true;
             messageColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            //messageColumn.Width = 1200;
             this.Columns.Add(messageColumn);
 
             this.DefaultCellStyle.BackColor = Color.White;
 
-            if (this.Width >= 1200)
+            if (this.Width >= 1400)
             {
                 messageColumn.Width = this.Width - 100;
             }
             else
             {
-                messageColumn.Width = 1000;
+                messageColumn.Width = 1300;
             }
 
             // Will be shown when there are some messages

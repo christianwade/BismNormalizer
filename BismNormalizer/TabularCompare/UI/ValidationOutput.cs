@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using BismNormalizer.TabularCompare.Core;
+using System.Drawing;
 
 namespace BismNormalizer.TabularCompare.UI
 {
@@ -69,6 +70,13 @@ namespace BismNormalizer.TabularCompare.UI
             }
 
             this.Refresh();
+        }
+
+        public void Rescale(float scaleFactor)
+        {
+            validationOutputButtons.HpiScaleFactor = (scaleFactor > 1 ? scaleFactor * 1.7f : 1); //complete fudge. todo: replace with a toolbar
+            treeGridViewValidationOutput.Scale(new SizeF(scaleFactor, scaleFactor));
+            treeGridViewValidationOutput.ResetColumnWidths(scaleFactor);
         }
     }
 }

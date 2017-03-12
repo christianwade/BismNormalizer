@@ -50,8 +50,11 @@ namespace BismNormalizer.TabularCompare.UI
 			this._root = new TreeGridNode(this);
 			this._root.IsRoot = true;
 
-			// Ensures that all rows are added unshared by listening to the CollectionChanged event.
-			base.Rows.CollectionChanged += delegate(object sender, System.ComponentModel.CollectionChangeEventArgs e){};
+            //hdpi
+            this.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            // Ensures that all rows are added unshared by listening to the CollectionChanged event.
+            base.Rows.CollectionChanged += delegate(object sender, System.ComponentModel.CollectionChangeEventArgs e){};
 		}
 		#endregion
 
@@ -139,11 +142,23 @@ namespace BismNormalizer.TabularCompare.UI
 
 		[Description("Returns the TreeGridNode for the given DataGridViewRow")]
 		public TreeGridNode GetNodeForRow(int index) => GetNodeForRow(base.Rows[index]);
-		#endregion
 
-		#region Public properties
+        /// <summary>
+        /// Reset column widths on HPI rescaling
+        /// </summary>
+        /// <param name="scaleFactor">HPI factor adjustment</param>
+        public void ResetColumnWidths(float scaleFactor)
+        {
+            foreach (DataGridViewColumn col in this.Columns)
+            {
+                col.Width = Convert.ToInt32(col.Width * scaleFactor);
+            }
+        }
+        #endregion
 
-		public bool Unloading
+        #region Public properties
+
+        public bool Unloading
 		{
 			get
 			{

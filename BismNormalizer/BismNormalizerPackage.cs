@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE80;
 using BismNormalizer.TabularCompare.UI;
+using System.Drawing;
 
 namespace BismNormalizer
 {
@@ -331,7 +332,7 @@ namespace BismNormalizer
             InitializeToolWindowInternal();
         }
 
-        internal void InitializeToolWindowInternal()
+        internal void InitializeToolWindowInternal(float dpiFactor = 0)
         {
             ToolWindowPane window = this.FindToolWindow(typeof(WarningList), 0, true);
             if ((null == window) || (null == window.Frame))
@@ -339,6 +340,11 @@ namespace BismNormalizer
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
             _validationOutput = (ValidationOutput)window.Window;
+            if (dpiFactor != 0)
+            {
+                _validationOutput.Rescale(dpiFactor);
+            }
+
             _toolWindowFrame = (IVsWindowFrame)window.Frame;
             ShowToolWindow();
         }

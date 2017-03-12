@@ -33,18 +33,20 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.btnStopProcessing = new System.Windows.Forms.Button();
             this.gridProcessing = new System.Windows.Forms.DataGridView();
-            this.ImageCol = new System.Windows.Forms.DataGridViewImageColumn();
-            this.WorkItemCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StatusCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeployImageList = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
             this.picStatus = new System.Windows.Forms.PictureBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.ImageCol = new System.Windows.Forms.DataGridViewImageColumn();
+            this.WorkItemCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StatusCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.gridProcessing)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picStatus)).BeginInit();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnClose
@@ -52,9 +54,10 @@
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnClose.Enabled = false;
-            this.btnClose.Location = new System.Drawing.Point(370, 426);
+            this.btnClose.Location = new System.Drawing.Point(731, 23);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(6);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.Size = new System.Drawing.Size(150, 44);
             this.btnClose.TabIndex = 1;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -65,9 +68,10 @@
             this.btnStopProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnStopProcessing.DialogResult = System.Windows.Forms.DialogResult.Abort;
             this.btnStopProcessing.Enabled = false;
-            this.btnStopProcessing.Location = new System.Drawing.Point(250, 426);
+            this.btnStopProcessing.Location = new System.Drawing.Point(491, 23);
+            this.btnStopProcessing.Margin = new System.Windows.Forms.Padding(6);
             this.btnStopProcessing.Name = "btnStopProcessing";
-            this.btnStopProcessing.Size = new System.Drawing.Size(114, 23);
+            this.btnStopProcessing.Size = new System.Drawing.Size(228, 44);
             this.btnStopProcessing.TabIndex = 2;
             this.btnStopProcessing.Text = "Stop Processing";
             this.btnStopProcessing.UseVisualStyleBackColor = true;
@@ -78,45 +82,22 @@
             this.gridProcessing.AllowUserToAddRows = false;
             this.gridProcessing.AllowUserToDeleteRows = false;
             this.gridProcessing.AllowUserToResizeRows = false;
-            this.gridProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.gridProcessing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridProcessing.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ImageCol,
             this.WorkItemCol,
             this.StatusCol});
-            this.gridProcessing.Location = new System.Drawing.Point(12, 56);
+            this.gridProcessing.Dock = System.Windows.Forms.DockStyle.Top;
+            this.gridProcessing.Location = new System.Drawing.Point(0, 96);
+            this.gridProcessing.Margin = new System.Windows.Forms.Padding(6);
             this.gridProcessing.MultiSelect = false;
             this.gridProcessing.Name = "gridProcessing";
             this.gridProcessing.ReadOnly = true;
             this.gridProcessing.RowHeadersVisible = false;
             this.gridProcessing.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gridProcessing.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridProcessing.Size = new System.Drawing.Size(433, 363);
+            this.gridProcessing.Size = new System.Drawing.Size(914, 682);
             this.gridProcessing.TabIndex = 3;
-            // 
-            // ImageCol
-            // 
-            this.ImageCol.Frozen = true;
-            this.ImageCol.HeaderText = "";
-            this.ImageCol.Name = "ImageCol";
-            this.ImageCol.ReadOnly = true;
-            this.ImageCol.Width = 26;
-            // 
-            // WorkItemCol
-            // 
-            this.WorkItemCol.HeaderText = "Work Item";
-            this.WorkItemCol.Name = "WorkItemCol";
-            this.WorkItemCol.ReadOnly = true;
-            this.WorkItemCol.Width = 140;
-            // 
-            // StatusCol
-            // 
-            this.StatusCol.HeaderText = "Status";
-            this.StatusCol.Name = "StatusCol";
-            this.StatusCol.ReadOnly = true;
-            this.StatusCol.Width = 240;
             // 
             // DeployImageList
             // 
@@ -129,33 +110,35 @@
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.lblStatus);
             this.panel1.Controls.Add(this.picStatus);
-            this.panel1.Location = new System.Drawing.Point(-5, -1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(466, 51);
+            this.panel1.Size = new System.Drawing.Size(914, 96);
             this.panel1.TabIndex = 4;
             // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(52, 15);
+            this.lblStatus.Location = new System.Drawing.Point(104, 29);
+            this.lblStatus.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(102, 18);
+            this.lblStatus.Size = new System.Drawing.Size(194, 36);
             this.lblStatus.TabIndex = 1;
             this.lblStatus.Text = "Deploying ...";
             // 
             // picStatus
             // 
             this.picStatus.Image = global::BismNormalizer.Resources.Progress;
-            this.picStatus.Location = new System.Drawing.Point(14, 8);
+            this.picStatus.Location = new System.Drawing.Point(28, 15);
+            this.picStatus.Margin = new System.Windows.Forms.Padding(6);
             this.picStatus.Name = "picStatus";
-            this.picStatus.Size = new System.Drawing.Size(32, 32);
+            this.picStatus.Size = new System.Drawing.Size(64, 62);
             this.picStatus.TabIndex = 0;
             this.picStatus.TabStop = false;
             // 
@@ -173,19 +156,51 @@
             this.dataGridViewTextBoxColumn2.ReadOnly = true;
             this.dataGridViewTextBoxColumn2.Width = 220;
             // 
-            // Deploy
+            // panel2
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.panel2.Controls.Add(this.btnStopProcessing);
+            this.panel2.Controls.Add(this.btnClose);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel2.Location = new System.Drawing.Point(0, 787);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(914, 100);
+            this.panel2.TabIndex = 5;
+            // 
+            // ImageCol
+            // 
+            this.ImageCol.Frozen = true;
+            this.ImageCol.HeaderText = "";
+            this.ImageCol.Name = "ImageCol";
+            this.ImageCol.ReadOnly = true;
+            this.ImageCol.Width = 26;
+            // 
+            // WorkItemCol
+            // 
+            this.WorkItemCol.HeaderText = "Work Item";
+            this.WorkItemCol.Name = "WorkItemCol";
+            this.WorkItemCol.ReadOnly = true;
+            this.WorkItemCol.Width = 150;
+            // 
+            // StatusCol
+            // 
+            this.StatusCol.HeaderText = "Status";
+            this.StatusCol.Name = "StatusCol";
+            this.StatusCol.ReadOnly = true;
+            this.StatusCol.Width = 280;
+            // 
+            // Deployment
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(457, 461);
-            this.Controls.Add(this.panel1);
+            this.ClientSize = new System.Drawing.Size(914, 887);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.gridProcessing);
-            this.Controls.Add(this.btnStopProcessing);
-            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Deploy";
+            this.Name = "Deployment";
             this.Text = "Deploy";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Deploy_FormClosing);
             this.Load += new System.EventHandler(this.Deploy_Load);
@@ -193,6 +208,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picStatus)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -207,8 +223,9 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn StatusCol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn WorkItemCol;
+        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.DataGridViewImageColumn ImageCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WorkItemCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StatusCol;
     }
 }

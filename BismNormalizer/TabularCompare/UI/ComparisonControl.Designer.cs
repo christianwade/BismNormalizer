@@ -29,21 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ComparisonControl));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlHeader = new System.Windows.Forms.Panel();
-            this.scDifferenceResults = new System.Windows.Forms.SplitContainer();
-            this.pnlProgressBar = new System.Windows.Forms.Panel();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.lblProgressBar = new System.Windows.Forms.Label();
-            this.treeGridComparisonResults = new BismNormalizer.TabularCompare.UI.TreeGridViewComparison();
-            this.TreeGridImageList = new System.Windows.Forms.ImageList(this.components);
-            this.scObjectDefinitions = new System.Windows.Forms.SplitContainer();
-            this.txtSourceObjectDefinition = new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtTargetObjectDefinition = new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.spltSourceTarget = new System.Windows.Forms.SplitContainer();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtSource = new System.Windows.Forms.TextBox();
+            this.txtTarget = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnCompareTabularModels = new System.Windows.Forms.ToolStripButton();
             this.ddSelectActions = new System.Windows.Forms.ToolStripDropDownButton();
             this.mnuHideSkipObjects = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,13 +56,23 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnOptions = new System.Windows.Forms.ToolStripButton();
             this.btnReportDifferences = new System.Windows.Forms.ToolStripButton();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtTarget = new System.Windows.Forms.TextBox();
-            this.txtSource = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.spltSourceTarget = new System.Windows.Forms.SplitContainer();
+            this.scDifferenceResults = new System.Windows.Forms.SplitContainer();
+            this.pnlProgressBar = new System.Windows.Forms.Panel();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.lblProgressBar = new System.Windows.Forms.Label();
+            this.treeGridComparisonResults = new BismNormalizer.TabularCompare.UI.TreeGridViewComparison();
+            this.TreeGridImageList = new System.Windows.Forms.ImageList(this.components);
+            this.scObjectDefinitions = new System.Windows.Forms.SplitContainer();
+            this.txtSourceObjectDefinition = new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtTargetObjectDefinition = new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.pnlHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).BeginInit();
+            this.spltSourceTarget.Panel1.SuspendLayout();
+            this.spltSourceTarget.Panel2.SuspendLayout();
+            this.spltSourceTarget.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scDifferenceResults)).BeginInit();
             this.scDifferenceResults.Panel1.SuspendLayout();
             this.scDifferenceResults.Panel2.SuspendLayout();
@@ -78,11 +83,6 @@
             this.scObjectDefinitions.Panel1.SuspendLayout();
             this.scObjectDefinitions.Panel2.SuspendLayout();
             this.scObjectDefinitions.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).BeginInit();
-            this.spltSourceTarget.Panel1.SuspendLayout();
-            this.spltSourceTarget.Panel2.SuspendLayout();
-            this.spltSourceTarget.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlHeader
@@ -93,202 +93,97 @@
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Margin = new System.Windows.Forms.Padding(6);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(1306, 108);
+            this.pnlHeader.Size = new System.Drawing.Size(1306, 86);
             this.pnlHeader.TabIndex = 46;
             // 
-            // scDifferenceResults
+            // spltSourceTarget
             // 
-            this.scDifferenceResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.scDifferenceResults.Location = new System.Drawing.Point(0, 108);
-            this.scDifferenceResults.Margin = new System.Windows.Forms.Padding(6);
-            this.scDifferenceResults.Name = "scDifferenceResults";
-            this.scDifferenceResults.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.spltSourceTarget.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.spltSourceTarget.IsSplitterFixed = true;
+            this.spltSourceTarget.Location = new System.Drawing.Point(0, 39);
+            this.spltSourceTarget.Margin = new System.Windows.Forms.Padding(6);
+            this.spltSourceTarget.Name = "spltSourceTarget";
             // 
-            // scDifferenceResults.Panel1
+            // spltSourceTarget.Panel1
             // 
-            this.scDifferenceResults.Panel1.Controls.Add(this.pnlProgressBar);
-            this.scDifferenceResults.Panel1.Controls.Add(this.treeGridComparisonResults);
+            this.spltSourceTarget.Panel1.Controls.Add(this.label1);
+            this.spltSourceTarget.Panel1.Controls.Add(this.txtSource);
             // 
-            // scDifferenceResults.Panel2
+            // spltSourceTarget.Panel2
             // 
-            this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
-            this.scDifferenceResults.Size = new System.Drawing.Size(1306, 979);
-            this.scDifferenceResults.SplitterDistance = 592;
-            this.scDifferenceResults.SplitterWidth = 8;
-            this.scDifferenceResults.TabIndex = 2;
+            this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
+            this.spltSourceTarget.Panel2.Controls.Add(this.label2);
+            this.spltSourceTarget.Size = new System.Drawing.Size(1306, 47);
+            this.spltSourceTarget.SplitterDistance = 642;
+            this.spltSourceTarget.SplitterWidth = 8;
+            this.spltSourceTarget.TabIndex = 45;
             // 
-            // pnlProgressBar
+            // label1
             // 
-            this.pnlProgressBar.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlProgressBar.Controls.Add(this.progressBar);
-            this.pnlProgressBar.Controls.Add(this.lblProgressBar);
-            this.pnlProgressBar.Location = new System.Drawing.Point(120, 40);
-            this.pnlProgressBar.Margin = new System.Windows.Forms.Padding(6);
-            this.pnlProgressBar.Name = "pnlProgressBar";
-            this.pnlProgressBar.Size = new System.Drawing.Size(560, 104);
-            this.pnlProgressBar.TabIndex = 1;
-            this.pnlProgressBar.Visible = false;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 16);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(80, 25);
+            this.label1.TabIndex = 39;
+            this.label1.Text = "Source";
             // 
-            // progressBar
+            // txtSource
             // 
-            this.progressBar.Location = new System.Drawing.Point(240, 31);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(6);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(274, 35);
-            this.progressBar.Step = 1;
-            this.progressBar.TabIndex = 1;
-            // 
-            // lblProgressBar
-            // 
-            this.lblProgressBar.AutoSize = true;
-            this.lblProgressBar.Location = new System.Drawing.Point(26, 35);
-            this.lblProgressBar.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.lblProgressBar.Name = "lblProgressBar";
-            this.lblProgressBar.Size = new System.Drawing.Size(204, 25);
-            this.lblProgressBar.TabIndex = 0;
-            this.lblProgressBar.Text = "Generating report ...";
-            // 
-            // treeGridComparisonResults
-            // 
-            this.treeGridComparisonResults.AllowUserToAddRows = false;
-            this.treeGridComparisonResults.AllowUserToDeleteRows = false;
-            this.treeGridComparisonResults.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.treeGridComparisonResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.treeGridComparisonResults.Comparison = null;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle2;
-            this.treeGridComparisonResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeGridComparisonResults.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.treeGridComparisonResults.ImageList = this.TreeGridImageList;
-            this.treeGridComparisonResults.Location = new System.Drawing.Point(0, 0);
-            this.treeGridComparisonResults.Margin = new System.Windows.Forms.Padding(6);
-            this.treeGridComparisonResults.Name = "treeGridComparisonResults";
-            this.treeGridComparisonResults.RowHeadersVisible = false;
-            this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.treeGridComparisonResults.Size = new System.Drawing.Size(1306, 592);
-            this.treeGridComparisonResults.TabIndex = 0;
-            this.treeGridComparisonResults.Unloading = false;
-            this.treeGridComparisonResults.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeGridComparisonResults_MouseUp);
-            // 
-            // TreeGridImageList
-            // 
-            this.TreeGridImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("TreeGridImageList.ImageStream")));
-            this.TreeGridImageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.TreeGridImageList.Images.SetKeyName(0, "Connection.png");
-            this.TreeGridImageList.Images.SetKeyName(1, "Table.png");
-            this.TreeGridImageList.Images.SetKeyName(2, "Relationship.png");
-            this.TreeGridImageList.Images.SetKeyName(3, "BismMeasure.png");
-            this.TreeGridImageList.Images.SetKeyName(4, "KPI.png");
-            this.TreeGridImageList.Images.SetKeyName(5, "DeleteAction.png");
-            this.TreeGridImageList.Images.SetKeyName(6, "UpdateAction.png");
-            this.TreeGridImageList.Images.SetKeyName(7, "CreateAction.png");
-            this.TreeGridImageList.Images.SetKeyName(8, "SkipAction.png");
-            this.TreeGridImageList.Images.SetKeyName(9, "Plus.png");
-            this.TreeGridImageList.Images.SetKeyName(10, "Minus.png");
-            this.TreeGridImageList.Images.SetKeyName(11, "Informational.png");
-            this.TreeGridImageList.Images.SetKeyName(12, "Warning.png");
-            this.TreeGridImageList.Images.SetKeyName(13, "WarningToolWindow.png");
-            this.TreeGridImageList.Images.SetKeyName(14, "Role.png");
-            this.TreeGridImageList.Images.SetKeyName(15, "Perspective.png");
-            this.TreeGridImageList.Images.SetKeyName(16, "Action.png");
-            this.TreeGridImageList.Images.SetKeyName(17, "CompareBismModels_Small.png");
-            this.TreeGridImageList.Images.SetKeyName(18, "DeleteActionGrey.png");
-            this.TreeGridImageList.Images.SetKeyName(19, "SkipActionGrey.png");
-            this.TreeGridImageList.Images.SetKeyName(20, "CreateActionGrey.png");
-            this.TreeGridImageList.Images.SetKeyName(21, "Culture.png");
-            // 
-            // scObjectDefinitions
-            // 
-            this.scObjectDefinitions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.scObjectDefinitions.Location = new System.Drawing.Point(0, 0);
-            this.scObjectDefinitions.Margin = new System.Windows.Forms.Padding(6);
-            this.scObjectDefinitions.Name = "scObjectDefinitions";
-            // 
-            // scObjectDefinitions.Panel1
-            // 
-            this.scObjectDefinitions.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.scObjectDefinitions.Panel1.Controls.Add(this.txtSourceObjectDefinition);
-            this.scObjectDefinitions.Panel1.Controls.Add(this.label4);
-            // 
-            // scObjectDefinitions.Panel2
-            // 
-            this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
-            this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
-            this.scObjectDefinitions.Size = new System.Drawing.Size(1306, 379);
-            this.scObjectDefinitions.SplitterDistance = 663;
-            this.scObjectDefinitions.SplitterWidth = 8;
-            this.scObjectDefinitions.TabIndex = 0;
-            // 
-            // txtSourceObjectDefinition
-            // 
-            this.txtSourceObjectDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSourceObjectDefinition.BackColor = System.Drawing.Color.White;
-            this.txtSourceObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 38);
-            this.txtSourceObjectDefinition.Margin = new System.Windows.Forms.Padding(6);
-            this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
-            this.txtSourceObjectDefinition.ReadOnly = true;
-            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(659, 384);
-            this.txtSourceObjectDefinition.TabIndex = 1;
-            this.txtSourceObjectDefinition.Text = "";
-            this.txtSourceObjectDefinition.WordWrap = false;
-            this.txtSourceObjectDefinition.vScroll += new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox.vScrollEventHandler(this.txtSourceObjectDefinition_vScroll);
-            this.txtSourceObjectDefinition.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtSourceObjectDefinition_KeyUp);
+            this.txtSource.BackColor = System.Drawing.SystemColors.Control;
+            this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtSource.Location = new System.Drawing.Point(98, 14);
+            this.txtSource.Margin = new System.Windows.Forms.Padding(6);
+            this.txtSource.Name = "txtSource";
+            this.txtSource.Size = new System.Drawing.Size(536, 31);
+            this.txtSource.TabIndex = 41;
+            this.txtSource.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
-            // label4
+            // txtTarget
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 8);
-            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(244, 25);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Source Object Definition";
-            // 
-            // txtTargetObjectDefinition
-            // 
-            this.txtTargetObjectDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTargetObjectDefinition.BackColor = System.Drawing.Color.White;
-            this.txtTargetObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 38);
-            this.txtTargetObjectDefinition.Margin = new System.Windows.Forms.Padding(6);
-            this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
-            this.txtTargetObjectDefinition.ReadOnly = true;
-            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(634, 380);
-            this.txtTargetObjectDefinition.TabIndex = 2;
-            this.txtTargetObjectDefinition.Text = "";
-            this.txtTargetObjectDefinition.WordWrap = false;
-            this.txtTargetObjectDefinition.vScroll += new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox.vScrollEventHandler(this.txtTargetObjectDefinition_vScroll);
-            this.txtTargetObjectDefinition.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtTargetObjectDefinition_KeyUp);
+            this.txtTarget.BackColor = System.Drawing.SystemColors.Control;
+            this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtTarget.Location = new System.Drawing.Point(90, 14);
+            this.txtTarget.Margin = new System.Windows.Forms.Padding(6);
+            this.txtTarget.Name = "txtTarget";
+            this.txtTarget.Size = new System.Drawing.Size(546, 31);
+            this.txtTarget.TabIndex = 42;
+            this.txtTarget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
-            // label5
+            // label2
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 8);
-            this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(238, 25);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "Target Object Definition";
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 16);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(74, 25);
+            this.label2.TabIndex = 40;
+            this.label2.Text = "Target";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnCompareTabularModels,
+            this.ddSelectActions,
+            this.btnValidateSelection,
+            this.btnUpdate,
+            this.btnGenerateScript,
+            this.toolStripButton1,
+            this.btnOptions,
+            this.btnReportDifferences});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip1.Size = new System.Drawing.Size(1306, 39);
+            this.toolStrip1.TabIndex = 46;
+            this.toolStrip1.Text = "toolStrip1";
             // 
             // btnCompareTabularModels
             // 
@@ -434,94 +329,201 @@
             this.btnReportDifferences.Text = "Report Differences";
             this.btnReportDifferences.Click += new System.EventHandler(this.btnReportDifferences_Click);
             // 
-            // toolStrip1
+            // scDifferenceResults
             // 
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnCompareTabularModels,
-            this.ddSelectActions,
-            this.btnValidateSelection,
-            this.btnUpdate,
-            this.btnGenerateScript,
-            this.toolStripButton1,
-            this.btnOptions,
-            this.btnReportDifferences});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1306, 39);
-            this.toolStrip1.TabIndex = 46;
-            this.toolStrip1.Text = "toolStrip1";
+            this.scDifferenceResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.scDifferenceResults.Location = new System.Drawing.Point(0, 86);
+            this.scDifferenceResults.Margin = new System.Windows.Forms.Padding(6);
+            this.scDifferenceResults.Name = "scDifferenceResults";
+            this.scDifferenceResults.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // label2
+            // scDifferenceResults.Panel1
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.scDifferenceResults.Panel1.Controls.Add(this.pnlProgressBar);
+            this.scDifferenceResults.Panel1.Controls.Add(this.treeGridComparisonResults);
+            // 
+            // scDifferenceResults.Panel2
+            // 
+            this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
+            this.scDifferenceResults.Size = new System.Drawing.Size(1306, 1001);
+            this.scDifferenceResults.SplitterDistance = 605;
+            this.scDifferenceResults.SplitterWidth = 8;
+            this.scDifferenceResults.TabIndex = 2;
+            // 
+            // pnlProgressBar
+            // 
+            this.pnlProgressBar.BackColor = System.Drawing.SystemColors.Control;
+            this.pnlProgressBar.Controls.Add(this.progressBar);
+            this.pnlProgressBar.Controls.Add(this.lblProgressBar);
+            this.pnlProgressBar.Location = new System.Drawing.Point(120, 40);
+            this.pnlProgressBar.Margin = new System.Windows.Forms.Padding(6);
+            this.pnlProgressBar.Name = "pnlProgressBar";
+            this.pnlProgressBar.Size = new System.Drawing.Size(560, 104);
+            this.pnlProgressBar.TabIndex = 1;
+            this.pnlProgressBar.Visible = false;
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(240, 31);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(6);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(274, 35);
+            this.progressBar.Step = 1;
+            this.progressBar.TabIndex = 1;
+            // 
+            // lblProgressBar
+            // 
+            this.lblProgressBar.AutoSize = true;
+            this.lblProgressBar.Location = new System.Drawing.Point(24, 31);
+            this.lblProgressBar.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblProgressBar.Name = "lblProgressBar";
+            this.lblProgressBar.Size = new System.Drawing.Size(204, 25);
+            this.lblProgressBar.TabIndex = 0;
+            this.lblProgressBar.Text = "Generating report ...";
+            // 
+            // treeGridComparisonResults
+            // 
+            this.treeGridComparisonResults.AllowUserToAddRows = false;
+            this.treeGridComparisonResults.AllowUserToDeleteRows = false;
+            this.treeGridComparisonResults.AllowUserToResizeRows = false;
+            this.treeGridComparisonResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.treeGridComparisonResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.treeGridComparisonResults.Comparison = null;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle4;
+            this.treeGridComparisonResults.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeGridComparisonResults.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.treeGridComparisonResults.ImageList = this.TreeGridImageList;
+            this.treeGridComparisonResults.Location = new System.Drawing.Point(0, 0);
+            this.treeGridComparisonResults.Margin = new System.Windows.Forms.Padding(6);
+            this.treeGridComparisonResults.Name = "treeGridComparisonResults";
+            this.treeGridComparisonResults.RowHeadersVisible = false;
+            this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.treeGridComparisonResults.Size = new System.Drawing.Size(1306, 605);
+            this.treeGridComparisonResults.TabIndex = 0;
+            this.treeGridComparisonResults.Unloading = false;
+            this.treeGridComparisonResults.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.treeGridComparisonResults_DataError);
+            this.treeGridComparisonResults.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeGridComparisonResults_MouseUp);
+            // 
+            // TreeGridImageList
+            // 
+            this.TreeGridImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("TreeGridImageList.ImageStream")));
+            this.TreeGridImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.TreeGridImageList.Images.SetKeyName(0, "Connection.png");
+            this.TreeGridImageList.Images.SetKeyName(1, "Table.png");
+            this.TreeGridImageList.Images.SetKeyName(2, "Relationship.png");
+            this.TreeGridImageList.Images.SetKeyName(3, "BismMeasure.png");
+            this.TreeGridImageList.Images.SetKeyName(4, "KPI.png");
+            this.TreeGridImageList.Images.SetKeyName(5, "DeleteAction.png");
+            this.TreeGridImageList.Images.SetKeyName(6, "UpdateAction.png");
+            this.TreeGridImageList.Images.SetKeyName(7, "CreateAction.png");
+            this.TreeGridImageList.Images.SetKeyName(8, "SkipAction.png");
+            this.TreeGridImageList.Images.SetKeyName(9, "Plus.png");
+            this.TreeGridImageList.Images.SetKeyName(10, "Minus.png");
+            this.TreeGridImageList.Images.SetKeyName(11, "Informational.png");
+            this.TreeGridImageList.Images.SetKeyName(12, "Warning.png");
+            this.TreeGridImageList.Images.SetKeyName(13, "WarningToolWindow.png");
+            this.TreeGridImageList.Images.SetKeyName(14, "Role.png");
+            this.TreeGridImageList.Images.SetKeyName(15, "Perspective.png");
+            this.TreeGridImageList.Images.SetKeyName(16, "Action.png");
+            this.TreeGridImageList.Images.SetKeyName(17, "CompareBismModels_Small.png");
+            this.TreeGridImageList.Images.SetKeyName(18, "DeleteActionGrey.png");
+            this.TreeGridImageList.Images.SetKeyName(19, "SkipActionGrey.png");
+            this.TreeGridImageList.Images.SetKeyName(20, "CreateActionGrey.png");
+            this.TreeGridImageList.Images.SetKeyName(21, "Culture.png");
+            // 
+            // scObjectDefinitions
+            // 
+            this.scObjectDefinitions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.scObjectDefinitions.Location = new System.Drawing.Point(0, 0);
+            this.scObjectDefinitions.Margin = new System.Windows.Forms.Padding(6);
+            this.scObjectDefinitions.Name = "scObjectDefinitions";
+            // 
+            // scObjectDefinitions.Panel1
+            // 
+            this.scObjectDefinitions.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.scObjectDefinitions.Panel1.Controls.Add(this.txtSourceObjectDefinition);
+            this.scObjectDefinitions.Panel1.Controls.Add(this.label4);
+            // 
+            // scObjectDefinitions.Panel2
+            // 
+            this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
+            this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
+            this.scObjectDefinitions.Size = new System.Drawing.Size(1306, 388);
+            this.scObjectDefinitions.SplitterDistance = 663;
+            this.scObjectDefinitions.SplitterWidth = 8;
+            this.scObjectDefinitions.TabIndex = 0;
+            // 
+            // txtSourceObjectDefinition
+            // 
+            this.txtSourceObjectDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 25);
-            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 25);
-            this.label2.TabIndex = 40;
-            this.label2.Text = "Target";
+            this.txtSourceObjectDefinition.BackColor = System.Drawing.Color.White;
+            this.txtSourceObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 31);
+            this.txtSourceObjectDefinition.Margin = new System.Windows.Forms.Padding(6);
+            this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
+            this.txtSourceObjectDefinition.ReadOnly = true;
+            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(659, 357);
+            this.txtSourceObjectDefinition.TabIndex = 1;
+            this.txtSourceObjectDefinition.Text = "";
+            this.txtSourceObjectDefinition.WordWrap = false;
+            this.txtSourceObjectDefinition.vScroll += new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox.vScrollEventHandler(this.txtSourceObjectDefinition_vScroll);
+            this.txtSourceObjectDefinition.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtSourceObjectDefinition_KeyUp);
             // 
-            // txtTarget
+            // label4
             // 
-            this.txtTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 2);
+            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(244, 25);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Source Object Definition";
+            // 
+            // txtTargetObjectDefinition
+            // 
+            this.txtTargetObjectDefinition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTarget.BackColor = System.Drawing.SystemColors.Control;
-            this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtTarget.Location = new System.Drawing.Point(90, 21);
-            this.txtTarget.Margin = new System.Windows.Forms.Padding(6);
-            this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(554, 31);
-            this.txtTarget.TabIndex = 42;
-            this.txtTarget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
+            this.txtTargetObjectDefinition.BackColor = System.Drawing.Color.White;
+            this.txtTargetObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 31);
+            this.txtTargetObjectDefinition.Margin = new System.Windows.Forms.Padding(6);
+            this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
+            this.txtTargetObjectDefinition.ReadOnly = true;
+            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(626, 357);
+            this.txtTargetObjectDefinition.TabIndex = 2;
+            this.txtTargetObjectDefinition.Text = "";
+            this.txtTargetObjectDefinition.WordWrap = false;
+            this.txtTargetObjectDefinition.vScroll += new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox.vScrollEventHandler(this.txtTargetObjectDefinition_vScroll);
+            this.txtTargetObjectDefinition.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtTargetObjectDefinition_KeyUp);
             // 
-            // txtSource
+            // label5
             // 
-            this.txtSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSource.BackColor = System.Drawing.SystemColors.Control;
-            this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtSource.Location = new System.Drawing.Point(98, 21);
-            this.txtSource.Margin = new System.Windows.Forms.Padding(6);
-            this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(536, 31);
-            this.txtSource.TabIndex = 41;
-            this.txtSource.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 25);
-            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(80, 25);
-            this.label1.TabIndex = 39;
-            this.label1.Text = "Source";
-            // 
-            // spltSourceTarget
-            // 
-            this.spltSourceTarget.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.spltSourceTarget.IsSplitterFixed = true;
-            this.spltSourceTarget.Location = new System.Drawing.Point(0, 39);
-            this.spltSourceTarget.Margin = new System.Windows.Forms.Padding(6);
-            this.spltSourceTarget.Name = "spltSourceTarget";
-            // 
-            // spltSourceTarget.Panel1
-            // 
-            this.spltSourceTarget.Panel1.Controls.Add(this.label1);
-            this.spltSourceTarget.Panel1.Controls.Add(this.txtSource);
-            // 
-            // spltSourceTarget.Panel2
-            // 
-            this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
-            this.spltSourceTarget.Panel2.Controls.Add(this.label2);
-            this.spltSourceTarget.Size = new System.Drawing.Size(1306, 69);
-            this.spltSourceTarget.SplitterDistance = 642;
-            this.spltSourceTarget.SplitterWidth = 8;
-            this.spltSourceTarget.TabIndex = 45;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 2);
+            this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(238, 25);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Target Object Definition";
             // 
             // ComparisonControl
             // 
@@ -535,6 +537,14 @@
             this.Load += new System.EventHandler(this.BismNormalizer_Load);
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();
+            this.spltSourceTarget.Panel1.ResumeLayout(false);
+            this.spltSourceTarget.Panel1.PerformLayout();
+            this.spltSourceTarget.Panel2.ResumeLayout(false);
+            this.spltSourceTarget.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).EndInit();
+            this.spltSourceTarget.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.scDifferenceResults.Panel1.ResumeLayout(false);
             this.scDifferenceResults.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.scDifferenceResults)).EndInit();
@@ -548,14 +558,6 @@
             this.scObjectDefinitions.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scObjectDefinitions)).EndInit();
             this.scObjectDefinitions.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
-            this.spltSourceTarget.Panel1.ResumeLayout(false);
-            this.spltSourceTarget.Panel1.PerformLayout();
-            this.spltSourceTarget.Panel2.ResumeLayout(false);
-            this.spltSourceTarget.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).EndInit();
-            this.spltSourceTarget.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

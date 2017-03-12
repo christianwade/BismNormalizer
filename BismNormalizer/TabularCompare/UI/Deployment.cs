@@ -1,6 +1,7 @@
 ﻿using BismNormalizer.TabularCompare.Core;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BismNormalizer.TabularCompare.UI
@@ -9,6 +10,7 @@ namespace BismNormalizer.TabularCompare.UI
     {
         private Comparison _comparison;
         private ComparisonInfo _comparisonInfo;
+        private float _dpiScaleFactor;
         private DeploymentStatus _deployStatus;
         private const string _deployRowWorkItem = "Deploy metadata";
         ProcessingErrorMessage _errorMessageForm;
@@ -22,6 +24,22 @@ namespace BismNormalizer.TabularCompare.UI
         {
             try
             {
+                //this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
+                this.Font = new Font(this.Font.FontFamily,
+                                     this.Font.Size * _dpiScaleFactor,
+                                     this.Font.Style);
+                gridProcessing.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
+                gridProcessing.Font = new Font(gridProcessing.Font.FontFamily,
+                                               gridProcessing.Font.Size * _dpiScaleFactor,
+                                               gridProcessing.Font.Style);
+                if (_dpiScaleFactor > 1)
+                {
+                    foreach (DataGridViewColumn col in gridProcessing.Columns)
+                    {
+                        col.Width = Convert.ToInt32(col.Width * _dpiScaleFactor * 2);
+                    }
+                }
+
                 this.KeyPreview = true;
                 AddRow(_deployRowWorkItem, "Deploying ...");
                 _deployStatus = DeploymentStatus.Deploying;
@@ -114,6 +132,10 @@ namespace BismNormalizer.TabularCompare.UI
                 {
                     _errorMessageForm.ErrorMessage = errorMessage;
                     _errorMessageForm.StartPosition = FormStartPosition.CenterParent;
+                    _errorMessageForm.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
+                    _errorMessageForm.Font = new Font(_errorMessageForm.Font.FontFamily,
+                                                      _errorMessageForm.Font.Size * _dpiScaleFactor,
+                                                      _errorMessageForm.Font.Style);
                     _errorMessageForm.ShowDialog();
                 }
 
@@ -152,6 +174,10 @@ namespace BismNormalizer.TabularCompare.UI
             credentialsForm.ConnectionName = e.ConnectionName;
             credentialsForm.Username = e.Username;
             credentialsForm.StartPosition = FormStartPosition.CenterParent;
+            credentialsForm.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
+            credentialsForm.Font = new Font(credentialsForm.Font.FontFamily,
+                                            credentialsForm.Font.Size * _dpiScaleFactor,
+                                            credentialsForm.Font.Style);
             credentialsForm.ShowDialog();
             if (credentialsForm.DialogResult == DialogResult.OK)
             {
@@ -176,6 +202,12 @@ namespace BismNormalizer.TabularCompare.UI
         {
             get { return _comparisonInfo; }
             set { _comparisonInfo = value; }
+        }
+
+        public float DpiScaleFactor
+        {
+            get { return _dpiScaleFactor; }
+            set { _dpiScaleFactor = value; }
         }
 
         private void btnClose_Click(object sender, EventArgs e)

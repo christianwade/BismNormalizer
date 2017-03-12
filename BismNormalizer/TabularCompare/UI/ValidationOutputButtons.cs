@@ -47,7 +47,7 @@ namespace BismNormalizer.TabularCompare.UI
 
             _fillerPanel.BringToFront();
 
-            SetTextAndWidths();
+            ScaleButtons();
         }
 
         void InformationalMessageButton_ValueChangedHandler(object sender, EventArgs e)
@@ -75,7 +75,7 @@ namespace BismNormalizer.TabularCompare.UI
             set
             {
                 _informationalMessageCount = value;
-                SetTextAndWidths();
+                ScaleButtons();
             }
         }
 
@@ -88,7 +88,7 @@ namespace BismNormalizer.TabularCompare.UI
             set
             {
                 _warningCount = value;
-                SetTextAndWidths();
+                ScaleButtons();
             }
         }
 
@@ -116,7 +116,14 @@ namespace BismNormalizer.TabularCompare.UI
             }
         }
 
-        private void SetTextAndWidths()
+        private float _hpiScaleFactor = 1;
+        public float HpiScaleFactor
+        {
+            get { return _hpiScaleFactor; }
+            set { _hpiScaleFactor = value; }
+        }
+
+        private void ScaleButtons()
         {
             int pixelsPerDigit = 6;
 
@@ -125,9 +132,12 @@ namespace BismNormalizer.TabularCompare.UI
 
             string informationalMessageCount = Convert.ToString(_informationalMessageCount);
             _informationalMessageButton.Text = informationalMessageCount + " Informational Messages";
-            _informationalMessageButton.Left = 92 + pixelsPerDigit * warningCount.Length;
 
-            _fillerPanel.Left = 253 + (pixelsPerDigit * warningCount.Length) + (pixelsPerDigit * informationalMessageCount.Length);
+            //where "informational messages" button starts
+            _informationalMessageButton.Left = Convert.ToInt32(92 * _hpiScaleFactor) + pixelsPerDigit * warningCount.Length;
+
+            //where "informational messages" button ends
+            _fillerPanel.Left = Convert.ToInt32(268 * _hpiScaleFactor) + (pixelsPerDigit * warningCount.Length) + (pixelsPerDigit * informationalMessageCount.Length);
         }
     }
 }

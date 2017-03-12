@@ -9,6 +9,8 @@ using Microsoft.VisualStudio.CommandBars;
 using EnvDTE;
 using EnvDTE80;
 using BismNormalizer.TabularCompare.Core;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace BismNormalizer.TabularCompare.UI
 {
@@ -55,6 +57,385 @@ namespace BismNormalizer.TabularCompare.UI
             public int Length;
             public Color BackColor;
         }
+
+        #endregion
+
+        #region DPI
+
+        // DPI at design time
+        private const float DpiAtDesign = 96F * 1.83F;
+
+        // Old (previous) DPI
+        private float _dpiOld = 0;
+
+        // New (current) DPI
+        private float _dpiNew = 0;
+
+        // Initial DpiAtDesign / _dpiNew
+        private float _dpiInitializationScaleFactor = 0;
+
+        // Flag to set whether this window is being moved by user
+        private bool _isBeingMoved = false;
+
+        // Flag to set whether this window will be adjusted later
+        private bool _willBeAdjusted = false;
+
+        // Method for adjustment
+        private ResizeMethod _method = ResizeMethod.Immediate;
+
+        private enum ResizeMethod
+        {
+            Immediate,
+            Delayed
+        }
+
+        private enum DelayedState
+        {
+            Initial,
+            Waiting,
+            Resized,
+            Aborted
+        }
+
+        // Catch window message of DPI change.
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            // Check if Windows 8.1 or newer and if not, ignore message.
+            if (!IsEightOneOrNewer()) return;
+
+            const int WM_DPICHANGED = 0x02e0; // 0x02E0 from WinUser.h
+
+            if (m.Msg == WM_DPICHANGED)
+            {
+                // wParam
+                short lo = NativeMethods.GetLoWord(m.WParam.ToInt32());
+
+                // lParam
+                NativeMethods.RECT r = (NativeMethods.RECT)Marshal.PtrToStructure(m.LParam, typeof(NativeMethods.RECT));
+
+                // Hold new DPI as target for adjustment.
+                _dpiNew = lo;
+
+                switch (_method)
+                {
+                    case ResizeMethod.Immediate:
+                        if (_dpiOld != lo)
+                        {
+                            MoveWindow();
+                            AdjustWindow();
+                        }
+                        break;
+
+                    case ResizeMethod.Delayed:
+                        if (_dpiOld != lo)
+                        {
+                            if (_isBeingMoved)
+                            {
+                                _willBeAdjusted = true;
+                            }
+                            else
+                            {
+                                AdjustWindow();
+                            }
+                        }
+                        else
+                        {
+                            if (_willBeAdjusted)
+                            {
+                                _willBeAdjusted = false;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        // Detect user began moving this window.
+        private void MainForm_ResizeBegin(object sender, EventArgs e)
+        {
+            _isBeingMoved = true;
+        }
+
+        // Detect user ended moving this window.
+        private void MainForm_ResizeEnd(object sender, EventArgs e)
+        {
+            _isBeingMoved = false;
+        }
+
+        // Detect this window is moved.
+        private void MainForm_Move(object sender, EventArgs e)
+        {
+            if (_willBeAdjusted && IsLocationGood())
+            {
+                _willBeAdjusted = false;
+
+                AdjustWindow();
+            }
+        }
+
+        // Get new location of this window after DPI change.
+        private void MoveWindow()
+        {
+            if (_dpiOld == 0) return; // Abort.
+
+            float factor = _dpiNew / _dpiOld;
+
+            // Prepare new rectangles shrinked or expanded sticking four corners.
+            int widthDiff = (int)(this.ClientSize.Width * factor) - this.ClientSize.Width;
+            int heightDiff = (int)(this.ClientSize.Height * factor) - this.ClientSize.Height;
+
+            List<NativeMethods.RECT> rectList = new List<NativeMethods.RECT>();
+
+            // Left-Top corner
+            rectList.Add(new NativeMethods.RECT
+            {
+                left = this.Bounds.Left,
+                top = this.Bounds.Top,
+                right = this.Bounds.Right + widthDiff,
+                bottom = this.Bounds.Bottom + heightDiff
+            });
+
+            // Right-Top corner
+            rectList.Add(new NativeMethods.RECT
+            {
+                left = this.Bounds.Left - widthDiff,
+                top = this.Bounds.Top,
+                right = this.Bounds.Right,
+                bottom = this.Bounds.Bottom + heightDiff
+            });
+
+            // Left-Bottom corner
+            rectList.Add(new NativeMethods.RECT
+            {
+                left = this.Bounds.Left,
+                top = this.Bounds.Top - heightDiff,
+                right = this.Bounds.Right + widthDiff,
+                bottom = this.Bounds.Bottom
+            });
+
+            // Right-Bottom corner
+            rectList.Add(new NativeMethods.RECT
+            {
+                left = this.Bounds.Left - widthDiff,
+                top = this.Bounds.Top - heightDiff,
+                right = this.Bounds.Right,
+                bottom = this.Bounds.Bottom
+            });
+
+            // Get handle to monitor that has the largest intersection with each rectangle.
+            for (int i = 0; i <= rectList.Count - 1; i++)
+            {
+                NativeMethods.RECT rectBuf = rectList[i];
+
+                IntPtr handleMonitor = NativeMethods.MonitorFromRect(ref rectBuf, NativeMethods.MONITOR_DEFAULTTONULL);
+
+                if (handleMonitor != IntPtr.Zero)
+                {
+                    // Check if at least Left-Top corner or Right-Top corner is inside monitors.
+                    IntPtr handleLeftTop = NativeMethods.MonitorFromPoint(new NativeMethods.POINT(rectBuf.left, rectBuf.top), NativeMethods.MONITOR_DEFAULTTONULL);
+                    IntPtr handleRightTop = NativeMethods.MonitorFromPoint(new NativeMethods.POINT(rectBuf.right, rectBuf.top), NativeMethods.MONITOR_DEFAULTTONULL);
+
+                    if ((handleLeftTop != IntPtr.Zero) || (handleRightTop != IntPtr.Zero))
+                    {
+                        // Check if DPI of the monitor matches.
+                        if (GetDpiSpecifiedMonitor(handleMonitor) == _dpiNew)
+                        {
+                            // Move this window.
+                            this.Location = new Point(rectBuf.left, rectBuf.top);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check if current location of this window is good for delayed adjustment.
+        private bool IsLocationGood()
+        {
+            if (_dpiOld == 0) return false; // Abort.
+
+            float factor = _dpiNew / _dpiOld;
+
+            // Prepare new rectangle shrinked or expanded sticking Left-Top corner.
+            int widthDiff = (int)(this.ClientSize.Width * factor) - this.ClientSize.Width;
+            int heightDiff = (int)(this.ClientSize.Height * factor) - this.ClientSize.Height;
+
+            NativeMethods.RECT rect = new NativeMethods.RECT()
+            {
+                left = this.Bounds.Left,
+                top = this.Bounds.Top,
+                right = this.Bounds.Right + widthDiff,
+                bottom = this.Bounds.Bottom + heightDiff
+            };
+
+            // Get handle to monitor that has the largest intersection with the rectangle.
+            IntPtr handleMonitor = NativeMethods.MonitorFromRect(ref rect, NativeMethods.MONITOR_DEFAULTTONULL);
+
+            if (handleMonitor != IntPtr.Zero)
+            {
+                // Check if DPI of the monitor matches.
+                if (GetDpiSpecifiedMonitor(handleMonitor) == _dpiNew)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Adjust location, size and font size of Controls according to new DPI.
+        private void AdjustWindowInitial()
+        {
+            _dpiOld = DpiAtDesign; //this.CurrentAutoScaleDimensions.Width;
+            _dpiNew = GetDpiWindowMonitor();
+
+            AdjustWindow();
+        }
+
+        // Adjust this window.
+        private void AdjustWindow()
+        {
+            if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
+            _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign;
+
+            float scaleFactor = _dpiNew / _dpiOld;
+            _dpiOld = _dpiNew;
+
+            // Adjust location and size of Controls (except location of this window itself).
+            this.Scale(new SizeF(scaleFactor, scaleFactor));
+
+            // Adjust Font size of Controls.
+            this.Font = new Font(this.Font.FontFamily,
+                                 this.Font.Size * scaleFactor,
+                                 this.Font.Style);
+
+            // Adjust font sizes
+            foreach (Control c in GetChildInControl(this)) //.OfType<Button>())
+            {
+                if (c is SplitContainer)
+                {
+                    c.Font = new Font(c.Font.FontFamily,
+                                      c.Font.Size * scaleFactor,
+                                      c.Font.Style);
+                }
+            }
+
+            // set up splitter distance/widths/visibility
+            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
+            scDifferenceResults.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scDifferenceResults.Height) * 0.8);
+            scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
+            scDifferenceResults.IsSplitterFixed = false;
+
+            txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor);
+            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor);
+            txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
+            txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.78);
+            txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
+            txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.78);
+
+            treeGridComparisonResults.ResetColumnWidths(scaleFactor);
+            if (_comparison != null && _bismNormalizerPackage.ValidationOutput != null)
+            {
+                _bismNormalizerPackage.ValidationOutput.Rescale(scaleFactor);
+            }
+        }
+
+        // Get child Controls in a specified Control.
+        private List<Control> GetChildInControl(Control parent)
+        {
+            List<Control> controlList = new List<Control>();
+
+            foreach (Control child in parent.Controls)
+            {
+                controlList.Add(child);
+                controlList.AddRange(GetChildInControl(child));
+            }
+
+            return controlList;
+        }
+
+        #region DPI calls
+
+        // Get DPI of monitor containing this window by GetDpiForMonitor.
+        private float GetDpiWindowMonitor()
+        {
+            // Get handle to this window.
+            //IntPtr handleWindow = this.ComparisonEditorPane.Window.Handle; //todo: will this work instead? In sample, it was: Process.GetCurrentProcess().MainWindowHandle;
+            IntPtr handleWindow = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+
+            // Get handle to monitor.
+            IntPtr handleMonitor = NativeMethods.MonitorFromWindow(handleWindow, NativeMethods.MONITOR_DEFAULTTOPRIMARY);
+
+            // Get DPI.
+            return GetDpiSpecifiedMonitor(handleMonitor);
+        }
+
+        // Get DPI of a specified monitor by GetDpiForMonitor.
+        private float GetDpiSpecifiedMonitor(IntPtr handleMonitor)
+        {
+            // Check if GetDpiForMonitor function is available.
+            if (!IsEightOneOrNewer()) return this.CurrentAutoScaleDimensions.Width;
+
+            // Get DPI.
+            uint dpiX = 0;
+            uint dpiY = 0;
+
+            int result = NativeMethods.GetDpiForMonitor(handleMonitor, NativeMethods.Monitor_DPI_Type.MDT_Default, out dpiX, out dpiY);
+
+            if (result != 0) // If not S_OK (= 0)
+            {
+                throw new Exception("Failed to get DPI of monitor containing this window.");
+            }
+
+            return (float)dpiX;
+        }
+
+        // Get DPI for all monitors by GetDeviceCaps.
+        private float GetDpiDeviceMonitor()
+        {
+            int dpiX = 0;
+            IntPtr screen = IntPtr.Zero;
+
+            try
+            {
+                screen = NativeMethods.GetDC(IntPtr.Zero);
+                dpiX = NativeMethods.GetDeviceCaps(screen, NativeMethods.LOGPIXELSX);
+            }
+            finally
+            {
+                if (screen != IntPtr.Zero)
+                {
+                    NativeMethods.ReleaseDC(IntPtr.Zero, screen);
+                }
+            }
+
+            return (float)dpiX;
+        }
+
+        #endregion
+
+        #region OS Version
+
+        // Check if OS is Windows 8.1 or newer.
+        private bool IsEightOneOrNewer()
+        {
+            // To get this value correctly, it is required to include ID of Windows 8.1 in the manifest file.
+            return (6.3 <= GetVersion());
+        }
+
+        // Get OS version in Double.
+        private double GetVersion()
+        {
+            OperatingSystem os = Environment.OSVersion;
+
+            return os.Version.Major + ((double)os.Version.Minor / 10);
+        }
+
+        #endregion
 
         #endregion
 
@@ -140,19 +521,8 @@ namespace BismNormalizer.TabularCompare.UI
             _menuComparisonGrid.MenuItems.Add("Delete selected objects Missing in Source", new EventHandler(Delete_Select));
             _menuComparisonGrid.MenuItems.Add("Update selected objects with Different Definitions", new EventHandler(Update_Select));
 
-            // set up splitter distance/widths/visibility
-            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
-            scDifferenceResults.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scDifferenceResults.Height) * 0.8);
-            scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
-            scDifferenceResults.IsSplitterFixed = false;
-
             //hdpi
-            txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
-            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
-            txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
-            txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.78);
-            txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
-            txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.78);
+            AdjustWindowInitial();
         }
 
         private bool ShowConnectionsForm()
@@ -166,9 +536,12 @@ namespace BismNormalizer.TabularCompare.UI
             Connections connForm = new Connections();
             connForm.Dte = _bismNormalizerPackage.Dte;
             connForm.ComparisonInfo = _comparisonInfo;
+            connForm.Scale(new SizeF(_dpiInitializationScaleFactor, _dpiInitializationScaleFactor));
+            connForm.Font = new Font(connForm.Font.FontFamily,
+                                     connForm.Font.Size * _dpiInitializationScaleFactor,
+                                     connForm.Font.Style);
             connForm.StartPosition = FormStartPosition.CenterParent;
             connForm.ShowDialog();
-
             if (connForm.DialogResult == DialogResult.OK)
             {
                 SetNotComparedState();
@@ -791,7 +1164,7 @@ namespace BismNormalizer.TabularCompare.UI
                 if (_bismNormalizerPackage.ValidationOutput == null)
                 {
                     //this should set up the tool window and then can refer to _bismNormalizerPackage.ValidationOutput
-                    _bismNormalizerPackage.InitializeToolWindowInternal();
+                    _bismNormalizerPackage.InitializeToolWindowInternal(_dpiInitializationScaleFactor);
                 }
                 else
                 {
@@ -962,6 +1335,10 @@ namespace BismNormalizer.TabularCompare.UI
             Options optionsForm = new Options();
             optionsForm.ComparisonInfo = _comparisonInfo;
             optionsForm.StartPosition = FormStartPosition.CenterParent;
+            optionsForm.Scale(new SizeF(_dpiInitializationScaleFactor, _dpiInitializationScaleFactor));
+            optionsForm.Font = new Font(optionsForm.Font.FontFamily,
+                                        optionsForm.Font.Size * _dpiInitializationScaleFactor,
+                                        optionsForm.Font.Style);
             optionsForm.ShowDialog();
             if (optionsForm.DialogResult == DialogResult.OK)
             {
@@ -1077,9 +1454,18 @@ namespace BismNormalizer.TabularCompare.UI
             Deployment deployForm = new Deployment();
             deployForm.Comparison = _comparison;
             deployForm.ComparisonInfo = _comparisonInfo;
+            deployForm.DpiScaleFactor = _dpiInitializationScaleFactor;
             deployForm.StartPosition = FormStartPosition.CenterParent;
             deployForm.ShowDialog();
             e.DeploymentSuccessful = (deployForm.DialogResult == DialogResult.OK);
+        }
+
+        private void treeGridComparisonResults_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (!(e.Exception is ArgumentException)) //ignore ArgumentException because happens on hpi scaling
+            {
+                throw new Exception(e.Exception.Message, e.Exception);
+            }
         }
     }
 }

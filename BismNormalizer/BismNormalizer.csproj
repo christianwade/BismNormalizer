@@ -193,6 +193,7 @@
     <Compile Include="TabularCompare\DeploymentMessageEventArgs.cs" />
     <Compile Include="TabularCompare\Enums.cs" />
     <Compile Include="TabularCompare\PasswordPromptEventArgs.cs" />
+    <Compile Include="TabularCompare\UI\NativeMethods.cs" />
     <Compile Include="TabularCompare\ValidationMessageEventArgs.cs" />
     <Compile Include="DemoHarness.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\Action.cs" />

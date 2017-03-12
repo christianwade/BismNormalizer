@@ -63,7 +63,7 @@ namespace BismNormalizer.TabularCompare.UI
         #region DPI
 
         // DPI at design time
-        private const float DpiAtDesign = 96F * 1.83F;
+        private const float DpiAtDesign = 96F; // * 1.83F;
 
         // Old (previous) DPI
         private float _dpiOld = 0;
@@ -72,7 +72,7 @@ namespace BismNormalizer.TabularCompare.UI
         private float _dpiNew = 0;
 
         // Initial DpiAtDesign / _dpiNew
-        private float _dpiInitializationScaleFactor = 0;
+        private float _dpiInitializationScaleFactor = 1;
 
         // Flag to set whether this window is being moved by user
         private bool _isBeingMoved = false;

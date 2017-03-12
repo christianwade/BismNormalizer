@@ -194,6 +194,12 @@
     <Compile Include="TabularCompare\Enums.cs" />
     <Compile Include="TabularCompare\PasswordPromptEventArgs.cs" />
     <Compile Include="TabularCompare\UI\NativeMethods.cs" />
+    <Compile Include="TabularCompare\UI\UserControl1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabularCompare\UI\UserControl1.Designer.cs">
+      <DependentUpon>UserControl1.cs</DependentUpon>
+    </Compile>
     <Compile Include="TabularCompare\ValidationMessageEventArgs.cs" />
     <Compile Include="DemoHarness.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\Action.cs" />
@@ -439,6 +445,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabularCompare\UI\UserControl1.resx">
+      <DependentUpon>UserControl1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabularCompare\UI\ValidationOutput.resx">
       <DependentUpon>ValidationOutput.cs</DependentUpon>

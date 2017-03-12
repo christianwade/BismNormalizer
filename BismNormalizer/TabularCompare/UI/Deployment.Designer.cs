@@ -54,10 +54,9 @@
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnClose.Enabled = false;
-            this.btnClose.Location = new System.Drawing.Point(731, 23);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(6);
+            this.btnClose.Location = new System.Drawing.Point(366, 12);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(150, 44);
+            this.btnClose.Size = new System.Drawing.Size(75, 23);
             this.btnClose.TabIndex = 1;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -68,10 +67,9 @@
             this.btnStopProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnStopProcessing.DialogResult = System.Windows.Forms.DialogResult.Abort;
             this.btnStopProcessing.Enabled = false;
-            this.btnStopProcessing.Location = new System.Drawing.Point(491, 23);
-            this.btnStopProcessing.Margin = new System.Windows.Forms.Padding(6);
+            this.btnStopProcessing.Location = new System.Drawing.Point(246, 12);
             this.btnStopProcessing.Name = "btnStopProcessing";
-            this.btnStopProcessing.Size = new System.Drawing.Size(228, 44);
+            this.btnStopProcessing.Size = new System.Drawing.Size(114, 23);
             this.btnStopProcessing.TabIndex = 2;
             this.btnStopProcessing.Text = "Stop Processing";
             this.btnStopProcessing.UseVisualStyleBackColor = true;
@@ -88,15 +86,14 @@
             this.WorkItemCol,
             this.StatusCol});
             this.gridProcessing.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gridProcessing.Location = new System.Drawing.Point(0, 96);
-            this.gridProcessing.Margin = new System.Windows.Forms.Padding(6);
+            this.gridProcessing.Location = new System.Drawing.Point(0, 51);
             this.gridProcessing.MultiSelect = false;
             this.gridProcessing.Name = "gridProcessing";
             this.gridProcessing.ReadOnly = true;
             this.gridProcessing.RowHeadersVisible = false;
             this.gridProcessing.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gridProcessing.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridProcessing.Size = new System.Drawing.Size(914, 682);
+            this.gridProcessing.Size = new System.Drawing.Size(457, 355);
             this.gridProcessing.TabIndex = 3;
             // 
             // DeployImageList
@@ -116,29 +113,26 @@
             this.panel1.Controls.Add(this.picStatus);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(914, 96);
+            this.panel1.Size = new System.Drawing.Size(457, 51);
             this.panel1.TabIndex = 4;
             // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(104, 29);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lblStatus.Location = new System.Drawing.Point(52, 15);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(194, 36);
+            this.lblStatus.Size = new System.Drawing.Size(102, 18);
             this.lblStatus.TabIndex = 1;
             this.lblStatus.Text = "Deploying ...";
             // 
             // picStatus
             // 
             this.picStatus.Image = global::BismNormalizer.Resources.Progress;
-            this.picStatus.Location = new System.Drawing.Point(28, 15);
-            this.picStatus.Margin = new System.Windows.Forms.Padding(6);
+            this.picStatus.Location = new System.Drawing.Point(14, 8);
             this.picStatus.Name = "picStatus";
-            this.picStatus.Size = new System.Drawing.Size(64, 62);
+            this.picStatus.Size = new System.Drawing.Size(32, 32);
             this.picStatus.TabIndex = 0;
             this.picStatus.TabStop = false;
             // 
@@ -161,9 +155,10 @@
             this.panel2.Controls.Add(this.btnStopProcessing);
             this.panel2.Controls.Add(this.btnClose);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 787);
+            this.panel2.Location = new System.Drawing.Point(0, 409);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(914, 100);
+            this.panel2.Size = new System.Drawing.Size(457, 52);
             this.panel2.TabIndex = 5;
             // 
             // ImageCol
@@ -179,7 +174,7 @@
             this.WorkItemCol.HeaderText = "Work Item";
             this.WorkItemCol.Name = "WorkItemCol";
             this.WorkItemCol.ReadOnly = true;
-            this.WorkItemCol.Width = 150;
+            this.WorkItemCol.Width = 131;
             // 
             // StatusCol
             // 
@@ -190,14 +185,13 @@
             // 
             // Deployment
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(914, 887);
+            this.ClientSize = new System.Drawing.Size(457, 461);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.gridProcessing);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Deployment";

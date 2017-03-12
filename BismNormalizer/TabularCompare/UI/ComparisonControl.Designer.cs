@@ -336,7 +336,7 @@
             // 
             this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
             this.scDifferenceResults.Size = new System.Drawing.Size(653, 510);
-            this.scDifferenceResults.SplitterDistance = 307;
+            this.scDifferenceResults.SplitterDistance = 371;
             this.scDifferenceResults.TabIndex = 2;
             // 
             // pnlProgressBar
@@ -398,7 +398,7 @@
             this.treeGridComparisonResults.Name = "treeGridComparisonResults";
             this.treeGridComparisonResults.RowHeadersVisible = false;
             this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 307);
+            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 371);
             this.treeGridComparisonResults.TabIndex = 0;
             this.treeGridComparisonResults.Unloading = false;
             this.treeGridComparisonResults.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.treeGridComparisonResults_DataError);
@@ -448,7 +448,7 @@
             this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
             this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
-            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 199);
+            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 135);
             this.scObjectDefinitions.SplitterDistance = 331;
             this.scObjectDefinitions.TabIndex = 0;
             // 
@@ -462,7 +462,7 @@
             this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 16);
             this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
             this.txtSourceObjectDefinition.ReadOnly = true;
-            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(331, 183);
+            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(331, 119);
             this.txtSourceObjectDefinition.TabIndex = 1;
             this.txtSourceObjectDefinition.Text = "";
             this.txtSourceObjectDefinition.WordWrap = false;
@@ -488,7 +488,7 @@
             this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 16);
             this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
             this.txtTargetObjectDefinition.ReadOnly = true;
-            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(313, 183);
+            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(313, 119);
             this.txtTargetObjectDefinition.TabIndex = 2;
             this.txtTargetObjectDefinition.Text = "";
             this.txtTargetObjectDefinition.WordWrap = false;

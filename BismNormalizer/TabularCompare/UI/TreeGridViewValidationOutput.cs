@@ -40,7 +40,7 @@ namespace BismNormalizer.TabularCompare.UI
             typeLabelColumn.HeaderText = "";
             typeLabelColumn.ReadOnly = true;
             typeLabelColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            typeLabelColumn.Width = this.Width / 601 * 98; //hdpi
+            typeLabelColumn.Width = 91;
             typeLabelColumn.Resizable = DataGridViewTriState.False;
             this.Columns.Add(typeLabelColumn);
 

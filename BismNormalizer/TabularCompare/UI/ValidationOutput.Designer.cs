@@ -43,9 +43,9 @@ namespace BismNormalizer.TabularCompare.UI
             this.validationOutputButtons.InformationalMessageCount = 0;
             this.validationOutputButtons.InformationalMessagesVisible = true;
             this.validationOutputButtons.Location = new System.Drawing.Point(0, 0);
-            this.validationOutputButtons.Margin = new System.Windows.Forms.Padding(12, 12, 12, 12);
+            this.validationOutputButtons.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.validationOutputButtons.Name = "validationOutputButtons";
-            this.validationOutputButtons.Size = new System.Drawing.Size(988, 46);
+            this.validationOutputButtons.Size = new System.Drawing.Size(494, 24);
             this.validationOutputButtons.TabIndex = 1;
             this.validationOutputButtons.WarningCount = 0;
             this.validationOutputButtons.WarningsVisible = true;
@@ -57,29 +57,27 @@ namespace BismNormalizer.TabularCompare.UI
             this.treeGridViewValidationOutput.AllowUserToResizeRows = false;
             this.treeGridViewValidationOutput.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.treeGridViewValidationOutput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.treeGridViewValidationOutput.Dock = System.Windows.Forms.DockStyle.Top;
+            this.treeGridViewValidationOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeGridViewValidationOutput.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.treeGridViewValidationOutput.ImageList = null;
             this.treeGridViewValidationOutput.InformationalMessagesVisible = false;
-            this.treeGridViewValidationOutput.Location = new System.Drawing.Point(0, 46);
-            this.treeGridViewValidationOutput.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.treeGridViewValidationOutput.Location = new System.Drawing.Point(0, 24);
             this.treeGridViewValidationOutput.Name = "treeGridViewValidationOutput";
             this.treeGridViewValidationOutput.ReadOnly = true;
             this.treeGridViewValidationOutput.RowHeadersVisible = false;
-            this.treeGridViewValidationOutput.Size = new System.Drawing.Size(988, 654);
+            this.treeGridViewValidationOutput.Size = new System.Drawing.Size(494, 341);
             this.treeGridViewValidationOutput.TabIndex = 0;
             this.treeGridViewValidationOutput.Unloading = false;
             this.treeGridViewValidationOutput.WarningsVisible = false;
             // 
             // ValidationOutput
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeGridViewValidationOutput);
             this.Controls.Add(this.validationOutputButtons);
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "ValidationOutput";
-            this.Size = new System.Drawing.Size(988, 702);
+            this.Size = new System.Drawing.Size(494, 365);
             this.Load += new System.EventHandler(this.ValidationOutput_Load);
             ((System.ComponentModel.ISupportInitialize)(this.treeGridViewValidationOutput)).EndInit();
             this.ResumeLayout(false);

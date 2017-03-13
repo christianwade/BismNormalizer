@@ -298,7 +298,7 @@ namespace BismNormalizer.TabularCompare.UI
         private void AdjustWindow()
         {
             if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
-            float fudgeFactor = 0.74f;
+            float fudgeFactor = 0.54f;
             _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign * fudgeFactor;
 
             float scaleFactor = _dpiNew / _dpiOld * fudgeFactor;

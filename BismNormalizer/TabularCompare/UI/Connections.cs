@@ -26,8 +26,9 @@ namespace BismNormalizer.TabularCompare.UI
             if (_dpiScaleFactor != 1)
             {
                 //DPI
-                float fudgeFactorFont = 1.6f;
-                float fudgeFactorWidth = 0.9f;
+                float fudgeFactorFont = 1.2f; //1.6f;
+                float fudgeFactorWidth = 0.98f; //0.9f;
+
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactorFont));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);
                 foreach (Control control in NativeMethods.GetChildInControl(this)) //.OfType<Button>())

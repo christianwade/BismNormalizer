@@ -298,7 +298,7 @@ namespace BismNormalizer.TabularCompare.UI
         private void AdjustWindow()
         {
             if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
-            float fudgeFactor = 0.76f;
+            float fudgeFactor = 0.54f;
             _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign * fudgeFactor;
 
             float scaleFactor = _dpiNew / _dpiOld * fudgeFactor;
@@ -335,11 +335,11 @@ namespace BismNormalizer.TabularCompare.UI
             scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
             scDifferenceResults.IsSplitterFixed = false;
 
-            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.51);
+            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.71);
             txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
-            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.68);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.91);
             txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
-            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.68);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.91);
             txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
             txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.86);
             txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.DirectoryServices.AccountManagement;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BismNormalizer.TabularCompare.UI
@@ -9,6 +10,7 @@ namespace BismNormalizer.TabularCompare.UI
         private string _connectionName;
         private string _username;
         private string _password;
+        private float _dpiScaleFactor;
 
         public string ConnectionName
         {
@@ -26,6 +28,12 @@ namespace BismNormalizer.TabularCompare.UI
             set { _password = value; }
         }
 
+        public float DpiScaleFactor
+        {
+            get { return _dpiScaleFactor; }
+            set { _dpiScaleFactor = value; }
+        }
+
         public ImpersonationCredentials()
         {
             InitializeComponent();
@@ -33,6 +41,20 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void ImpersonationCredentials_Load(object sender, EventArgs e)
         {
+            if (_dpiScaleFactor != 1)
+            {
+                //DPI
+                float fudgeFactor = 1.6f;
+                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
+                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+                foreach (Control control in NativeMethods.GetChildInControl(this))
+                {
+                    control.Font = new Font(control.Font.FontFamily,
+                                            control.Font.Size * _dpiScaleFactor * fudgeFactor,
+                                            control.Font.Style);
+                }
+            }
+
             this.KeyPreview = true;
 
             txtConnectionName.Text = _connectionName;

@@ -34,12 +34,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pnlSourceDb = new System.Windows.Forms.Panel();
             this.grpSource = new System.Windows.Forms.GroupBox();
-            this.pnlSourceProject = new System.Windows.Forms.Panel();
             this.cboSourceProject = new System.Windows.Forms.ComboBox();
             this.rdoSourceProject = new System.Windows.Forms.RadioButton();
             this.rdoSourceDb = new System.Windows.Forms.RadioButton();
             this.grpTarget = new System.Windows.Forms.GroupBox();
-            this.pnlTargetProject = new System.Windows.Forms.Panel();
             this.cboTargetProject = new System.Windows.Forms.ComboBox();
             this.rdoTargetProject = new System.Windows.Forms.RadioButton();
             this.rdoTargetDb = new System.Windows.Forms.RadioButton();
@@ -51,28 +49,36 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSwitch = new System.Windows.Forms.Button();
+            this.pnlTargetProject = new System.Windows.Forms.Panel();
+            this.pnlSourceProject = new System.Windows.Forms.Panel();
             this.pnlSourceDb.SuspendLayout();
             this.grpSource.SuspendLayout();
-            this.pnlSourceProject.SuspendLayout();
             this.grpTarget.SuspendLayout();
-            this.pnlTargetProject.SuspendLayout();
             this.pnlTargetDb.SuspendLayout();
+            this.pnlTargetProject.SuspendLayout();
+            this.pnlSourceProject.SuspendLayout();
             this.SuspendLayout();
             // 
-            // cboSourceCatalog
+            // cboSourceDatabase
             // 
+            this.cboSourceDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboSourceDatabase.FormattingEnabled = true;
-            this.cboSourceDatabase.Location = new System.Drawing.Point(58, 39);
+            this.cboSourceDatabase.Location = new System.Drawing.Point(11, 39);
             this.cboSourceDatabase.MaxDropDownItems = 11;
-            this.cboSourceDatabase.Name = "cboSourceCatalog";
+            this.cboSourceDatabase.Name = "cboSourceDatabase";
             this.cboSourceDatabase.Size = new System.Drawing.Size(213, 21);
             this.cboSourceDatabase.TabIndex = 12;
             this.cboSourceDatabase.Enter += new System.EventHandler(this.cboSourceDatabase_Enter);
             // 
             // cboSourceServer
             // 
+            this.cboSourceServer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboSourceServer.FormattingEnabled = true;
-            this.cboSourceServer.Location = new System.Drawing.Point(58, 7);
+            this.cboSourceServer.Location = new System.Drawing.Point(11, 7);
             this.cboSourceServer.MaxDropDownItems = 11;
             this.cboSourceServer.Name = "cboSourceServer";
             this.cboSourceServer.Size = new System.Drawing.Size(213, 21);
@@ -82,7 +88,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 42);
+            this.label2.Location = new System.Drawing.Point(8, 108);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 11;
@@ -91,7 +97,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 10);
+            this.label1.Location = new System.Drawing.Point(6, 76);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 10;
@@ -99,20 +105,25 @@
             // 
             // pnlSourceDb
             // 
+            this.pnlSourceDb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlSourceDb.Controls.Add(this.cboSourceServer);
             this.pnlSourceDb.Controls.Add(this.cboSourceDatabase);
-            this.pnlSourceDb.Controls.Add(this.label1);
-            this.pnlSourceDb.Controls.Add(this.label2);
-            this.pnlSourceDb.Location = new System.Drawing.Point(20, 66);
+            this.pnlSourceDb.Location = new System.Drawing.Point(67, 66);
             this.pnlSourceDb.Name = "pnlSourceDb";
-            this.pnlSourceDb.Size = new System.Drawing.Size(280, 66);
+            this.pnlSourceDb.Size = new System.Drawing.Size(233, 66);
             this.pnlSourceDb.TabIndex = 1;
             // 
             // grpSource
             // 
+            this.grpSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.grpSource.Controls.Add(this.pnlSourceProject);
             this.grpSource.Controls.Add(this.rdoSourceProject);
             this.grpSource.Controls.Add(this.rdoSourceDb);
+            this.grpSource.Controls.Add(this.label1);
+            this.grpSource.Controls.Add(this.label2);
             this.grpSource.Controls.Add(this.pnlSourceDb);
             this.grpSource.Location = new System.Drawing.Point(12, 12);
             this.grpSource.Name = "grpSource";
@@ -121,16 +132,11 @@
             this.grpSource.TabStop = false;
             this.grpSource.Text = "Source";
             // 
-            // pnlSourceProject
-            // 
-            this.pnlSourceProject.Controls.Add(this.cboSourceProject);
-            this.pnlSourceProject.Location = new System.Drawing.Point(67, 9);
-            this.pnlSourceProject.Name = "pnlSourceProject";
-            this.pnlSourceProject.Size = new System.Drawing.Size(233, 34);
-            this.pnlSourceProject.TabIndex = 18;
-            // 
             // cboSourceProject
             // 
+            this.cboSourceProject.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboSourceProject.DisplayMember = "Name";
             this.cboSourceProject.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSourceProject.FormattingEnabled = true;
@@ -146,7 +152,7 @@
             this.rdoSourceProject.AutoSize = true;
             this.rdoSourceProject.Location = new System.Drawing.Point(7, 19);
             this.rdoSourceProject.Name = "rdoSourceProject";
-            this.rdoSourceProject.Size = new System.Drawing.Size(58, 17);
+            this.rdoSourceProject.Size = new System.Drawing.Size(71, 26);
             this.rdoSourceProject.TabIndex = 17;
             this.rdoSourceProject.Text = "Project";
             this.rdoSourceProject.UseVisualStyleBackColor = true;
@@ -158,7 +164,7 @@
             this.rdoSourceDb.Checked = true;
             this.rdoSourceDb.Location = new System.Drawing.Point(7, 46);
             this.rdoSourceDb.Name = "rdoSourceDb";
-            this.rdoSourceDb.Size = new System.Drawing.Size(71, 17);
+            this.rdoSourceDb.Size = new System.Drawing.Size(84, 26);
             this.rdoSourceDb.TabIndex = 16;
             this.rdoSourceDb.TabStop = true;
             this.rdoSourceDb.Text = "Database";
@@ -167,9 +173,13 @@
             // 
             // grpTarget
             // 
+            this.grpTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpTarget.Controls.Add(this.pnlTargetProject);
             this.grpTarget.Controls.Add(this.rdoTargetProject);
             this.grpTarget.Controls.Add(this.rdoTargetDb);
+            this.grpTarget.Controls.Add(this.label3);
+            this.grpTarget.Controls.Add(this.label4);
             this.grpTarget.Controls.Add(this.pnlTargetDb);
             this.grpTarget.Location = new System.Drawing.Point(365, 12);
             this.grpTarget.Name = "grpTarget";
@@ -178,16 +188,11 @@
             this.grpTarget.TabStop = false;
             this.grpTarget.Text = "Target";
             // 
-            // pnlTargetProject
-            // 
-            this.pnlTargetProject.Controls.Add(this.cboTargetProject);
-            this.pnlTargetProject.Location = new System.Drawing.Point(67, 9);
-            this.pnlTargetProject.Name = "pnlTargetProject";
-            this.pnlTargetProject.Size = new System.Drawing.Size(232, 34);
-            this.pnlTargetProject.TabIndex = 18;
-            // 
             // cboTargetProject
             // 
+            this.cboTargetProject.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTargetProject.DisplayMember = "Name";
             this.cboTargetProject.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTargetProject.FormattingEnabled = true;
@@ -202,7 +207,7 @@
             this.rdoTargetProject.AutoSize = true;
             this.rdoTargetProject.Location = new System.Drawing.Point(7, 19);
             this.rdoTargetProject.Name = "rdoTargetProject";
-            this.rdoTargetProject.Size = new System.Drawing.Size(58, 17);
+            this.rdoTargetProject.Size = new System.Drawing.Size(71, 26);
             this.rdoTargetProject.TabIndex = 17;
             this.rdoTargetProject.Text = "Project";
             this.rdoTargetProject.UseVisualStyleBackColor = true;
@@ -214,7 +219,7 @@
             this.rdoTargetDb.Checked = true;
             this.rdoTargetDb.Location = new System.Drawing.Point(7, 46);
             this.rdoTargetDb.Name = "rdoTargetDb";
-            this.rdoTargetDb.Size = new System.Drawing.Size(71, 17);
+            this.rdoTargetDb.Size = new System.Drawing.Size(84, 26);
             this.rdoTargetDb.TabIndex = 16;
             this.rdoTargetDb.TabStop = true;
             this.rdoTargetDb.Text = "Database";
@@ -223,31 +228,38 @@
             // 
             // pnlTargetDb
             // 
+            this.pnlTargetDb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlTargetDb.Controls.Add(this.cboTargetServer);
             this.pnlTargetDb.Controls.Add(this.cboTargetDatabase);
-            this.pnlTargetDb.Controls.Add(this.label3);
-            this.pnlTargetDb.Controls.Add(this.label4);
-            this.pnlTargetDb.Location = new System.Drawing.Point(20, 66);
+            this.pnlTargetDb.Location = new System.Drawing.Point(67, 66);
             this.pnlTargetDb.Name = "pnlTargetDb";
-            this.pnlTargetDb.Size = new System.Drawing.Size(279, 66);
+            this.pnlTargetDb.Size = new System.Drawing.Size(232, 66);
             this.pnlTargetDb.TabIndex = 15;
             // 
             // cboTargetServer
             // 
+            this.cboTargetServer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTargetServer.FormattingEnabled = true;
-            this.cboTargetServer.Location = new System.Drawing.Point(58, 7);
+            this.cboTargetServer.Location = new System.Drawing.Point(11, 7);
             this.cboTargetServer.MaxDropDownItems = 11;
             this.cboTargetServer.Name = "cboTargetServer";
             this.cboTargetServer.Size = new System.Drawing.Size(213, 21);
             this.cboTargetServer.TabIndex = 9;
             this.cboTargetServer.TextChanged += new System.EventHandler(this.cboTargetServer_TextChanged);
             // 
-            // cboTargetCatalog
+            // cboTargetDatabase
             // 
+            this.cboTargetDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTargetDatabase.FormattingEnabled = true;
-            this.cboTargetDatabase.Location = new System.Drawing.Point(58, 39);
+            this.cboTargetDatabase.Location = new System.Drawing.Point(11, 39);
             this.cboTargetDatabase.MaxDropDownItems = 11;
-            this.cboTargetDatabase.Name = "cboTargetCatalog";
+            this.cboTargetDatabase.Name = "cboTargetDatabase";
             this.cboTargetDatabase.Size = new System.Drawing.Size(213, 21);
             this.cboTargetDatabase.TabIndex = 12;
             this.cboTargetDatabase.Enter += new System.EventHandler(this.cboTargetDatabase_Enter);
@@ -255,7 +267,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 10);
+            this.label3.Location = new System.Drawing.Point(6, 76);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 10;
@@ -264,7 +276,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(5, 42);
+            this.label4.Location = new System.Drawing.Point(6, 108);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 11;
@@ -272,6 +284,7 @@
             // 
             // btnOK
             // 
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Location = new System.Drawing.Point(514, 159);
             this.btnOK.Name = "btnOK";
@@ -283,6 +296,7 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(595, 159);
             this.btnCancel.Name = "btnCancel";
@@ -293,6 +307,7 @@
             // 
             // btnSwitch
             // 
+            this.btnSwitch.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnSwitch.BackgroundImage = global::BismNormalizer.Resources.ButtonSwitch;
             this.btnSwitch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnSwitch.Location = new System.Drawing.Point(323, 49);
@@ -301,6 +316,28 @@
             this.btnSwitch.TabIndex = 20;
             this.btnSwitch.UseVisualStyleBackColor = true;
             this.btnSwitch.Click += new System.EventHandler(this.btnSwitch_Click);
+            // 
+            // pnlTargetProject
+            // 
+            this.pnlTargetProject.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlTargetProject.Controls.Add(this.cboTargetProject);
+            this.pnlTargetProject.Location = new System.Drawing.Point(67, 9);
+            this.pnlTargetProject.Name = "pnlTargetProject";
+            this.pnlTargetProject.Size = new System.Drawing.Size(232, 34);
+            this.pnlTargetProject.TabIndex = 18;
+            // 
+            // pnlSourceProject
+            // 
+            this.pnlSourceProject.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlSourceProject.Controls.Add(this.cboSourceProject);
+            this.pnlSourceProject.Location = new System.Drawing.Point(67, 9);
+            this.pnlSourceProject.Name = "pnlSourceProject";
+            this.pnlSourceProject.Size = new System.Drawing.Size(233, 34);
+            this.pnlSourceProject.TabIndex = 18;
             // 
             // Connections
             // 
@@ -323,15 +360,13 @@
             this.Text = "Connections";
             this.Load += new System.EventHandler(this.Connections_Load);
             this.pnlSourceDb.ResumeLayout(false);
-            this.pnlSourceDb.PerformLayout();
             this.grpSource.ResumeLayout(false);
             this.grpSource.PerformLayout();
-            this.pnlSourceProject.ResumeLayout(false);
             this.grpTarget.ResumeLayout(false);
             this.grpTarget.PerformLayout();
-            this.pnlTargetProject.ResumeLayout(false);
             this.pnlTargetDb.ResumeLayout(false);
-            this.pnlTargetDb.PerformLayout();
+            this.pnlTargetProject.ResumeLayout(false);
+            this.pnlSourceProject.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -346,10 +381,8 @@
         private System.Windows.Forms.GroupBox grpSource;
         private System.Windows.Forms.RadioButton rdoSourceDb;
         private System.Windows.Forms.RadioButton rdoSourceProject;
-        private System.Windows.Forms.Panel pnlSourceProject;
         private System.Windows.Forms.ComboBox cboSourceProject;
         private System.Windows.Forms.GroupBox grpTarget;
-        private System.Windows.Forms.Panel pnlTargetProject;
         private System.Windows.Forms.ComboBox cboTargetProject;
         private System.Windows.Forms.RadioButton rdoTargetProject;
         private System.Windows.Forms.RadioButton rdoTargetDb;
@@ -361,5 +394,7 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSwitch;
+        private System.Windows.Forms.Panel pnlSourceProject;
+        private System.Windows.Forms.Panel pnlTargetProject;
     }
 }

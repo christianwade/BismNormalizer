@@ -13,11 +13,18 @@ namespace BismNormalizer.TabularCompare.UI
     public partial class ProcessingErrorMessage : Form
     {
         private string _errorMessage;
+        private float _dpiScaleFactor;
 
         public string ErrorMessage
         {
             get { return _errorMessage; }
             set { _errorMessage = value; }
+        }
+
+        public float DpiScaleFactor
+        {
+            get { return _dpiScaleFactor; }
+            set { _dpiScaleFactor = value; }
         }
 
         public ProcessingErrorMessage()
@@ -27,6 +34,20 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void ErrorMessage_Load(object sender, EventArgs e)
         {
+            if (_dpiScaleFactor != 1)
+            {
+                //DPI
+                float fudgeFactor = 1.6f;
+                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
+                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+                foreach (Control control in NativeMethods.GetChildInControl(this))
+                {
+                    control.Font = new Font(control.Font.FontFamily,
+                                            control.Font.Size * _dpiScaleFactor * fudgeFactor,
+                                            control.Font.Style);
+                }
+            }
+
             txtErrorMessage.Text = _errorMessage;
 
             //do not want the OK button selected (closes inadvertently)

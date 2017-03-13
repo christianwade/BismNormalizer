@@ -13,6 +13,7 @@ namespace BismNormalizer.TabularCompare.UI
     public partial class Options : Form
     {
         private ComparisonInfo _comparisonInfo;
+        private float _dpiScaleFactor;
 
         public Options()
         {
@@ -21,9 +22,26 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void Options_Load(object sender, EventArgs e)
         {
-            this.KeyPreview = true;
+            if (_dpiScaleFactor != 1)
+            {
+                //DPI
+                float fudgeFactor = 1.6f;
+                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
+                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+                foreach (Control control in NativeMethods.GetChildInControl(this)) //.OfType<Button>())
+                {
+                    if (control is GroupBox || control is Button)
+                    {
+                        control.Font = new Font(control.Font.FontFamily,
+                                          control.Font.Size * _dpiScaleFactor * fudgeFactor,
+                                          control.Font.Style);
+                    }
+                }
+                this.cboProcessingOption.Left = label1.Right + Convert.ToInt32(12 * _dpiScaleFactor);
+            }
 
-            chkMeasureDependencies.Text = "Display warnings for measure dependencies (DAX reference\nto missing measure/column)";
+            this.KeyPreview = true;
+            chkMeasureDependencies.Text = "Display warnings for measure dependencies (DAX\nreference to missing measure/column)";
 
             chkPerspectives.Checked = _comparisonInfo.OptionsInfo.OptionPerspectives;
             chkMergePerspectives.Checked = _comparisonInfo.OptionsInfo.OptionMergePerspectives;
@@ -104,6 +122,12 @@ namespace BismNormalizer.TabularCompare.UI
         {
             get { return _comparisonInfo; }
             set { _comparisonInfo = value; }
+        }
+
+        public float DpiScaleFactor
+        {
+            get { return _dpiScaleFactor; }
+            set { _dpiScaleFactor = value; }
         }
     }
 }

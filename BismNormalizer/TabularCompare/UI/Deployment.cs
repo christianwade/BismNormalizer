@@ -24,6 +24,7 @@ namespace BismNormalizer.TabularCompare.UI
         {
             try
             {
+                //DPI
                 //this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
                 this.Font = new Font(this.Font.FontFamily,
                                      this.Font.Size * _dpiScaleFactor,
@@ -132,10 +133,7 @@ namespace BismNormalizer.TabularCompare.UI
                 {
                     _errorMessageForm.ErrorMessage = errorMessage;
                     _errorMessageForm.StartPosition = FormStartPosition.CenterParent;
-                    _errorMessageForm.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
-                    _errorMessageForm.Font = new Font(_errorMessageForm.Font.FontFamily,
-                                                      _errorMessageForm.Font.Size * _dpiScaleFactor,
-                                                      _errorMessageForm.Font.Style);
+                    _errorMessageForm.DpiScaleFactor = _dpiScaleFactor;
                     _errorMessageForm.ShowDialog();
                 }
 

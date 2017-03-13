@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Microsoft.AnalysisServices;
+using System.Drawing;
 
 namespace BismNormalizer.TabularCompare.UI
 {
     public partial class Connections : Form
     {
         private ComparisonInfo _comparisonInfo;
+        private float _dpiScaleFactor;
         private bool _sourceDatabaseBound = false;
         private bool _targetDatabaseBound = false;
         private bool _SetTargetDatabaseFromSourceProjectConfigurationAllowed = false;
@@ -21,6 +23,38 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void Connections_Load(object sender, EventArgs e)
         {
+            if (_dpiScaleFactor != 1)
+            {
+                //DPI
+                float fudgeFactorFont = 1.6f;
+                float fudgeFactorWidth = 0.9f;
+                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactorFont));
+                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);
+                foreach (Control control in NativeMethods.GetChildInControl(this)) //.OfType<Button>())
+                {
+                    if (control is GroupBox || control is Button)
+                    {
+                        control.Font = new Font(control.Font.FontFamily,
+                                          control.Font.Size * _dpiScaleFactor * fudgeFactorFont,
+                                          control.Font.Style);
+                    }
+                    if (control is GroupBox || control.Name == "btnSwitch")
+                    {
+                        control.Width = Convert.ToInt32(control.Width * _dpiScaleFactor * fudgeFactorWidth);
+                    }
+                    if (control is ComboBox)
+                    {
+                        control.Width = Convert.ToInt32(control.Width * fudgeFactorWidth);
+                    }
+                    if (control is Panel)
+                    {
+                        control.Left = Convert.ToInt32(control.Left * _dpiScaleFactor);
+                    }
+                }
+                this.btnSwitch.Left = grpSource.Right + Convert.ToInt32(12 * _dpiScaleFactor);
+                this.grpTarget.Left = btnSwitch.Right + Convert.ToInt32(12 * _dpiScaleFactor);
+            }
+
             cboSourceServer.DataSource = ComparisonControl.ReverseArray<string>(Settings.Default.SourceServerAutoCompleteEntries.Substring(0, Settings.Default.SourceServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
             cboTargetServer.DataSource = ComparisonControl.ReverseArray<string>(Settings.Default.TargetServerAutoCompleteEntries.Substring(0, Settings.Default.TargetServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
 
@@ -252,6 +286,12 @@ namespace BismNormalizer.TabularCompare.UI
         {
             get { return _comparisonInfo; }
             set { _comparisonInfo = value; }
+        }
+
+        public float DpiScaleFactor
+        {
+            get { return _dpiScaleFactor; }
+            set { _dpiScaleFactor = value; }
         }
 
         private void rdoSourceProject_CheckedChanged(object sender, EventArgs e)

@@ -298,7 +298,7 @@ namespace BismNormalizer.TabularCompare.UI
         private void AdjustWindow()
         {
             if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
-            float fudgeFactor = 0.54f;
+            float fudgeFactor = 0.74f;
             _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign * fudgeFactor;
 
             float scaleFactor = _dpiNew / _dpiOld * fudgeFactor;
@@ -313,7 +313,7 @@ namespace BismNormalizer.TabularCompare.UI
                                  this.Font.Style);
 
             // Adjust font sizes
-            //foreach (Control c in GetChildInControl(this)) //.OfType<Button>())
+            //foreach (Control c in NativeMethods.GetChildInControl(this)) //.OfType<Button>())
             //{
             //    if (c is SplitContainer)
             //    {
@@ -335,11 +335,11 @@ namespace BismNormalizer.TabularCompare.UI
             scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
             scDifferenceResults.IsSplitterFixed = false;
 
-            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.71);
+            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.60);
             txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
-            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.91);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.80);
             txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
-            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.91);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.80);
             txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
             txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.86);
             txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
@@ -352,28 +352,14 @@ namespace BismNormalizer.TabularCompare.UI
             }
         }
 
-        // Get child Controls in a specified Control.
-        private List<Control> GetChildInControl(Control parent)
-        {
-            List<Control> controlList = new List<Control>();
-
-            foreach (Control child in parent.Controls)
-            {
-                controlList.Add(child);
-                controlList.AddRange(GetChildInControl(child));
-            }
-
-            return controlList;
-        }
-
         #region DPI calls
 
         // Get DPI of monitor containing this window by GetDpiForMonitor.
         private float GetDpiWindowMonitor()
         {
             // Get handle to this window.
-            //IntPtr handleWindow = this.ComparisonEditorPane.Window.Handle; //todo: will this work instead? In sample, it was: Process.GetCurrentProcess().MainWindowHandle;
-            IntPtr handleWindow = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            IntPtr handleWindow = this.ComparisonEditorPane.Window.Handle; //todo: will this work instead? In sample, it was: Process.GetCurrentProcess().MainWindowHandle;
+            //IntPtr handleWindow = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
 
             // Get handle to monitor.
             IntPtr handleMonitor = NativeMethods.MonitorFromWindow(handleWindow, NativeMethods.MONITOR_DEFAULTTOPRIMARY);
@@ -544,11 +530,8 @@ namespace BismNormalizer.TabularCompare.UI
             Connections connForm = new Connections();
             connForm.Dte = _bismNormalizerPackage.Dte;
             connForm.ComparisonInfo = _comparisonInfo;
-            connForm.Scale(new SizeF(_dpiInitializationScaleFactor, _dpiInitializationScaleFactor));
-            connForm.Font = new Font(connForm.Font.FontFamily,
-                                     connForm.Font.Size * _dpiInitializationScaleFactor,
-                                     connForm.Font.Style);
             connForm.StartPosition = FormStartPosition.CenterParent;
+            connForm.DpiScaleFactor = _dpiInitializationScaleFactor;
             connForm.ShowDialog();
             if (connForm.DialogResult == DialogResult.OK)
             {
@@ -1343,10 +1326,7 @@ namespace BismNormalizer.TabularCompare.UI
             Options optionsForm = new Options();
             optionsForm.ComparisonInfo = _comparisonInfo;
             optionsForm.StartPosition = FormStartPosition.CenterParent;
-            optionsForm.Scale(new SizeF(_dpiInitializationScaleFactor, _dpiInitializationScaleFactor));
-            optionsForm.Font = new Font(optionsForm.Font.FontFamily,
-                                        optionsForm.Font.Size * _dpiInitializationScaleFactor,
-                                        optionsForm.Font.Style);
+            optionsForm.DpiScaleFactor = _dpiInitializationScaleFactor;
             optionsForm.ShowDialog();
             if (optionsForm.DialogResult == DialogResult.OK)
             {

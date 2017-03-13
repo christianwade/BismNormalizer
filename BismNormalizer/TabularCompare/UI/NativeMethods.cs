@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
+using System.Windows.Forms;
 
 namespace BismNormalizer.TabularCompare.UI
 {
@@ -84,5 +85,18 @@ namespace BismNormalizer.TabularCompare.UI
         internal static extern bool ReleaseDC(IntPtr hWnd,
                                               IntPtr hDC);
 
+        // Get child Controls in a specified Control.
+        internal static List<Control> GetChildInControl(Control parent)
+        {
+            List<Control> controlList = new List<Control>();
+
+            foreach (Control child in parent.Controls)
+            {
+                controlList.Add(child);
+                controlList.AddRange(GetChildInControl(child));
+            }
+
+            return controlList;
+        }
     }
 }

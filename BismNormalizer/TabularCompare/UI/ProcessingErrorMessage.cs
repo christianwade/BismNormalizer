@@ -40,7 +40,7 @@ namespace BismNormalizer.TabularCompare.UI
                 float fudgeFactor = 1.2f; //1.6f;
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
-                foreach (Control control in NativeMethods.GetChildInControl(this))
+                foreach (Control control in HighDPIUtils.GetChildInControl(this))
                 {
                     control.Font = new Font(control.Font.FontFamily,
                                             control.Font.Size * _dpiScaleFactor * fudgeFactor,

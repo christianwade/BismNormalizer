@@ -31,7 +31,7 @@ namespace BismNormalizer.TabularCompare.UI
 
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactorFont));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);
-                foreach (Control control in NativeMethods.GetChildInControl(this)) //.OfType<Button>())
+                foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
                 {
                     if (control is GroupBox || control is Button)
                     {

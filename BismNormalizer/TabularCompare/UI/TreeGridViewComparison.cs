@@ -166,7 +166,12 @@ namespace BismNormalizer.TabularCompare.UI
             }
 
             // show the object properties for the first row
-            if (this.Rows.Count > 0) InvokeObjectDefinitionsCallBack();
+            if (this.Rows.Count > 0)
+            {
+                InvokeObjectDefinitionsCallBack();
+                //CBW todo - use this or not?
+                //this.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            }
         }
 
         private void PopulateNode(TreeGridNode node, ComparisonObject comparisonObject)

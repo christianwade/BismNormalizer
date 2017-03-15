@@ -62,48 +62,24 @@ namespace BismNormalizer.TabularCompare.UI
 
         #region DPI
 
-        // DPI at design time
-        private const float DpiAtDesign = 96F;
-
-        // Old (previous) DPI
-        private float _dpiOld = 0;
-
-        // New (current) DPI
-        private float _dpiNew = 0;
-
-        // Initial DpiAtDesign / _dpiNew
-        private float _dpiInitializationScaleFactor = 1;
-
-        // Adjust location, size and font size of Controls according to new DPI.
-        private void AdjustWindowInitial()
+        private float _dpiScaleFactor = 1;
+        private void Rescale()
         {
-            _dpiOld = DpiAtDesign;
-            //_dpiNew = GetDpiWindowMonitor();
-            _dpiNew = HighDPIUtils.GetDpiWindowMonitor();
-
-            AdjustWindow();
-        }
-
-        // Adjust this window.
-        private void AdjustWindow()
-        {
-            if ((_dpiOld == 0) || (_dpiOld == _dpiNew)) return; // Abort.
+            this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
+            if (this._dpiScaleFactor == 1) return;
             float fudgeFactor = 0.54f;
-            _dpiInitializationScaleFactor = _dpiNew / DpiAtDesign * fudgeFactor;
-
-            float scaleFactor = _dpiNew / _dpiOld * fudgeFactor;
-            _dpiOld = _dpiNew;
+            this._dpiScaleFactor = this._dpiScaleFactor * fudgeFactor;
 
             // Adjust location and size of Controls (except location of this window itself).
-            this.Scale(new SizeF(scaleFactor, scaleFactor));
+            this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
 
             // Adjust Font size of Controls.
             this.Font = new Font(this.Font.FontFamily,
-                                 this.Font.Size * scaleFactor,
+                                 this.Font.Size * _dpiScaleFactor,
                                  this.Font.Style);
 
             // Adjust font sizes
-            //foreach (Control c in NativeMethods.GetChildInControl(this)) //.OfType<Button>())
+            //foreach (Control c in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
             //{
             //    if (c is SplitContainer)
             //    {
@@ -113,10 +89,10 @@ namespace BismNormalizer.TabularCompare.UI
             //    }
             //}
             pnlHeader.Font = new Font(pnlHeader.Font.FontFamily,
-                                      pnlHeader.Font.Size * scaleFactor,
+                                      pnlHeader.Font.Size * _dpiScaleFactor,
                                       pnlHeader.Font.Style);
             scDifferenceResults.Font = new Font(scDifferenceResults.Font.FontFamily,
-                                                scDifferenceResults.Font.Size * scaleFactor,
+                                                scDifferenceResults.Font.Size * _dpiScaleFactor,
                                                 scDifferenceResults.Font.Style);
             
             // set up splitter distance/widths/visibility
@@ -125,20 +101,20 @@ namespace BismNormalizer.TabularCompare.UI
             scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
             scDifferenceResults.IsSplitterFixed = false;
 
-            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * scaleFactor * 0.65);
+            pnlHeader.Height = Convert.ToInt32(pnlHeader.Height * _dpiScaleFactor * 0.65);
             txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
-            txtSource.Left = Convert.ToInt32(txtSource.Left * scaleFactor * 0.80);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * _dpiScaleFactor * 0.80);
             txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
-            txtTarget.Left = Convert.ToInt32(txtTarget.Left * scaleFactor * 0.80);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * _dpiScaleFactor * 0.80);
             txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
             txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.86);
             txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
             txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.86);
 
-            treeGridComparisonResults.ResetColumnWidths(scaleFactor);
+            treeGridComparisonResults.ResetColumnWidths(_dpiScaleFactor);
             if (_comparison != null && _bismNormalizerPackage.ValidationOutput != null)
             {
-                _bismNormalizerPackage.ValidationOutput.Rescale(scaleFactor);
+                _bismNormalizerPackage.ValidationOutput.Rescale(_dpiScaleFactor);
             }
         }
 
@@ -227,7 +203,7 @@ namespace BismNormalizer.TabularCompare.UI
             _menuComparisonGrid.MenuItems.Add("Update selected objects with Different Definitions", new EventHandler(Update_Select));
 
             //hdpi
-            AdjustWindowInitial();
+            Rescale();
         }
 
         private bool ShowConnectionsForm()
@@ -242,7 +218,7 @@ namespace BismNormalizer.TabularCompare.UI
             connForm.Dte = _bismNormalizerPackage.Dte;
             connForm.ComparisonInfo = _comparisonInfo;
             connForm.StartPosition = FormStartPosition.CenterParent;
-            connForm.DpiScaleFactor = _dpiInitializationScaleFactor;
+            connForm.DpiScaleFactor = _dpiScaleFactor;
             connForm.ShowDialog();
             if (connForm.DialogResult == DialogResult.OK)
             {
@@ -770,6 +746,7 @@ namespace BismNormalizer.TabularCompare.UI
             if (!userCancelled)
             {
                 _comparison.ValidationMessage += HandleValidationMessage;
+                _comparison.ResizeValidationHeaders += HandleResizeValidationHeaders;
                 _comparison.DatabaseDeployment += HandleDatabaseDeployment;
                 _comparison.Connect();
                 SetAutoComplete();
@@ -866,7 +843,7 @@ namespace BismNormalizer.TabularCompare.UI
                 if (_bismNormalizerPackage.ValidationOutput == null)
                 {
                     //this should set up the tool window and then can refer to _bismNormalizerPackage.ValidationOutput
-                    _bismNormalizerPackage.InitializeToolWindowInternal(_dpiInitializationScaleFactor);
+                    _bismNormalizerPackage.InitializeToolWindowInternal(_dpiScaleFactor);
                 }
                 else
                 {
@@ -1037,7 +1014,7 @@ namespace BismNormalizer.TabularCompare.UI
             Options optionsForm = new Options();
             optionsForm.ComparisonInfo = _comparisonInfo;
             optionsForm.StartPosition = FormStartPosition.CenterParent;
-            optionsForm.DpiScaleFactor = _dpiInitializationScaleFactor;
+            optionsForm.DpiScaleFactor = _dpiScaleFactor;
             optionsForm.ShowDialog();
             if (optionsForm.DialogResult == DialogResult.OK)
             {
@@ -1148,12 +1125,17 @@ namespace BismNormalizer.TabularCompare.UI
                 e.ValidationMessageStatus);
         }
 
+        private void HandleResizeValidationHeaders(object sender, EventArgs e)
+        {
+            BismNormalizerPackage.ValidationOutput.ResizeValidationHeaders();
+        }
+
         private void HandleDatabaseDeployment(object sender, DatabaseDeploymentEventArgs e)
         {
             Deployment deployForm = new Deployment();
             deployForm.Comparison = _comparison;
             deployForm.ComparisonInfo = _comparisonInfo;
-            deployForm.DpiScaleFactor = _dpiInitializationScaleFactor;
+            deployForm.DpiScaleFactor = _dpiScaleFactor;
             deployForm.StartPosition = FormStartPosition.CenterParent;
             deployForm.ShowDialog();
             e.DeploymentSuccessful = (deployForm.DialogResult == DialogResult.OK);

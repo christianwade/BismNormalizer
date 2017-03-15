@@ -78,5 +78,13 @@ namespace BismNormalizer.TabularCompare.UI
             treeGridViewValidationOutput.Scale(new SizeF(scaleFactor, scaleFactor));
             treeGridViewValidationOutput.ResetColumnWidths(scaleFactor);
         }
+
+        public void ResizeValidationHeaders()
+        {
+            if (treeGridViewValidationOutput.Rows.Count > 0)
+            {
+                treeGridViewValidationOutput.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            }
+        }
     }
 }

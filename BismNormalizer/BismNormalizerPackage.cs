@@ -344,7 +344,6 @@ namespace BismNormalizer
             {
                 _validationOutput.Rescale(dpiFactor);
             }
-
             _toolWindowFrame = (IVsWindowFrame)window.Frame;
             ShowToolWindow();
         }

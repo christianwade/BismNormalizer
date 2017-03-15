@@ -1149,6 +1149,8 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             #endregion
 
             _targetTabularModel.FinalCleanup();
+
+            OnResizeValidationHeaders(new EventArgs());
         }
 
         #region Private methods for validation

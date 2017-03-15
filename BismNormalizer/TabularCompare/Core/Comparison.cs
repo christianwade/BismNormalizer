@@ -47,10 +47,21 @@ namespace BismNormalizer.TabularCompare.Core
         public event EventHandler<ValidationMessageEventArgs> ValidationMessage;
 
         /// <summary>
+        /// Occurs when all messages for a validation are done, and need to dynamically resize the headers.
+        /// </summary>
+        public event EventHandler<EventArgs> ResizeValidationHeaders;
+
+        /// <summary>
         /// Invokes the ValidationMessage event.
         /// </summary>
         /// <param name="e">ValidationMessageEventArgs object.</param>
         public virtual void OnValidationMessage(ValidationMessageEventArgs e) => ValidationMessage?.Invoke(this, e);
+
+        /// <summary>
+        /// Invokes the ResizeValidationHeaders event.
+        /// </summary>
+        /// <param name="e">EventArgs object.</param>
+        public virtual void OnResizeValidationHeaders(EventArgs e) => ResizeValidationHeaders?.Invoke(this, e);
 
         /// <summary>
         /// Occurs during database deployment when a password is required for an impersonated account.

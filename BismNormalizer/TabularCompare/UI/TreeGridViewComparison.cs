@@ -169,8 +169,12 @@ namespace BismNormalizer.TabularCompare.UI
             if (this.Rows.Count > 0)
             {
                 InvokeObjectDefinitionsCallBack();
-                //CBW todo - use this or not?
+
                 //this.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+
+                if (this.Columns.Contains("TypeLabel")) this.AutoResizeColumn(this.Columns["TypeLabel"].Index, DataGridViewAutoSizeColumnMode.AllCells);
+                if (this.Columns.Contains("Status")) this.AutoResizeColumn(this.Columns["Status"].Index, DataGridViewAutoSizeColumnMode.AllCells);
+                if (this.Columns.Contains("UpdateAction")) this.AutoResizeColumn(this.Columns["UpdateAction"].Index, DataGridViewAutoSizeColumnMode.AllCells);
             }
         }
 

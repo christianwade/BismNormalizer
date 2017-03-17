@@ -41,9 +41,10 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void ImpersonationCredentials_Load(object sender, EventArgs e)
         {
-            if (_dpiScaleFactor != 1)
+            if (_dpiScaleFactor > 1)
             {
                 //DPI
+                _dpiScaleFactor = _dpiScaleFactor * 0.54f;
                 float fudgeFactor = 1.2f; //1.6f;
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);

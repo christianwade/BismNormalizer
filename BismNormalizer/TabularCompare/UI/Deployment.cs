@@ -25,20 +25,23 @@ namespace BismNormalizer.TabularCompare.UI
             try
             {
                 //DPI
-                //this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
-                this.Font = new Font(this.Font.FontFamily,
-                                     this.Font.Size * _dpiScaleFactor,
-                                     this.Font.Style);
-                gridProcessing.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
-                gridProcessing.Font = new Font(gridProcessing.Font.FontFamily,
-                                               gridProcessing.Font.Size * _dpiScaleFactor,
-                                               gridProcessing.Font.Style);
                 if (_dpiScaleFactor > 1)
                 {
+                    float fudgedDpiScaleFactor = _dpiScaleFactor * 0.54f;
+
+                    //this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+                    this.Font = new Font(this.Font.FontFamily,
+                                     this.Font.Size * fudgedDpiScaleFactor,
+                                     this.Font.Style);
+                    gridProcessing.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+                    gridProcessing.Font = new Font(gridProcessing.Font.FontFamily,
+                                                   gridProcessing.Font.Size * fudgedDpiScaleFactor,
+                                                   gridProcessing.Font.Style);
+
                     foreach (DataGridViewColumn col in gridProcessing.Columns)
-                    {
-                        col.Width = Convert.ToInt32(col.Width * _dpiScaleFactor * 2);
-                    }
+                        {
+                            col.Width = Convert.ToInt32(col.Width * fudgedDpiScaleFactor * 2);
+                        }
                 }
 
                 this.KeyPreview = true;

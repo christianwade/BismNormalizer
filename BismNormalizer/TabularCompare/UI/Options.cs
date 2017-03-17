@@ -22,8 +22,9 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void Options_Load(object sender, EventArgs e)
         {
-            if (_dpiScaleFactor != 1)
+            if (_dpiScaleFactor > 1)
             {
+                _dpiScaleFactor = _dpiScaleFactor * 0.54f;
                 //DPI
                 float fudgeFactor = 1.2f; //1.6f;
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));

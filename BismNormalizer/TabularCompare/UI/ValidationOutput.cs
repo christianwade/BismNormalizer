@@ -74,7 +74,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         public void Rescale(float scaleFactor)
         {
-            validationOutputButtons.HpiScaleFactor = (scaleFactor > 1 ? scaleFactor * 1.7f : 1); //complete fudge. todo: replace with a toolbar instead of tabstrip - or use the VS error list
+            validationOutputButtons.HpiScaleFactor = (scaleFactor > 1 ? scaleFactor * 0.918f : 1); //complete fudge. todo: replace with a toolbar instead of tabstrip - or use the VS error list
             treeGridViewValidationOutput.Scale(new SizeF(scaleFactor, scaleFactor));
             treeGridViewValidationOutput.ResetColumnWidths(scaleFactor);
         }

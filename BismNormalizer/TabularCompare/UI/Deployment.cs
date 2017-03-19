@@ -27,21 +27,28 @@ namespace BismNormalizer.TabularCompare.UI
                 //DPI
                 if (_dpiScaleFactor > 1)
                 {
-                    float fudgedDpiScaleFactor = _dpiScaleFactor * 0.54f;
+                    float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
 
-                    //this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+                    this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+                    picStatus.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+                    gridProcessing.Scale(new SizeF(fudgedDpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor, fudgedDpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor));
                     this.Font = new Font(this.Font.FontFamily,
                                      this.Font.Size * fudgedDpiScaleFactor,
                                      this.Font.Style);
-                    gridProcessing.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
-                    gridProcessing.Font = new Font(gridProcessing.Font.FontFamily,
-                                                   gridProcessing.Font.Size * fudgedDpiScaleFactor,
-                                                   gridProcessing.Font.Style);
-
-                    foreach (DataGridViewColumn col in gridProcessing.Columns)
+                    foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
+                    {
+                        if (control is DataGridView || control is Button)
                         {
-                            col.Width = Convert.ToInt32(col.Width * fudgedDpiScaleFactor * 2);
+                            control.Font = new Font(control.Font.FontFamily,
+                                                    control.Font.Size * fudgedDpiScaleFactor,
+                                                    control.Font.Style);
                         }
+                    }
+                    foreach (DataGridViewColumn col in gridProcessing.Columns)
+                    {
+                        col.Width = Convert.ToInt32(col.Width * fudgedDpiScaleFactor * 1.5f);
+                    }
+                    HighDPIUtils.ScaleStreamedImageListByDpi(DeployImageList);
                 }
 
                 this.KeyPreview = true;
@@ -93,13 +100,13 @@ namespace BismNormalizer.TabularCompare.UI
             switch (e.DeploymentStatus)
             {
                 case DeploymentStatus.Success:
-                    picStatus.Image = Resources.ProgressSuccess;
-                    lblStatus.Text = "Succes";
+                    picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressSuccess) : Resources.ProgressSuccess);
+                    lblStatus.Text = "Success";
                     _deployStatus = DeploymentStatus.Success;
                     break;
 
                 case DeploymentStatus.Cancel:
-                    picStatus.Image = Resources.ProgressCancel;
+                    picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressCancel) : Resources.ProgressCancel);
                     lblStatus.Text = "Cancelled";
                     _deployStatus = DeploymentStatus.Cancel;
                     break;
@@ -128,7 +135,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             else
             {
-                picStatus.Image = Resources.ProgressError;
+                picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressError) : Resources.ProgressError);
                 lblStatus.Text = "Error";
                 _deployStatus = DeploymentStatus.Error;
 
@@ -155,7 +162,8 @@ namespace BismNormalizer.TabularCompare.UI
             row.Cells[0].Value = DeployImageList.Images[0];
             row.Cells[1].Value = workItem;
             row.Cells[2].Value = status;
-            gridProcessing.Rows.Add(row);
+            int rowIndex = gridProcessing.Rows.Add(row);
+            gridProcessing.AutoResizeRow(rowIndex, DataGridViewAutoSizeRowMode.AllCells);
         }
 
         private void btnStopProcessing_Click(object sender, EventArgs e)

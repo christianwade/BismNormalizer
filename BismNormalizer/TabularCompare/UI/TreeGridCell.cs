@@ -132,8 +132,11 @@ namespace BismNormalizer.TabularCompare.UI
 			// paint the cell normally
 			base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 
-			// TO_DO: Indent width needs to take image size into account
-			Rectangle glyphRect = new Rectangle(cellBounds.X + this.GlyphMargin, cellBounds.Y, INDENT_WIDTH, cellBounds.Height - 1);
+            float dpiFactor = HighDPIUtils.GetDpiFactor();
+            int scaleBack = (dpiFactor > 1 ? Convert.ToInt32(dpiFactor) : 0);
+
+            // TO_DO: Indent width needs to take image size into account
+            Rectangle glyphRect = new Rectangle(cellBounds.X + this.GlyphMargin - scaleBack, cellBounds.Y - scaleBack, INDENT_WIDTH, cellBounds.Height - 1);
 			int glyphHalf = glyphRect.Width / 2;
 
 			//TO_DO: This painting code needs to be rehashed to be cleaner
@@ -228,20 +231,23 @@ namespace BismNormalizer.TabularCompare.UI
 				}
 			}
 
+            if (dpiFactor > 1) dpiFactor = dpiFactor * HighDPIUtils.PrimaryFudgeFactor;
+            float size = 10 * dpiFactor;
+
 			if (node.HasChildren || node._grid.VirtualNodes)
 			{
 				if (((TreeGridView)this.DataGridView).ImageList.Images.Count > 0)
 				{
-					// Paint node glyphs
-					if (node.IsExpanded)
-					{
-						graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[10], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, 10, 10);
-					}
-					else
-					{
-						graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[9], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, 10, 10);
-					}
-				}
+                    // Paint node glyphs
+                    if (node.IsExpanded)
+                    {
+                        graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[10], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
+                    }
+                    else
+                    {
+                        graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[9], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
+                    }
+                }
 			}
 
 

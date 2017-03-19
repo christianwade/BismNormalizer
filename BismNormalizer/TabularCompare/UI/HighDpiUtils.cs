@@ -29,8 +29,8 @@ namespace BismNormalizer.TabularCompare.UI
 
         public static Size ScaleByDpi(Size size)
         {
-            float dpiFactor = GetDpiFactor();
-            return new Size((int)(size.Width * dpiFactor), (int)(size.Height * dpiFactor));
+            float dpiFactorFudged = GetDpiFactor() * HighDPIUtils.PrimaryFudgeFactor;
+            return new Size((int)(size.Width * dpiFactorFudged), (int)(size.Height * dpiFactorFudged));
         }
 
         /// <summary>
@@ -45,7 +45,6 @@ namespace BismNormalizer.TabularCompare.UI
                 (int)(size.Width * factor),
                 (int)(size.Height * factor));
         }
-
 
         /// <summary>
         /// Scales an ImageList which is already populated with an ImageStream. Scaling occurs on the object iteself.
@@ -90,6 +89,9 @@ namespace BismNormalizer.TabularCompare.UI
             scaledFontSize = Math.Max(scaledFontSize, minFontSize);
             return new Font(preferredFont.FontFamily, (float)Math.Floor(scaledFontSize));
         }
+
+        public static float PrimaryFudgeFactor = 0.72f; // 0.68f; // 0.54f;
+        public static float SecondaryFudgeFactor = 1.6f; //1.2f;
 
         public static float GetDpiFactor()
         {

@@ -24,18 +24,17 @@ namespace BismNormalizer.TabularCompare.UI
         {
             if (_dpiScaleFactor > 1)
             {
-                _dpiScaleFactor = _dpiScaleFactor * 0.54f;
+                _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
                 //DPI
-                float fudgeFactor = 1.2f; //1.6f;
-                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
+                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
                 foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
                 {
                     if (control is GroupBox || control is Button)
                     {
                         control.Font = new Font(control.Font.FontFamily,
-                                          control.Font.Size * _dpiScaleFactor * fudgeFactor,
-                                          control.Font.Style);
+                                                control.Font.Size * _dpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor,
+                                                control.Font.Style);
                     }
                 }
                 this.cboProcessingOption.Left = label1.Right + Convert.ToInt32(12 * _dpiScaleFactor);

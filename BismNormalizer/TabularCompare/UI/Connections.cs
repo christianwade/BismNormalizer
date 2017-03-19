@@ -26,9 +26,9 @@ namespace BismNormalizer.TabularCompare.UI
             if (_dpiScaleFactor != 1)
             {
                 //DPI
-                _dpiScaleFactor = _dpiScaleFactor * 0.54f;
-                float fudgeFactorFont = 1.2f; //1.6f;
-                float fudgeFactorWidth = 0.98f; //0.9f;
+                _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+                float fudgeFactorFont = HighDPIUtils.SecondaryFudgeFactor;
+                float fudgeFactorWidth = 0.9f; //0.98f;
 
                 this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactorFont));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);

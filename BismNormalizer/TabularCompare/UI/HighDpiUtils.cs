@@ -101,6 +101,11 @@ namespace BismNormalizer.TabularCompare.UI
                 using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
                 {
                     factor = (float)graphics.DpiX / 96F; //96 is the default windows DPI
+                    if (factor > 1.3 && factor < 1.7)
+                    {
+                        HighDPIUtils.PrimaryFudgeFactor = 0.66f;
+                        HighDPIUtils.SecondaryFudgeFactor = 1.1f;
+                    }
                 }
             }
             catch (Exception)

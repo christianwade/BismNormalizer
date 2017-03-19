@@ -23,14 +23,14 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void Connections_Load(object sender, EventArgs e)
         {
-            if (_dpiScaleFactor != 1)
+            if (_dpiScaleFactor > 1)
             {
                 //DPI
                 _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
                 float fudgeFactorFont = HighDPIUtils.SecondaryFudgeFactor;
-                float fudgeFactorWidth = 0.9f; //0.98f;
+                float fudgeFactorWidth = (_dpiScaleFactor > 1.3 && _dpiScaleFactor < 1.7 ? 0.7f : 0.98f);
 
-                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactorFont));
+                this.Scale(new SizeF(_dpiScaleFactor * fudgeFactorFont, _dpiScaleFactor * fudgeFactorFont));
                 this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);
                 foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
                 {

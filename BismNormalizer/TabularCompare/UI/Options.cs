@@ -24,20 +24,20 @@ namespace BismNormalizer.TabularCompare.UI
         {
             if (_dpiScaleFactor > 1)
             {
-                _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+                float dpiScaleFactorFudged = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
                 //DPI
-                this.Scale(new SizeF(_dpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor, _dpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor));
-                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+                this.Scale(new SizeF(dpiScaleFactorFudged * (_dpiScaleFactor > 1.7 ? 1 : HighDPIUtils.SecondaryFudgeFactor), dpiScaleFactorFudged * HighDPIUtils.SecondaryFudgeFactor));
+                this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged);
                 foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
                 {
                     if (control is GroupBox || control is Button)
                     {
                         control.Font = new Font(control.Font.FontFamily,
-                                                control.Font.Size * _dpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor,
+                                                control.Font.Size * dpiScaleFactorFudged * HighDPIUtils.SecondaryFudgeFactor,
                                                 control.Font.Style);
                     }
                 }
-                this.cboProcessingOption.Left = label1.Right + Convert.ToInt32(12 * _dpiScaleFactor);
+                this.cboProcessingOption.Left = label1.Right + Convert.ToInt32(12 * dpiScaleFactorFudged);
             }
 
             this.KeyPreview = true;

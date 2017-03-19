@@ -26,23 +26,22 @@ namespace BismNormalizer.TabularCompare.UI
             if (_dpiScaleFactor > 1)
             {
                 //DPI
-                _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
-                float fudgeFactorFont = HighDPIUtils.SecondaryFudgeFactor;
-                float fudgeFactorWidth = (_dpiScaleFactor > 1.3 && _dpiScaleFactor < 1.7 ? 0.7f : 0.98f);
+                float dpiScaleFactorFudged = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+                float fudgeFactorWidth = (_dpiScaleFactor > 1.3 && _dpiScaleFactor < 1.7 ? 0.7f : 0.95f);
 
-                this.Scale(new SizeF(_dpiScaleFactor * fudgeFactorFont, _dpiScaleFactor * fudgeFactorFont));
-                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor * fudgeFactorWidth);
+                this.Scale(new SizeF(dpiScaleFactorFudged * (_dpiScaleFactor > 1.7 ? 1 : HighDPIUtils.SecondaryFudgeFactor), dpiScaleFactorFudged * HighDPIUtils.SecondaryFudgeFactor));
+                this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged * fudgeFactorWidth);
                 foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
                 {
                     if (control is GroupBox || control is Button)
                     {
                         control.Font = new Font(control.Font.FontFamily,
-                                          control.Font.Size * _dpiScaleFactor * fudgeFactorFont,
+                                          control.Font.Size * dpiScaleFactorFudged * HighDPIUtils.SecondaryFudgeFactor,
                                           control.Font.Style);
                     }
                     if (control is GroupBox || control.Name == "btnSwitch")
                     {
-                        control.Width = Convert.ToInt32(control.Width * _dpiScaleFactor * fudgeFactorWidth);
+                        control.Width = Convert.ToInt32(control.Width * dpiScaleFactorFudged * fudgeFactorWidth);
                     }
                     if (control is ComboBox)
                     {
@@ -50,11 +49,11 @@ namespace BismNormalizer.TabularCompare.UI
                     }
                     if (control is Panel)
                     {
-                        control.Left = Convert.ToInt32(control.Left * _dpiScaleFactor);
+                        control.Left = Convert.ToInt32(control.Left * dpiScaleFactorFudged);
                     }
                 }
-                this.btnSwitch.Left = grpSource.Right + Convert.ToInt32(12 * _dpiScaleFactor);
-                this.grpTarget.Left = btnSwitch.Right + Convert.ToInt32(12 * _dpiScaleFactor);
+                this.btnSwitch.Left = grpSource.Right + Convert.ToInt32(12 * dpiScaleFactorFudged);
+                this.grpTarget.Left = btnSwitch.Right + Convert.ToInt32(12 * dpiScaleFactorFudged);
             }
 
             cboSourceServer.DataSource = ComparisonControl.ReverseArray<string>(Settings.Default.SourceServerAutoCompleteEntries.Substring(0, Settings.Default.SourceServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));

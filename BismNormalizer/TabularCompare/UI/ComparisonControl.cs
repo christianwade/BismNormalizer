@@ -96,10 +96,10 @@ namespace BismNormalizer.TabularCompare.UI
             scObjectDefinitions.SplitterDistance = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Width) * 0.5);
             scDifferenceResults.IsSplitterFixed = false;
 
-            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.2); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
-            txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.82);
+            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.3); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
+            txtSource.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Width) * 0.8);
             txtSource.Left = Convert.ToInt32(txtSource.Left * fudgedDpiScaleFactor * 0.9);
-            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.82);
+            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Width) * 0.8);
             txtTarget.Left = Convert.ToInt32(txtTarget.Left * fudgedDpiScaleFactor * 0.9);
             txtSourceObjectDefinition.Width = scObjectDefinitions.Panel1.Width;
             txtSourceObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel1.Height) * 0.86);

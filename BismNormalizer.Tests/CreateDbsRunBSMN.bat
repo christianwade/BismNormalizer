@@ -1,3 +1,5 @@
+Powershell.exe -Command Set-ExecutionPolicy Unrestricted
+
 Powershell.exe .\TestPrep.ps1
 
 echo About to run Test1103.bsmn ...

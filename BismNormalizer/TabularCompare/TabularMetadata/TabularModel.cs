@@ -1289,7 +1289,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
 
-            string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database);
+            string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database, includeRestrictedInformation: true);
 
             _server.Disconnect();
             _server = new Server();

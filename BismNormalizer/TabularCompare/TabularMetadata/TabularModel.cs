@@ -1246,27 +1246,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 UpdateWithScript();
                 _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
 
-                //Reset passwords
-                foreach (DataSource dataSource in _database.Model.DataSources)
-                {
-                    if (dataSource.Type == DataSourceType.Provider)
-                    {
-                        ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
+                ////Reset passwords - No longer required since using includeRestrictedInformation in ScriptCreateOrReplace (from UpdateWithScript)
+                //foreach (DataSource dataSource in _database.Model.DataSources)
+                //{
+                //    if (dataSource.Type == DataSourceType.Provider)
+                //    {
+                //        ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
 
-                        if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
-                        {
-                            foreach (PasswordPromptEventArgs args in argsAllConnections)
-                            {
-                                if (dataSource.Name == args.ConnectionName && providerDataSource.Account == args.Username)
-                                {
-                                    providerDataSource.Account = args.Username;
-                                    providerDataSource.Password = args.Password;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                //        if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
+                //        {
+                //            foreach (PasswordPromptEventArgs args in argsAllConnections)
+                //            {
+                //                if (dataSource.Name == args.ConnectionName && providerDataSource.Account == args.Username)
+                //                {
+                //                    providerDataSource.Account = args.Username;
+                //                    providerDataSource.Password = args.Password;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
 
                 //Kick off processing
                 ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
@@ -1289,6 +1289,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
 
+            //includeRestrictedInformation only includes passwords in connections if they were added during this session (does not allow derivation of passwords from the server)
             string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database, includeRestrictedInformation: true);
 
             _server.Disconnect();

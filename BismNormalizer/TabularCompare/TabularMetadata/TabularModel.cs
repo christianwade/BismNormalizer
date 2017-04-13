@@ -296,9 +296,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 StructuredDataSource structuredSource = (StructuredDataSource)connectionSource.TomConnection;
                 StructuredDataSource structuredTarget = (StructuredDataSource)connectionTarget.TomConnection;
                 
+                //todo: test this!
                 structuredTarget.Description = structuredSource.Description;
-                structuredTarget.ConnectionDetails = structuredSource.ConnectionDetails;
-                structuredTarget.Credential = structuredSource.Credential;
+                structuredTarget.ContextExpression = structuredSource.ContextExpression;
             }
             else
             {

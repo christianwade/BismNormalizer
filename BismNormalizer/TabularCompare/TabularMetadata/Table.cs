@@ -67,6 +67,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //Find the primary partition (first one) to determine Connection. Technically it is possible for different partitions in the same table to point to different connections, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the connection gives a warning message listing associated tables).
             foreach (Partition partition in _tomTable.Partitions)
             {
+                if (partition.SourceType == PartitionSourceType.M)
+                {
+                    //Todo: check dependency tree to see if all partitions refer only to a single connection connection
+
+                    //_connectionName = "NYC Taxi SQL DW";
+                }
+
                 if (partition.SourceType == PartitionSourceType.Query)
                 {
                     _connectionName = ((QueryPartitionSource)partition.Source).DataSource.Name;

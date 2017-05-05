@@ -513,14 +513,14 @@ $@"{{
         /// <summary>
         /// Executes an XMLA command on the tabular model for the connection.
         /// </summary>
-        /// <param name="amoServer"></param>
+        /// <param name="server"></param>
         /// <param name="commandStatement"></param>
         /// <returns>XmlNodeList containing results of the command execution.</returns>
-        public XmlNodeList ExecuteXmlaCommand(Server amoServer, string commandStatement)
+        public XmlNodeList ExecuteXmlaCommand(Microsoft.AnalysisServices.Core.Server server, string commandStatement)
         {
-            XmlWriter xmlWriter = amoServer.StartXmlaRequest(XmlaRequestType.Undefined);
-            WriteSoapEnvelopeWithCommandStatement(xmlWriter, amoServer.SessionID, commandStatement);
-            System.Xml.XmlReader xmlReader = amoServer.EndXmlaRequest();
+            XmlWriter xmlWriter = server.StartXmlaRequest(XmlaRequestType.Undefined);
+            WriteSoapEnvelopeWithCommandStatement(xmlWriter, server.SessionID, commandStatement);
+            System.Xml.XmlReader xmlReader = server.EndXmlaRequest();
             xmlReader.MoveToContent();
             string fullEnvelopeResponseFromServer = xmlReader.ReadOuterXml();
             xmlReader.Close();

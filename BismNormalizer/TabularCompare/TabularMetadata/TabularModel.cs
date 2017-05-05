@@ -27,6 +27,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private PerspectiveCollection _perspectives = new PerspectiveCollection();
         private CultureCollection _cultures = new CultureCollection();
         private RoleCollection _roles = new RoleCollection();
+        private MDependencyCollection _mDependencies = new MDependencyCollection();
         private List<Tom.Perspective> _tomPerspectivesBackup;
         private List<Tom.Culture> _tomCulturesBackup;
         private List<Tom.ModelRole> _tomRolesBackup;
@@ -131,6 +132,47 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (Tom.Culture culture in _database.Model.Cultures)
             {
                 _cultures.Add(new Culture(this, culture));
+            }
+
+            PopulateMDependencies();
+        }
+
+        private void PopulateMDependencies()
+        {
+            string command = "SELECT * FROM $System.DISCOVER_CALC_DEPENDENCY WHERE OBJECT_TYPE = 'PARTITION' OR OBJECT_TYPE = 'M_EXPRESSION';";
+            XmlNodeList rows = _connectionInfo.ExecuteXmlaCommand(_server, command);
+
+            foreach (XmlNode row in rows)
+            {
+                string objectType = "";
+                string tableName = "";
+                string objectName = "";
+                string expression = "";
+                string referencedObjectType = "";
+                string referencedObjectName = "";
+                string referencedExpression = "";
+
+                foreach (XmlNode col in row.ChildNodes)
+                {
+                    if (col.Name == "OBJECT_TYPE") objectType = col.InnerText;
+                    if (col.Name == "TABLE") tableName = col.InnerText;
+                    if (col.Name == "OBJECT") objectName = col.InnerText;
+                    if (col.Name == "EXPRESSION") expression = col.InnerText;
+                    if (col.Name == "REFERENCED_OBJECT_TYPE") referencedObjectType = col.InnerText;
+                    if (col.Name == "REFERENCED_OBJECT") referencedObjectName = col.InnerText;
+                    if (col.Name == "REFERENCED_EXPRESSION") referencedExpression = col.InnerText;
+                }
+
+                _mDependencies.Add(new MDependency(this,
+                    objectType,
+                    tableName,
+                    objectName,
+                    expression,
+                    referencedObjectType,
+                    referencedObjectName,
+                    referencedExpression
+                    )
+                );
             }
         }
 

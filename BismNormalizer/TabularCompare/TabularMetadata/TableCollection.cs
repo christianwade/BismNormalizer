@@ -54,34 +54,38 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             TableCollection returnTables = new TableCollection();
             foreach (Table table in this)
             {
-                if (dataSource is ProviderDataSource && table.ConnectionName == dataSource.Name)
+                if (table.ConnectionName == dataSource.Name)
                 {
                     returnTables.Add(table);
                 }
-                else if (dataSource is StructuredDataSource && table.TomTable.Partitions.Count > 0)
-                {
-                    bool partitionsMatch = false;
-                    
-                    //Check all the partitions refer to the connection, otherwise don't consider as child of the connection
-                    foreach (Partition partition in table.TomTable.Partitions)
-                    {
-                        if ( partition.SourceType == PartitionSourceType.M &&
-                             ((MPartitionSource)partition.Source).Expression.Replace(" ", string.Empty).Contains($"Source={dataSource.Name},"))
-                        {
-                            partitionsMatch = true;
-                        }
-                        else
-                        {
-                            partitionsMatch = false;
-                            break;
-                        }
-                    }
 
-                    if (partitionsMatch)
-                    {
-                        returnTables.Add(table);
-                    }
-                }
+                //Todo: delete ...
+
+                //Don't do this here; can do in Table.PopulateProperties() to populate the connection name
+                //else if (dataSource is StructuredDataSource && table.TomTable.Partitions.Count > 0)
+                //{
+                //    bool partitionsMatch = false;
+
+                //    //Check all the partitions refer to the connection, otherwise don't consider as child of the connection
+                //    foreach (Partition partition in table.TomTable.Partitions)
+                //    {
+                //        if ( partition.SourceType == PartitionSourceType.M &&
+                //             ((MPartitionSource)partition.Source).Expression.Replace(" ", string.Empty).Contains($"Source={dataSource.Name},"))
+                //        {
+                //            partitionsMatch = true;
+                //        }
+                //        else
+                //        {
+                //            partitionsMatch = false;
+                //            break;
+                //        }
+                //    }
+
+                //    if (partitionsMatch)
+                //    {
+                //        returnTables.Add(table);
+                //    }
+                //}
             }
             return returnTables;
         }

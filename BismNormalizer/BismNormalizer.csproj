@@ -202,8 +202,8 @@
     <Compile Include="DemoHarness.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\Action.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\ActionCollection.cs" />
-    <Compile Include="TabularCompare\MultidimensionalMetadata\Connection.cs" />
-    <Compile Include="TabularCompare\MultidimensionalMetadata\ConnectionCollection.cs" />
+    <Compile Include="TabularCompare\MultidimensionalMetadata\DataSource.cs" />
+    <Compile Include="TabularCompare\MultidimensionalMetadata\DataSourceCollection.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\TabularModel.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\Comparison.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\ComparisonObject.cs" />
@@ -254,8 +254,8 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="TabularCompare\TabularMetadata\Connection.cs" />
-    <Compile Include="TabularCompare\TabularMetadata\ConnectionCollection.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\DataSource.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\DataSourceCollection.cs" />
     <Compile Include="TabularCompare\TabularMetadata\Culture.cs" />
     <Compile Include="TabularCompare\TabularMetadata\CultureCollection.cs" />
     <Compile Include="TabularCompare\TabularMetadata\TabularModel.cs" />

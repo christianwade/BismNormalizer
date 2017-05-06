@@ -18,7 +18,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private Tom.Table _tomTable;
         private RelationshipCollection _relationships = new RelationshipCollection();
         private MeasureCollection _measures = new MeasureCollection();
-        private string _connectionName;
+        private string _dataSourceName;
 
         /// <summary>
         /// Initializes a new instance of the Table class using multiple parameters.
@@ -39,9 +39,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public TabularModel ParentTabularModel => _parentTabularModel;
 
         /// <summary>
-        /// Name of the Connection object that the Table object belongs to.
+        /// Name of the DataSource object that the Table object belongs to.
         /// </summary>
-        public string ConnectionName => _connectionName;
+        public string DataSourceName => _dataSourceName;
 
         /// <summary>
         /// Collection of relationships for the Table object.
@@ -62,44 +62,44 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             base.RemovePropertyFromObjectDefinition("measures");
 
-            _connectionName = "";
+            _dataSourceName = "";
             bool hasMOrQueryPartition = false;
 
-            //Associate table with a connection if possible. It's not possible if calc table or if M expression refers to a shared expression, or multiple data sources
+            //Associate table with a DataSource if possible. It's not possible if calc table or if M expression refers to a shared expression, or multiple data sources
             foreach (Partition partition in _tomTable.Partitions)
             {
                 if (partition.SourceType == PartitionSourceType.M)
                 {
                     hasMOrQueryPartition = true;
 
-                    //Check M dependency tree to see if all partitions refer only to a single connection connection
+                    //Check M dependency tree to see if all partitions refer only to a single DataSource
                     MDependencyCollection mDependencies = _parentTabularModel.MDependencies.DependenciesReferenceFrom(MDependencyObjectType.Partition, partition.Name);
-                    if (mDependencies.Count == 1 && mDependencies[0].ReferencedObjectType == MDependencyObjectType.Connection)
+                    if (mDependencies.Count == 1 && mDependencies[0].ReferencedObjectType == MDependencyObjectType.DataSource)
                     {
-                        if (_connectionName == "")
+                        if (_dataSourceName == "")
                         {
-                            _connectionName = mDependencies[0].ReferencedObjectName;
+                            _dataSourceName = mDependencies[0].ReferencedObjectName;
                         }
-                        else if (_connectionName != mDependencies[0].ReferencedObjectName)
+                        else if (_dataSourceName != mDependencies[0].ReferencedObjectName)
                         {
-                            //Partition depends on a different connection to another partition in same table, so ensure no connection association for the table and stop iterating partitions.
-                            _connectionName = "";
+                            //Partition depends on a different DataSource to another partition in same table, so ensure no DataSource association for the table and stop iterating partitions.
+                            _dataSourceName = "";
                             break;
                         }
                     }
                     else
                     {
-                        //Partition has mutiple dependencies, or depends on an expression instead of data source, so ensure no connection association for the table and stop iterating partitions.
-                        _connectionName = "";
+                        //Partition has mutiple dependencies, or depends on an expression instead of DataSource, so ensure no DataSource association for the table and stop iterating partitions.
+                        _dataSourceName = "";
                         break;
                     }
                 }
 
-                //If old partition, find the primary partition (first one) to determine Connection. Technically it is possible for different partitions in the same table to point to different connections, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the connection gives a warning message listing associated tables).
+                //If old partition, find the primary partition (first one) to determine DataSource. Technically it is possible for different partitions in the same table to point to different DataSources, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the DataSource gives a warning message listing associated tables).
                 if (partition.SourceType == PartitionSourceType.Query)
                 {
                     hasMOrQueryPartition = true;
-                    _connectionName = ((QueryPartitionSource)partition.Source).DataSource.Name;
+                    _dataSourceName = ((QueryPartitionSource)partition.Source).DataSource.Name;
                     break;
                 }
             }

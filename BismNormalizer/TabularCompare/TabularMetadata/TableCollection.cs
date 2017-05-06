@@ -45,16 +45,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         /// <summary>
-        /// Returns a collection of Table objects filtered by the parent connection's name.
+        /// Returns a collection of Table objects filtered by the parent DataSource's name.
         /// </summary>
         /// <param name="dataSourceName"></param>
         /// <returns>TableCollection</returns>
-        public TableCollection FilterByConnection(DataSource dataSource)
+        public TableCollection FilterByDataSource(Microsoft.AnalysisServices.Tabular.DataSource dataSource)
         {
             TableCollection returnTables = new TableCollection();
             foreach (Table table in this)
             {
-                if (table.ConnectionName == dataSource.Name)
+                if (table.DataSourceName == dataSource.Name)
                 {
                     returnTables.Add(table);
                 }
@@ -63,27 +63,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         /// <summary>
-        /// Returns a collection of Table objects that do not have a connection associated with them. These can be calculated tables or tables with M partitions that do not refer to a connection.
+        /// Returns a collection of Table objects that do not have a DataSource associated with them. These can be calculated tables or tables with M partitions that do not refer to a DataSource.
         /// </summary>
         /// <returns></returns>
-        public TableCollection WithoutConnection(Model model)
+        public TableCollection WithoutDataSource(Model model)
         {
-            TableCollection tablesWithConnection = new TableCollection();
-            foreach (DataSource dataSource in model.DataSources)
+            TableCollection tablesWithDataSource = new TableCollection();
+            foreach (Microsoft.AnalysisServices.Tabular.DataSource dataSource in model.DataSources)
             {
-                tablesWithConnection.AddRange(this.FilterByConnection(dataSource));
+                tablesWithDataSource.AddRange(this.FilterByDataSource(dataSource));
             }
 
-            TableCollection tablesWithoutConnection = new TableCollection();
+            TableCollection tablesWithoutDataSource = new TableCollection();
             foreach (Table table in this)
             {
-                if (!tablesWithConnection.ContainsName(table.Name))
+                if (!tablesWithDataSource.ContainsName(table.Name))
                 {
-                    tablesWithoutConnection.Add(table);
+                    tablesWithoutDataSource.Add(table);
                 }
             }
 
-            return tablesWithoutConnection;
+            return tablesWithoutDataSource;
         }
 
         /// <summary>

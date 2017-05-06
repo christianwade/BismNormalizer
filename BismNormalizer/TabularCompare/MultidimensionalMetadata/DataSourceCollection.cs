@@ -7,22 +7,22 @@ using System.Text;
 namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 {
     /// <summary>
-    /// Represents a collection of Connection objects.
+    /// Represents a collection of DataSource objects.
     /// </summary>
-    public class ConnectionCollection : List<Connection>
+    public class DataSourceCollection : List<DataSource>
     {
         /// <summary>
         /// Find an object in the collection by name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>Connection object if found. Null if not found.</returns>
-        public Connection FindByName(string name)
+        /// <returns>DataSource object if found. Null if not found.</returns>
+        public DataSource FindByName(string name)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Name == name)
+                if (dataSource.Name == name)
                 {
-                    return connection;
+                    return dataSource;
                 }
             }
             return null;
@@ -35,9 +35,9 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// <returns>True if the object is found, or False if it's not found.</returns>
         public bool ContainsName(string name)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Name == name)
+                if (dataSource.Name == name)
                 {
                     return true;
                 }
@@ -49,14 +49,14 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// Find an object in the collection by Id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Connection object if found. Null if not found.</returns>
-        public Connection FindById(string id)
+        /// <returns>DataSource object if found. Null if not found.</returns>
+        public DataSource FindById(string id)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Id == id)
+                if (dataSource.Id == id)
                 {
-                    return connection;
+                    return dataSource;
                 }
             }
             return null;
@@ -69,9 +69,9 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// <returns>True if the object is found, or False if it's not found.</returns>
         public bool ContainsId(string id)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Id == id)
+                if (dataSource.Id == id)
                 {
                     return true;
                 }
@@ -86,11 +86,11 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// <returns>True if the object was removed, or False if was not found.</returns>
         public bool RemoveById(string id)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Id == id)
+                if (dataSource.Id == id)
                 {
-                    this.Remove(connection);
+                    this.Remove(dataSource);
                     return true;
                 }
             }

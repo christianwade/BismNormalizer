@@ -88,7 +88,7 @@ namespace BismNormalizer.TabularCompare.UI
         {
             // There are 3 types of nodes:
             //  1) Top Level (for a comparion window)
-            //  2) Type Node (for grouping of messages by type, e.g. connections, tables, etc.)
+            //  2) Type Node (for grouping of messages by type, e.g. DataSources, tables, etc.)
             //  3) Message node (that contains the actual message), which can be either a warning or informational
 
             //This method will add at least 1 message node and its parent nodes only if necessary.
@@ -120,8 +120,8 @@ namespace BismNormalizer.TabularCompare.UI
             TreeGridNode particularTypeNode = null;
             switch (validationMessageType)
             {
-                case ValidationMessageType.Connection:
-                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Connections");
+                case ValidationMessageType.DataSource:
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Data Sources");
                     particularTypeNode.ImageIndex = 0;
                     break;
                 case ValidationMessageType.Table:

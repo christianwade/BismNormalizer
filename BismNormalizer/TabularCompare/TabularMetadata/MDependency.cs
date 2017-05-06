@@ -47,7 +47,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     _referencedObjectType = MDependencyObjectType.Expression;
                     break;
                 case "DATA_SOURCE":
-                    _referencedObjectType = MDependencyObjectType.Connection;
+                    _referencedObjectType = MDependencyObjectType.DataSource;
                     break;
                 default:
                     break;

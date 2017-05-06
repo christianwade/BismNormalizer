@@ -240,7 +240,7 @@ namespace BismNormalizer.TabularCompare.Core
                 Excel.Worksheet Ws = default(Excel.Worksheet);
                 Ws = Wb.ActiveSheet;
                 Ws.Name = "Bism Normalizer Report";
-                int row = 1, lastConnectionRow = -1, lastTableRow = -1;
+                int row = 1, lastDataSourceRow = -1, lastTableRow = -1;
 
                 // set up headers
                 Ws.Cells[row, 1].Value = "Type";
@@ -261,7 +261,7 @@ namespace BismNormalizer.TabularCompare.Core
 
                 foreach (ComparisonObject comparisonObject in _comparisonObjects)
                 {
-                    PopulateExcelRow(Ws, ref row, ref lastConnectionRow, ref lastTableRow, comparisonObject, progBar);
+                    PopulateExcelRow(Ws, ref row, ref lastDataSourceRow, ref lastTableRow, comparisonObject, progBar);
                 }
 
                 // do we need to close the last groups?
@@ -270,9 +270,9 @@ namespace BismNormalizer.TabularCompare.Core
                     Ws.Application.Rows[Convert.ToString(lastTableRow + 1) + ":" + Convert.ToString(row)].Select();
                     Ws.Application.Selection.Rows.Group();
                 }
-                if (lastConnectionRow < row && lastConnectionRow != -1)
+                if (lastDataSourceRow < row && lastDataSourceRow != -1)
                 {
-                    Ws.Application.Rows[Convert.ToString(lastConnectionRow + 1) + ":" + Convert.ToString(row)].Select();
+                    Ws.Application.Rows[Convert.ToString(lastDataSourceRow + 1) + ":" + Convert.ToString(row)].Select();
                     Ws.Application.Selection.Rows.Group();
                 }
 
@@ -343,13 +343,13 @@ namespace BismNormalizer.TabularCompare.Core
             }
         }
 
-        private void PopulateExcelRow(Excel.Worksheet Ws, ref int row, ref int lastConnectionRow, ref int lastTableRow, ComparisonObject comparisonObject, ProgressBar progBar)
+        private void PopulateExcelRow(Excel.Worksheet Ws, ref int row, ref int lastDataSourceRow, ref int lastTableRow, ComparisonObject comparisonObject, ProgressBar progBar)
         {
             progBar.PerformStep();
             row += 1;
 
             // Close out groups if necessary
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles like connections for purpose of grouping
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles like datasources for purpose of grouping
             {
                 // do we need to close a table group?
                 if (lastTableRow + 1 < row && lastTableRow != -1)
@@ -359,23 +359,23 @@ namespace BismNormalizer.TabularCompare.Core
                 }
                 lastTableRow = row;
 
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/roles like connections for purpose of grouping
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/roles like datasources for purpose of grouping
                 {
-                    // do we need to close a connection group?
-                    if (lastConnectionRow + 1 < row && lastConnectionRow != -1)
+                    // do we need to close a datasource group?
+                    if (lastDataSourceRow + 1 < row && lastDataSourceRow != -1)
                     {
-                        Ws.Application.Rows[Convert.ToString(lastConnectionRow + 1) + ":" + Convert.ToString(row - 1)].Select();
+                        Ws.Application.Rows[Convert.ToString(lastDataSourceRow + 1) + ":" + Convert.ToString(row - 1)].Select();
                         Ws.Application.Selection.Rows.Group();
                     }
-                    lastConnectionRow = row;
+                    lastDataSourceRow = row;
                 }
             }
 
             //Type column
             switch (comparisonObject.ComparisonObjectType)
             {
-                case ComparisonObjectType.Connection:
-                    Ws.Cells[row, 1].Value = "Connection";
+                case ComparisonObjectType.DataSource:
+                    Ws.Cells[row, 1].Value = "Data Source";
                     break;
                 case ComparisonObjectType.Table:
                     Ws.Cells[row, 1].Value = "Table";
@@ -491,7 +491,7 @@ namespace BismNormalizer.TabularCompare.Core
 
             foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
             {
-                PopulateExcelRow(Ws, ref row, ref lastConnectionRow, ref lastTableRow, childComparisonObject, progBar);
+                PopulateExcelRow(Ws, ref row, ref lastDataSourceRow, ref lastTableRow, childComparisonObject, progBar);
             }
         }
 

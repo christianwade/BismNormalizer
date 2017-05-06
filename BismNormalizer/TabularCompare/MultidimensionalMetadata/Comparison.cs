@@ -81,23 +81,23 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         {
             _comparisonObjectCount = 0;
 
-            #region Connections
+            #region Data Sources
 
-            foreach (Connection connectionSource in _sourceTabularModel.Connections)
+            foreach (DataSource dataSourceSource in _sourceTabularModel.DataSources)
             {
                 // check if source is not in target
-                if (!_targetTabularModel.Connections.ContainsName(connectionSource.Name))
+                if (!_targetTabularModel.DataSources.ContainsName(dataSourceSource.Name))
                 {
-                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInTarget, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
-                    _comparisonObjects.Add(comparisonObjectConnection);
+                    ComparisonObject comparisonObjectDataSource = new ComparisonObject(ComparisonObjectType.DataSource, ComparisonObjectStatus.MissingInTarget, dataSourceSource, dataSourceSource.Name, dataSourceSource.Id, dataSourceSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
+                    _comparisonObjects.Add(comparisonObjectDataSource);
                     _comparisonObjectCount += 1;
 
-                    #region Tables for Connection that is Missing in Target
+                    #region Tables for DataSource that is Missing in Target
 
-                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnectionId(connectionSource.Id))
+                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByDataSourceId(dataSourceSource.Id))
                     {
                         ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
-                        comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                        comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                         _comparisonObjectCount += 1;
 
                         #region Relationships for Table that is Missing in Target
@@ -138,38 +138,38 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 }
                 else
                 {
-                    // there is a connection in the target with the same name at least
-                    Connection connectionTarget = _targetTabularModel.Connections.FindByName(connectionSource.Name);
-                    if (connectionSource.Id != connectionTarget.Id)
+                    // there is a datasource in the target with the same name at least
+                    DataSource dataSourceTarget = _targetTabularModel.DataSources.FindByName(dataSourceSource.Name);
+                    if (dataSourceSource.Id != dataSourceTarget.Id)
                     {
-                        connectionSource.SubstituteId = connectionTarget.Id;
+                        dataSourceSource.SubstituteId = dataSourceTarget.Id;
                     }
-                    ComparisonObject comparisonObjectConnection;
+                    ComparisonObject comparisonObjectDataSource;
                     
-                    // check if connection object definition is different
-                    if (connectionSource.ObjectDefinition != connectionTarget.ObjectDefinition)
+                    // check if datasource object definition is different
+                    if (dataSourceSource.ObjectDefinition != dataSourceTarget.ObjectDefinition)
                     {
-                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.DifferentDefinitions, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Update, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
-                        _comparisonObjects.Add(comparisonObjectConnection);
+                        comparisonObjectDataSource = new ComparisonObject(ComparisonObjectType.DataSource, ComparisonObjectStatus.DifferentDefinitions, dataSourceSource, dataSourceSource.Name, dataSourceSource.Id, dataSourceSource.ObjectDefinition, MergeAction.Update, dataSourceTarget, dataSourceTarget.Name, dataSourceTarget.Id, dataSourceTarget.ObjectDefinition);
+                        _comparisonObjects.Add(comparisonObjectDataSource);
                         _comparisonObjectCount += 1;
                     }
                     else
                     {
                         // they are equal, ...
-                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.SameDefinition, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Skip, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
-                        _comparisonObjects.Add(comparisonObjectConnection);
+                        comparisonObjectDataSource = new ComparisonObject(ComparisonObjectType.DataSource, ComparisonObjectStatus.SameDefinition, dataSourceSource, dataSourceSource.Name, dataSourceSource.Id, dataSourceSource.ObjectDefinition, MergeAction.Skip, dataSourceTarget, dataSourceTarget.Name, dataSourceTarget.Id, dataSourceTarget.ObjectDefinition);
+                        _comparisonObjects.Add(comparisonObjectDataSource);
                         _comparisonObjectCount += 1;
                     }
 
-                    #region Tables where source/target connections exist
+                    #region Tables where source/target datasources exist
 
-                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnectionId(connectionSource.Id))
+                    foreach (Table tblSource in _sourceTabularModel.Tables.FilterByDataSourceId(dataSourceSource.Id))
                     {
                         // check if source is not in target
-                        if (!_targetTabularModel.Tables.FilterByConnectionId(connectionTarget.Id).ContainsName(tblSource.Name))
+                        if (!_targetTabularModel.Tables.FilterByDataSourceId(dataSourceTarget.Id).ContainsName(tblSource.Name))
                         {
                             ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
-                            comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                            comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                             _comparisonObjectCount += 1;
 
                             #region Relationships for table Missing in Target
@@ -220,13 +220,13 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                             if (tblSource.ObjectDefinition == tblTarget.ObjectDefinition)
                             {
                                 comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.SameDefinition, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Skip, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
-                                comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                                comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                                 _comparisonObjectCount += 1;
                             }
                             else
                             {
                                 comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.DifferentDefinitions, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Update, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
-                                comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                                comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                                 _comparisonObjectCount += 1;
                             }
 
@@ -368,13 +368,13 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         }
                     }
 
-                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByConnectionId(connectionTarget.Id))
+                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByDataSourceId(dataSourceTarget.Id))
                     {
                         // check if target is not in source
-                        if (!_sourceTabularModel.Tables.FilterByConnectionId(connectionSource.Id).ContainsName(tblTarget.Name))
+                        if (!_sourceTabularModel.Tables.FilterByDataSourceId(dataSourceSource.Id).ContainsName(tblTarget.Name))
                         {
                             ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
-                            comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                            comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                             _comparisonObjectCount += 1;
 
                             #region Relationships for table Missing in Source
@@ -416,21 +416,21 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 }
             }
 
-            foreach (Connection bismConnectionTarget in _targetTabularModel.Connections)
+            foreach (DataSource dataSourceTarget in _targetTabularModel.DataSources)
             {
-                // if target connection is Missing in Source, offer deletion
-                if (!_sourceTabularModel.Connections.ContainsName(bismConnectionTarget.Name))
+                // if target datasource is Missing in Source, offer deletion
+                if (!_sourceTabularModel.DataSources.ContainsName(dataSourceTarget.Name))
                 {
-                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, bismConnectionTarget, bismConnectionTarget.Name, bismConnectionTarget.Id, bismConnectionTarget.ObjectDefinition);
-                    _comparisonObjects.Add(comparisonObjectConnection);
+                    ComparisonObject comparisonObjectDataSource = new ComparisonObject(ComparisonObjectType.DataSource, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, dataSourceTarget, dataSourceTarget.Name, dataSourceTarget.Id, dataSourceTarget.ObjectDefinition);
+                    _comparisonObjects.Add(comparisonObjectDataSource);
                     _comparisonObjectCount += 1;
 
-                    #region Tables for Connection that is Missing in Source
+                    #region Tables for DataSource that is Missing in Source
 
-                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByConnectionId(bismConnectionTarget.Id))
+                    foreach (Table tblTarget in _targetTabularModel.Tables.FilterByDataSourceId(dataSourceTarget.Id))
                     {
                         ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
-                        comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
+                        comparisonObjectDataSource.ChildComparisonObjects.Add(comparisonObjectTable);
                         _comparisonObjectCount += 1;
 
                         #region Relationships for Table that is Missing in Source
@@ -693,42 +693,42 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
             #endregion
 
-            #region Connections
+            #region DataSources
 
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Delete)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Delete)
                 {
-                    _targetTabularModel.DeleteConnection(comparisonObject.TargetObjectId);
-                    OnValidationMessage(new ValidationMessageEventArgs("Delete Connection [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
+                    _targetTabularModel.DeleteDataSource(comparisonObject.TargetObjectId);
+                    OnValidationMessage(new ValidationMessageEventArgs("Delete Data Source [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Create)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Create)
                 {
-                    _targetTabularModel.CreateConnection(_sourceTabularModel.Connections.FindById(comparisonObject.SourceObjectId));
-                    OnValidationMessage(new ValidationMessageEventArgs("Create Connection [" + comparisonObject.SourceObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
+                    _targetTabularModel.CreateDataSource(_sourceTabularModel.DataSources.FindById(comparisonObject.SourceObjectId));
+                    OnValidationMessage(new ValidationMessageEventArgs("Create Data Source [" + comparisonObject.SourceObjectName + "].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Update)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
                 {
-                    _targetTabularModel.UpdateConnection(_sourceTabularModel.Connections.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Connections.FindById(comparisonObject.TargetObjectId));
-                    OnValidationMessage(new ValidationMessageEventArgs("Update Connection [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
+                    _targetTabularModel.UpdateDataSource(_sourceTabularModel.DataSources.FindById(comparisonObject.SourceObjectId), _targetTabularModel.DataSources.FindById(comparisonObject.TargetObjectId));
+                    OnValidationMessage(new ValidationMessageEventArgs("Update Data Source [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && 
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && 
                     (comparisonObject.MergeAction == MergeAction.Skip || comparisonObject.MergeAction == MergeAction.Update) &&
                     (comparisonObject.Status == ComparisonObjectStatus.DifferentDefinitions || comparisonObject.Status == ComparisonObjectStatus.SameDefinition) &&
                     comparisonObject.SourceObjectId != comparisonObject.TargetObjectId)
                 {
                     comparisonObject.SourceObjectSubstituteId = comparisonObject.TargetObjectId;
-                    _sourceTabularModel.Connections.FindById(comparisonObject.SourceObjectId).SubstituteId = comparisonObject.TargetObjectId;
+                    _sourceTabularModel.DataSources.FindById(comparisonObject.SourceObjectId).SubstituteId = comparisonObject.TargetObjectId;
                 }
             }
 
@@ -776,7 +776,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         }
                         else
                         {
-                            OnValidationMessage(new ValidationMessageEventArgs("Unable to create Table " + childComparisonObject.SourceObjectName + " because another table with the same name (under a different connection) already exists in target model.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                            OnValidationMessage(new ValidationMessageEventArgs("Unable to create Table " + childComparisonObject.SourceObjectName + " because another table with the same name (under a different data source) already exists in target model.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
                         }
                     }
                 }
@@ -1036,7 +1036,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     }
                     else
                     {
-                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Action " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one connection/table in target, for there to be an public \"cube\".", ValidationMessageType.Action, ValidationMessageStatus.Warning));
+                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Action " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one data source/table in target, for there to be an public \"cube\".", ValidationMessageType.Action, ValidationMessageStatus.Warning));
                     }
                 }
             }
@@ -1073,7 +1073,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     }
                     else
                     {
-                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Perspective " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one connection/table in target, for there to be an public \"cube\".", ValidationMessageType.Perspective, ValidationMessageStatus.Warning));
+                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Perspective " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one data source/table in target, for there to be an public \"cube\".", ValidationMessageType.Perspective, ValidationMessageStatus.Warning));
                     }
                 }
             }
@@ -1110,7 +1110,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     }
                     else
                     {
-                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Role " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one connection/table in target, for there to be an public \"cube\".", ValidationMessageType.Role, ValidationMessageStatus.Warning));
+                        OnValidationMessage(new ValidationMessageEventArgs("Unable to create Role " + comparisonObject.SourceObjectName + " because public \"cube\" not found in target.  There must be at least one data source/table in target, for there to be an public \"cube\".", ValidationMessageType.Role, ValidationMessageStatus.Warning));
                     }
                 }
             }
@@ -1227,7 +1227,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
         private void ProcessAffectedTables(Core.ComparisonObject comparisonObject, ProcessingTableCollection tablesToProcess)
         {
-            //Recursively call for multiple levels to ensure catch calculated tables or those child of connection
+            //Recursively call for multiple levels to ensure catch calculated tables or those child of data source
 
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table &&
                 (comparisonObject.MergeAction == MergeAction.Create || comparisonObject.MergeAction == MergeAction.Update)

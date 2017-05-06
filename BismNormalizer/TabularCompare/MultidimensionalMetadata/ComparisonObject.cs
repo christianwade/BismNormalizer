@@ -151,7 +151,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             switch (this.ComparisonObjectType)
             {
                 //tabular objects
-                case ComparisonObjectType.Connection:
+                case ComparisonObjectType.DataSource:
                     sortKey = "A";
                     break;
                 case ComparisonObjectType.Table:

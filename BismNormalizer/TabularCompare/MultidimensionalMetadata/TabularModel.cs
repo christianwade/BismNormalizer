@@ -26,7 +26,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         private ComparisonInfo _comparisonInfo;
         private Server _amoServer;
         private Database _amoDatabase;
-        private ConnectionCollection _connections = new ConnectionCollection();
+        private DataSourceCollection _dataSources = new DataSourceCollection();
         private TableCollection _tables = new TableCollection();
         private MeasureCollection _measures = new MeasureCollection();
         private KpiCollection _kpis = new KpiCollection();
@@ -75,9 +75,9 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
 
             // shell model            
-            foreach (DataSource datasource in _amoDatabase.DataSources)
+            foreach (Microsoft.AnalysisServices.DataSource datasource in _amoDatabase.DataSources)
             {
-                _connections.Add(new Connection(this, datasource));
+                _dataSources.Add(new DataSource(this, datasource));
             }
             foreach (Dimension dimension in _amoDatabase.Dimensions)
             {
@@ -611,9 +611,9 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         }
 
         /// <summary>
-        /// Collection of connections for the TabularModel object.
+        /// Collection of data sources for the TabularModel object.
         /// </summary>
-        public ConnectionCollection Connections => _connections;
+        public DataSourceCollection DataSources => _dataSources;
 
         /// <summary>
         /// Collection of tables for the TabularModel object.
@@ -948,23 +948,23 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         }
 
 
-        #region Connections
+        #region DataSources
 
         /// <summary>
-        /// Delete connection associated with the TabularModel object.
+        /// Delete datasource associated with the TabularModel object.
         /// </summary>
-        /// <param name="id">The id of the connection to be deleted.</param>
-        public void DeleteConnection(string id)
+        /// <param name="id">The id of the datasource to be deleted.</param>
+        public void DeleteDataSource(string id)
         {
             if (_amoDatabase.DataSources.Contains(id))
             {
                 _amoDatabase.DataSources.Remove(id);
             }
 
-            //check if DataSourceViews[0].DataSourceID refers to the connection to be deleted
+            //check if DataSourceViews[0].DataSourceID refers to the datasource to be deleted
             if (_amoDatabase.DataSourceViews.Count > 0 && _amoDatabase.DataSourceViews[0].DataSourceID == id)
             {
-                //set it to the first data source in the cube (should be fine because all the existing tables that use this connection will also be deleted)
+                //set it to the first data source in the cube (should be fine because all the existing tables that use this datasource will also be deleted)
                 if (_amoDatabase.DataSources.Count > 0)
                 {
                     _amoDatabase.DataSourceViews[0].DataSourceID = _amoDatabase.DataSources[0].ID;
@@ -976,52 +976,52 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }            
 
             // shell model
-            if (_connections.ContainsId(id))
+            if (_dataSources.ContainsId(id))
             {
-                _connections.RemoveById(id);
+                _dataSources.RemoveById(id);
             }
         }
 
         /// <summary>
-        /// Create connection associated with the TabularModel object.
+        /// Create data source associated with the TabularModel object.
         /// </summary>
-        /// <param name="connectionSource">Connection object from the source tabular model to be created in the target.</param>
-        public void CreateConnection(Connection connectionSource)
+        /// <param name="dataSourceSource">DataSource object from the source tabular model to be created in the target.</param>
+        public void CreateDataSource(DataSource dataSourceSource)
         {
-            DataSource amoDataSourceTarget = connectionSource.AmoDatasource.Clone();
+            Microsoft.AnalysisServices.DataSource amoDataSourceTarget = dataSourceSource.AmoDataSource.Clone();
 
-            // Need to check if there is an existing connection with same ID (some clever clogs might have renamed the object in source and kept same ID).  If so, replace it with a new one and store it as substitute ID in source.
-            if (_amoDatabase.DataSources.Contains(connectionSource.Id))
+            // Need to check if there is an existing datasource with same ID (some clever clogs might have renamed the object in source and kept same ID).  If so, replace it with a new one and store it as substitute ID in source.
+            if (_amoDatabase.DataSources.Contains(dataSourceSource.Id))
             {
                 amoDataSourceTarget.ID = Convert.ToString(Guid.NewGuid());
-                connectionSource.SubstituteId = amoDataSourceTarget.ID;
+                dataSourceSource.SubstituteId = amoDataSourceTarget.ID;
             }
 
             _amoDatabase.DataSources.Add(amoDataSourceTarget);
 
-            // in the event we deleted the only connection in the DeleteConnection method above, ...
+            // in the event we deleted the only datasource in the DeleteDataSource method above, ...
             if (_amoDatabase.DataSourceViews.Count > 0 && _amoDatabase.DataSourceViews[0].DataSourceID == null)
             {
                 _amoDatabase.DataSourceViews[0].DataSourceID = amoDataSourceTarget.ID;
             }
 
             // shell model
-            _connections.Add(new Connection(this, amoDataSourceTarget));
+            _dataSources.Add(new DataSource(this, amoDataSourceTarget));
         }
 
         /// <summary>
-        /// Update connection associated with the TabularModel object.
+        /// Update datasource associated with the TabularModel object.
         /// </summary>
-        /// <param name="connectionSource">Connection object from the source tabular model to be updated in the target.</param>
-        /// <param name="connectionTarget">Connection object in the target tabular model to be updated.</param>
-        public void UpdateConnection(Connection connectionSource, Connection connectionTarget)
+        /// <param name="dataSourceSource">DataSource object from the source tabular model to be updated in the target.</param>
+        /// <param name="dataSourceTarget">DataSource object in the target tabular model to be updated.</param>
+        public void UpdateDataSource(DataSource dataSourceSource, DataSource dataSourceTarget)
         {
-            connectionTarget.AmoDatasource.ConnectionString = connectionSource.AmoDatasource.ConnectionString;
+            dataSourceTarget.AmoDataSource.ConnectionString = dataSourceSource.AmoDataSource.ConnectionString;
 
-            if (connectionSource.Id != connectionTarget.Id)
+            if (dataSourceSource.Id != dataSourceTarget.Id)
             {
                 // If the names are the same, but the IDs are different, need to store the ID from the target in the source connection so that when Create/Update subsequent tables (partitions, DSVs and special dimension properties), we know to substitute the Connection ID
-                connectionSource.SubstituteId = connectionTarget.Id;
+                dataSourceSource.SubstituteId = dataSourceTarget.Id;
             }
         }
 
@@ -1097,7 +1097,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 string newDataSourceViewName = tableSource.TabularModel.AmoDatabase.DataSourceViews[0].Name;
                 DataSet newDataSourceViewDataSet = new DataSet(newDataSourceViewName);
                 DataSourceView newDatasourceView = _amoDatabase.DataSourceViews.AddNew(newDataSourceViewName, newDataSourceViewName);
-                newDatasourceView.DataSourceID = tableSource.TabularModel.Connections.FindById(tableSource.DataSourceID).SubstituteId;
+                newDatasourceView.DataSourceID = tableSource.TabularModel.DataSources.FindById(tableSource.DataSourceID).SubstituteId;
                 newDatasourceView.Schema = newDataSourceViewDataSet;
 
                 Cube sandboxCube = _amoDatabase.Cubes.Add(tableSource.TabularModel.AmoDatabase.Cubes[0].Name, tableSource.TabularModel.AmoDatabase.Cubes[0].ID);
@@ -1127,7 +1127,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 useSubstituteId = true;
             }
 
-            string substituteConnectionId = tableSource.TabularModel.Connections.FindById(tableSource.DataSourceID).SubstituteId;
+            string substituteDataSourceId = tableSource.TabularModel.DataSources.FindById(tableSource.DataSourceID).SubstituteId;
 
             #endregion
 
@@ -1137,7 +1137,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 //DataTable tableTarget = tableSource.AmoTable.Clone();
                 DataTable tableTarget = tableSource.AmoTable.Copy();
-                tableTarget.ExtendedProperties["DataSourceID"] = substituteConnectionId;
+                tableTarget.ExtendedProperties["DataSourceID"] = substituteDataSourceId;
                 if (useSubstituteId) tableTarget.TableName = tableSource.SubstituteId;
 
                 if (_amoDatabase.DataSourceViews[0].Schema.Tables.Contains(tableTarget.TableName))
@@ -1248,7 +1248,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             List<string> partitionIdsToRename = new List<string>();
             foreach (Partition partition in measureGroupTarget.Partitions)
             {
-                if (partition.Source is QueryBinding) partition.Source = new QueryBinding(substituteConnectionId, ((QueryBinding)partition.Source).QueryDefinition);
+                if (partition.Source is QueryBinding) partition.Source = new QueryBinding(substituteDataSourceId, ((QueryBinding)partition.Source).QueryDefinition);
                 if (useSubstituteId && partition.ID == tableSource.Id) partitionIdsToRename.Add(partition.ID);
             }
             foreach (string partitionIdToRename in partitionIdsToRename)
@@ -2552,7 +2552,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 _tablesToProcess = tablesToProcess;
 
                 //Set passwords ready for processing
-                foreach (DataSource dataSource in _amoDatabase.DataSources)
+                foreach (Microsoft.AnalysisServices.DataSource dataSource in _amoDatabase.DataSources)
                 {
                     if (dataSource.ImpersonationInfo != null && dataSource.ImpersonationInfo.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
                     {

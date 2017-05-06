@@ -7,7 +7,7 @@ using System.Text;
 namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 {
     /// <summary>
-    /// Represents a collection of Connection objects.
+    /// Represents a collection of DataSource objects.
     /// </summary>
     public class TableCollection : List<Table>
     {
@@ -15,7 +15,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// Find an object in the collection by name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>Connection object if found. Null if not found.</returns>
+        /// <returns>DataSource object if found. Null if not found.</returns>
         public Table FindByName(string name)
         {
             foreach (Table table in this)
@@ -49,7 +49,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// Find an object in the collection by Id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>Connection object if found. Null if not found.</returns>
+        /// <returns>DataSource object if found. Null if not found.</returns>
         public Table FindById(string id)
         {
             foreach (Table table in this)
@@ -80,11 +80,11 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         }
 
         /// <summary>
-        /// Returns a collection of Table objects filtered by the parent connection's Id.
+        /// Returns a collection of Table objects filtered by the parent datasource's Id.
         /// </summary>
         /// <param name="dataSourceId"></param>
         /// <returns>TableCollection</returns>
-        public TableCollection FilterByConnectionId(string dataSourceId)
+        public TableCollection FilterByDataSourceId(string dataSourceId)
         {
             TableCollection returnTables = new TableCollection();
             foreach (Table table in this)

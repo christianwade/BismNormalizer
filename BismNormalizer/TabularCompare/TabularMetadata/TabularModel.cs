@@ -22,7 +22,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private ComparisonInfo _comparisonInfo;
         private Server _server;
         private Database _database;
-        private ConnectionCollection _connections = new ConnectionCollection();
+        private DataSourceCollection _dataSources = new DataSourceCollection();
         private TableCollection _tables = new TableCollection();
         private ExpressionCollection _expressions = new ExpressionCollection();
         private PerspectiveCollection _perspectives = new PerspectiveCollection();
@@ -68,11 +68,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             PopulateMDependencies();
 
             //Shell model
-            foreach (DataSource datasource in _database.Model.DataSources)
+            foreach (Tom.DataSource dataSource in _database.Model.DataSources)
             {
-                if (datasource.Type == DataSourceType.Provider || datasource.Type == DataSourceType.Structured)
+                if (dataSource.Type == DataSourceType.Provider || dataSource.Type == DataSourceType.Structured)
                 {
-                    _connections.Add(new Connection(this, datasource));
+                    _dataSources.Add(new DataSource(this, dataSource));
                 }
             }
             foreach (Tom.Table table in _database.Model.Tables)
@@ -204,9 +204,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         /// <summary>
-        /// Collection of connections for the TabularModel object.
+        /// Collection of DataSources for the TabularModel object.
         /// </summary>
-        public ConnectionCollection Connections => _connections;
+        public DataSourceCollection DataSources => _dataSources;
 
         /// <summary>
         /// Collection of tables for the TabularModel object.
@@ -282,13 +282,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
-        #region Connections
+        #region DataSources
 
         /// <summary>
-        /// Delete connection associated with the TabularModel object.
+        /// Delete DataSource associated with the TabularModel object.
         /// </summary>
-        /// <param name="name">The name of the connection to be deleted.</param>
-        public void DeleteConnection(string name)
+        /// <param name="name">The name of the DataSource to be deleted.</param>
+        public void DeleteDataSource(string name)
         {
             if (_database.Model.DataSources.ContainsName(name))
             {
@@ -296,61 +296,61 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
 
             // shell model
-            if (_connections.ContainsName(name))
+            if (_dataSources.ContainsName(name))
             {
-                _connections.RemoveByName(name);
+                _dataSources.RemoveByName(name);
             }
         }
 
         /// <summary>
-        /// Create connection associated with the TabularModel object.
+        /// Create DataSource associated with the TabularModel object.
         /// </summary>
-        /// <param name="connectionSource">Connection object from the source tabular model to be created in the target.</param>
-        public void CreateConnection(Connection connectionSource)
+        /// <param name="dataSourceSource">DataSource object from the source tabular model to be created in the target.</param>
+        public void CreateDataSource(DataSource dataSourceSource)
         {
-            if (connectionSource.TomConnection is ProviderDataSource)
+            if (dataSourceSource.TomDataSource is ProviderDataSource)
             {
                 ProviderDataSource providerTarget = new ProviderDataSource();
-                connectionSource.TomConnection.CopyTo(providerTarget);
+                dataSourceSource.TomDataSource.CopyTo(providerTarget);
 
                 _database.Model.DataSources.Add(providerTarget);
                 
                 // shell model
-                _connections.Add(new Connection(this, providerTarget));
+                _dataSources.Add(new DataSource(this, providerTarget));
             }
             else
             {
                 StructuredDataSource structuredTarget = new StructuredDataSource();
-                connectionSource.TomConnection.CopyTo(structuredTarget);
+                dataSourceSource.TomDataSource.CopyTo(structuredTarget);
 
                 _database.Model.DataSources.Add(structuredTarget);
 
                 // shell model
-                _connections.Add(new Connection(this, structuredTarget));
+                _dataSources.Add(new DataSource(this, structuredTarget));
             }
         }
 
         /// <summary>
-        /// Update connection associated with the TabularModel object.
+        /// Update DataSource associated with the TabularModel object.
         /// </summary>
-        /// <param name="connectionSource">Connection object from the source tabular model to be updated in the target.</param>
-        /// <param name="connectionTarget">Connection object in the target tabular model to be updated.</param>
-        public void UpdateConnection(Connection connectionSource, Connection connectionTarget)
+        /// <param name="dataSourceSource">DataSource object from the source tabular model to be updated in the target.</param>
+        /// <param name="dataSourceTarget">DataSource object in the target tabular model to be updated.</param>
+        public void UpdateDataSource(DataSource dataSourceSource, DataSource dataSourceTarget)
         {
-            if (connectionSource.TomConnection is ProviderDataSource && connectionTarget.TomConnection is ProviderDataSource)
+            if (dataSourceSource.TomDataSource is ProviderDataSource && dataSourceTarget.TomDataSource is ProviderDataSource)
             {
-                ProviderDataSource providerSource = (ProviderDataSource)connectionSource.TomConnection;
-                ProviderDataSource providerTarget = (ProviderDataSource)connectionTarget.TomConnection;
+                ProviderDataSource providerSource = (ProviderDataSource)dataSourceSource.TomDataSource;
+                ProviderDataSource providerTarget = (ProviderDataSource)dataSourceTarget.TomDataSource;
 
                 providerTarget.Description = providerSource.Description;
                 providerTarget.ConnectionString = providerSource.ConnectionString;
                 providerTarget.ImpersonationMode = providerSource.ImpersonationMode;
                 providerTarget.Account = providerSource.Account;
             }
-            else if (connectionSource.TomConnection is StructuredDataSource && connectionTarget.TomConnection is StructuredDataSource)
+            else if (dataSourceSource.TomDataSource is StructuredDataSource && dataSourceTarget.TomDataSource is StructuredDataSource)
             {
-                StructuredDataSource structuredSource = (StructuredDataSource)connectionSource.TomConnection;
-                StructuredDataSource structuredTarget = (StructuredDataSource)connectionTarget.TomConnection;
+                StructuredDataSource structuredSource = (StructuredDataSource)dataSourceSource.TomDataSource;
+                StructuredDataSource structuredTarget = (StructuredDataSource)dataSourceTarget.TomDataSource;
                 
                 //todo: test this!
                 structuredTarget.Description = structuredSource.Description;
@@ -406,7 +406,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     QueryPartitionSource queryPartition = ((QueryPartitionSource)partition.Source);
                     string dataSourceName = queryPartition.DataSource.Name;
-                    queryPartition.DataSource = _connections.FindByName(dataSourceName).TomConnection;
+                    queryPartition.DataSource = _dataSources.FindByName(dataSourceName).TomDataSource;
                 }
             }
 
@@ -1328,7 +1328,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 List<PasswordPromptEventArgs> argsAllConnections = new List<PasswordPromptEventArgs>();
 
                 //Set passwords
-                foreach (DataSource dataSource in _database.Model.DataSources)
+                foreach (Tom.DataSource dataSource in _database.Model.DataSources)
                 {
                     if (dataSource.Type == DataSourceType.Provider)
                     {
@@ -1618,9 +1618,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         private void FinalValidation()
         {
-            if (_connectionInfo.DirectQuery && _connections.Count > 1)
+            if (_connectionInfo.DirectQuery && _dataSources.Count > 1)
             {
-                throw new InvalidOperationException("Target model contains multiple connections, which are not allowed for Direct Query models. Re-run comparison and (considering changes) ensure there is a single connection in the target model.");
+                throw new InvalidOperationException("Target model contains multiple data sources, which are not allowed for Direct Query models. Re-run comparison and (considering changes) ensure there is a single connection in the target model.");
             }
         }
 

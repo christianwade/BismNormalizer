@@ -77,8 +77,8 @@ namespace BismNormalizer.TabularCompare.UI
             ComparisonObjectType returnObjType;
             switch (lookupType)
             {
-                case "Connection":
-                    returnObjType = ComparisonObjectType.Connection;
+                case "Data Source":
+                    returnObjType = ComparisonObjectType.DataSource;
                     break;
                 case "Table":
                     returnObjType = ComparisonObjectType.Table;
@@ -108,7 +108,7 @@ namespace BismNormalizer.TabularCompare.UI
                     returnObjType = ComparisonObjectType.Action;
                     break;
                 default:
-                    returnObjType = ComparisonObjectType.Connection;
+                    returnObjType = ComparisonObjectType.DataSource;
                     break;
             }
             return returnObjType;
@@ -218,9 +218,9 @@ namespace BismNormalizer.TabularCompare.UI
             switch (comparisonObject.ComparisonObjectType)
             {
                 // Tabular objecs
-                case ComparisonObjectType.Connection:
+                case ComparisonObjectType.DataSource:
                     node.ImageIndex = 0;
-                    node.Cells[0].Value = "Connection";
+                    node.Cells[0].Value = "Data Source";
                     break;
                 case ComparisonObjectType.Table:
                     node.ImageIndex = 1;

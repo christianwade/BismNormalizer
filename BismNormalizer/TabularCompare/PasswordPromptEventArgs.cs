@@ -8,7 +8,7 @@ namespace BismNormalizer.TabularCompare
     public class PasswordPromptEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets or sets the name of the connection.
+        /// Gets or sets the name of the DataSource.
         /// </summary>
         public string ConnectionName { get; set; }
 

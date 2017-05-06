@@ -7,22 +7,22 @@ using System.Text;
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
     /// <summary>
-    /// Represents a collection of Connection objects.
+    /// Represents a collection of DataSource objects.
     /// </summary>
-    public class ConnectionCollection : List<Connection>
+    public class DataSourceCollection : List<DataSource>
     {
         /// <summary>
         /// Find an object in the collection by name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>Connection object if found. Null if not found.</returns>
-        public Connection FindByName(string name)
+        /// <returns>DataSource object if found. Null if not found.</returns>
+        public DataSource FindByName(string name)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Name == name)
+                if (dataSource.Name == name)
                 {
-                    return connection;
+                    return dataSource;
                 }
             }
             return null;
@@ -35,9 +35,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <returns>True if the object is found, or False if it's not found.</returns>
         public bool ContainsName(string name)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Name == name)
+                if (dataSource.Name == name)
                 {
                     return true;
                 }
@@ -52,11 +52,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <returns>True if the object was removed, or False if was not found.</returns>
         public bool RemoveByName(string name)
         {
-            foreach (Connection connection in this)
+            foreach (DataSource dataSource in this)
             {
-                if (connection.Name == name)
+                if (dataSource.Name == name)
                 {
-                    this.Remove(connection);
+                    this.Remove(dataSource);
                     return true;
                 }
             }

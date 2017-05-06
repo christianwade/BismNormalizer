@@ -12,7 +12,7 @@ namespace BismNormalizer.TabularCompare.Core
 
         protected ComparisonObjectType _comparisonObjectType;
         protected ComparisonObjectStatus _status;
-        protected UpdateAction _updateAction;
+        protected MergeAction _mergeAction;
         protected List<ComparisonObject> _childComparisonObjects;
 
         #endregion
@@ -24,15 +24,15 @@ namespace BismNormalizer.TabularCompare.Core
         /// </summary>
         /// <param name="comparisonObjectType">Type of ComaprisonObject such as Table, Measure, Relationship, etc.</param>
         /// <param name="status">Status of ComaprisonObject such as Same Definition, Different Definitions and Missing In Target.</param>
-        /// <param name="updateAction">Action of ComaprisonObject such as Create, Update, Delete and Skip.</param>
+        /// <param name="mergeAction">Action of ComaprisonObject such as Create, Update, Delete and Skip.</param>
         public ComparisonObject(
             ComparisonObjectType comparisonObjectType,
             ComparisonObjectStatus status,
-            UpdateAction updateAction)
+            MergeAction mergeAction)
         {
             _comparisonObjectType = comparisonObjectType;
             _status = status;
-            _updateAction = updateAction;
+            _mergeAction = mergeAction;
             _childComparisonObjects = new List<ComparisonObject>();
         }
 
@@ -59,12 +59,12 @@ namespace BismNormalizer.TabularCompare.Core
         }
 
         /// <summary>
-        /// The comparison object update action such as Create, Update, Delete and Skip.
+        /// The comparison object merge action such as Create, Update, Delete and Skip.
         /// </summary>
-        public UpdateAction UpdateAction
+        public MergeAction MergeAction
         {
-            get { return _updateAction; }
-            set { _updateAction = value; }
+            get { return _mergeAction; }
+            set { _mergeAction = value; }
         }
 
         /// <summary>

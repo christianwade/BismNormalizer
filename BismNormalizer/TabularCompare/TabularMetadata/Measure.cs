@@ -61,7 +61,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Find missing calculation dependencies by inspecting the DAX expression for the measure and iterating columns and other measures in the tabular model for validity of the expression.
         /// </summary>
         /// <returns>List of missing dependencies to be displayed or logged as warnings.</returns>
-        public List<string> FindMissingCalculationDependencies()
+        public List<string> FindMissingMeasureDependencies()
         {
             List<string> dependencies = new List<string>();
 

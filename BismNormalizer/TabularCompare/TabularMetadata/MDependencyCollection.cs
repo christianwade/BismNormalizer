@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
@@ -11,6 +8,56 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     /// </summary>
     public class MDependencyCollection : List<MDependency>
     {
+        /// <summary>
+        /// Returns collection of M dependencies that the object identified by the params references (directly or indirectly).
+        /// </summary>
+        /// <param name="objectType">Type of the object to look up dependencies.</param>
+        /// <param name="objectName">Name of the object to look up dependencies.</param>
+        /// <returns></returns>
+        public MDependencyCollection DependenciesReferenceFrom(MDependencyObjectType objectType, string objectName)
+        {
+            MDependencyCollection returnVal = new MDependencyCollection();
+            LookUpDependenciesReferenceFrom(objectType, objectName, returnVal);
+            return returnVal;
+        }
+
+        private void LookUpDependenciesReferenceFrom(MDependencyObjectType objectType, string objectName, MDependencyCollection returnVal)
+        {
+            foreach (MDependency mDependency in this)
+            {
+                if (mDependency.ObjectType == objectType && mDependency.ObjectName == objectName)
+                {
+                    LookUpDependenciesReferenceFrom(mDependency.ReferencedObjectType, mDependency.ReferencedObjectName, returnVal);
+                    returnVal.Add(mDependency);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns collection of M dependency objects that hold references to the object identified by the param values (directly or chained).
+        /// </summary>
+        /// <param name="objectType">Type of the object to look up dependencies.</param>
+        /// <param name="objectName">Name of the object to look up dependencies.</param>
+        /// <returns></returns>
+        public MDependencyCollection DependenciesReferenceTo(MDependencyObjectType referencedObjectType, string referencedObjectName)
+        {
+            MDependencyCollection returnVal = new MDependencyCollection();
+            LookUpDependenciesReferenceTo(referencedObjectType, referencedObjectName, returnVal);
+            return returnVal;
+        }
+
+        private void LookUpDependenciesReferenceTo(MDependencyObjectType referencedObjectType, string referencedObjectName, MDependencyCollection returnVal)
+        {
+            foreach (MDependency mDependency in this)
+            {
+                if (mDependency.ReferencedObjectType == referencedObjectType && mDependency.ReferencedObjectName == referencedObjectName)
+                {
+                    LookUpDependenciesReferenceTo(mDependency.ObjectType, mDependency.ObjectName, returnVal);
+                    returnVal.Add(mDependency);
+                }
+            }
+        }
+
         /// <summary>
         /// Find an object in the collection by name.
         /// </summary>

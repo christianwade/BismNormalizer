@@ -9,11 +9,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     public class MDependency
     {
         private TabularModel _parentTabularModel;
-        private string _objectType;
+        private MDependencyObjectType _objectType;
         private string _tableName;
         private string _objectName;
         private string _expression;
-        private string _referencedObjectType;
+        private MDependencyObjectType _referencedObjectType;
         private string _referencedObjectName;
         private string _referencedExpression;
 
@@ -24,11 +24,34 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public MDependency(TabularModel parentTabularModel, string objectType, string tableName, string objectName, string expression, string referencedObjectType, string referencedObjectName, string referencedExpression)
         {
             _parentTabularModel = parentTabularModel;
-            _objectType = objectType;
+            switch (objectType)
+            {
+                case "PARTITION":
+                    _objectType = MDependencyObjectType.Partition;
+                    break;
+                case "M_EXPRESSION":
+                    _objectType = MDependencyObjectType.Expression;
+                    break;
+                default:
+                    break;
+            }
             _tableName = tableName;
             _objectName = objectName;
             _expression = expression;
-            _referencedObjectType = referencedObjectType;
+            switch (referencedObjectType)
+            {
+                case "PARTITION":
+                    _objectType = MDependencyObjectType.Partition;
+                    break;
+                case "M_EXPRESSION":
+                    _objectType = MDependencyObjectType.Expression;
+                    break;
+                case "DATA_SOURCE":
+                    _objectType = MDependencyObjectType.Connection;
+                    break;
+                default:
+                    break;
+            }
             _referencedObjectName = referencedObjectName;
             _referencedExpression = referencedExpression;
 
@@ -46,7 +69,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// The object type of the dependency.
         /// </summary>
-        public string ObjectType => _objectType;
+        public MDependencyObjectType ObjectType => _objectType;
         
         /// <summary>
         /// The table name of the dependency.
@@ -66,7 +89,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// The referenced object type of the dependency.
         /// </summary>
-        public string ReferencedObjectType => _referencedObjectType;
+        public MDependencyObjectType ReferencedObjectType => _referencedObjectType;
 
         /// <summary>
         /// The referenced object name of the dependency.

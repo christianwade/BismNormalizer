@@ -4,7 +4,7 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Type of object that a validation message relates to. For example, Table, Measure, MeasureCalculationDependency, etc.
     /// </summary>
-    public enum ValidationMessageType { Connection, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Action, MeasureCalculationDependency, General }; //General used for command line only
+    public enum ValidationMessageType { Connection, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Expression, Action, MeasureCalculationDependency, General }; //General used for command line only
 
     /// <summary>
     /// Status for a validation message, such as Informational and Warning.
@@ -14,7 +14,7 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Type of comparison object. For example, Table, Measure, Relationship, etc.
     /// </summary>
-    public enum ComparisonObjectType { Connection, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Action };
+    public enum ComparisonObjectType { Connection, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Expression, Action };
 
     /// <summary>
     /// Status of comparison object, such as Same Definition, Different Definitions and Missing In Target.
@@ -24,7 +24,7 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Action to be taken for a comparison object, such as Create, Update, Delete and Skip.
     /// </summary>
-    public enum UpdateAction { Create, Update, Delete, Skip };
+    public enum MergeAction { Create, Update, Delete, Skip };
 
     /// <summary>
     /// Processing option for database deployment.
@@ -35,4 +35,9 @@ namespace BismNormalizer.TabularCompare
     /// Status of database deployment.
     /// </summary>
     public enum DeploymentStatus { Deploying = 0, Success = 1, Error = 2, Cancel = 3 };
+
+    /// <summary>
+    /// Type of dependency. For example, Connection, Partition, Expression.
+    /// </summary>
+    public enum MDependencyObjectType { Connection, Partition, Expression };
 }

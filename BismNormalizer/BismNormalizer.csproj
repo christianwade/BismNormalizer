@@ -193,6 +193,8 @@
     <Compile Include="TabularCompare\DeploymentMessageEventArgs.cs" />
     <Compile Include="TabularCompare\Enums.cs" />
     <Compile Include="TabularCompare\PasswordPromptEventArgs.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\Expression.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\ExpressionCollection.cs" />
     <Compile Include="TabularCompare\TabularMetadata\MDependency.cs" />
     <Compile Include="TabularCompare\TabularMetadata\MDependencyCollection.cs" />
     <Compile Include="TabularCompare\UI\HighDpiUtils.cs" />
@@ -363,6 +365,7 @@
     <Resource Include="Resources\Check.png" />
     <Resource Include="Resources\Error.png" />
     <Resource Include="Resources\Culture.png" />
+    <Resource Include="Resources\Expression.png" />
     <Content Include="Resources\LicenseTerms.txt">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1769,7 +1769,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
         /// </summary>
         /// <param name="ActionSource">Action object from the source tabular model to be updated in the target.</param>
         /// <param name="ActionTarget">Action object in the target tabular model to be updated.</param>
-        public void UpdateAction(Action ActionSource, Action ActionTarget)
+        public void MergeAction(Action ActionSource, Action ActionTarget)
         {
             if (ActionSource.Id != ActionTarget.Id)
             {

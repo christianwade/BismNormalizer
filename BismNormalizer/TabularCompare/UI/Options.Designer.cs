@@ -88,7 +88,7 @@
             this.chkPartitions.Name = "chkPartitions";
             this.chkPartitions.Size = new System.Drawing.Size(266, 27);
             this.chkPartitions.TabIndex = 6;
-            this.chkPartitions.Text = "Consider query partitions when comparing tables";
+            this.chkPartitions.Text = "Consider M/query partitions when comparing tables";
             this.chkPartitions.UseVisualStyleBackColor = true;
             // 
             // chkMeasureDependencies

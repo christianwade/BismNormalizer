@@ -92,6 +92,9 @@ namespace BismNormalizer.TabularCompare.UI
                 case "KPI":
                     returnObjType = ComparisonObjectType.Kpi;
                     break;
+                case "Expression":
+                    returnObjType = ComparisonObjectType.Expression;
+                    break;
                 case "Perspective":
                     returnObjType = ComparisonObjectType.Perspective;
                     break;
@@ -172,7 +175,7 @@ namespace BismNormalizer.TabularCompare.UI
 
                 if (this.Columns.Contains("TypeLabel")) this.AutoResizeColumn(this.Columns["TypeLabel"].Index, DataGridViewAutoSizeColumnMode.AllCells);
                 if (this.Columns.Contains("Status")) this.AutoResizeColumn(this.Columns["Status"].Index, DataGridViewAutoSizeColumnMode.AllCells);
-                if (this.Columns.Contains("UpdateAction")) this.AutoResizeColumn(this.Columns["UpdateAction"].Index, DataGridViewAutoSizeColumnMode.AllCells);
+                if (this.Columns.Contains("MergeAction")) this.AutoResizeColumn(this.Columns["MergeAction"].Index, DataGridViewAutoSizeColumnMode.AllCells);
             }
         }
 
@@ -205,7 +208,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             node.Cells[1].Value = comparisonObject.SourceObjectName;
             node.Cells[2].Value = comparisonObject.SourceObjectInternalName;
-            //node.Cells[8].Value = comparisonObject.UpdateAction.ToString();  //set below instead
+            //node.Cells[8].Value = comparisonObject.MergeAction.ToString();  //set below instead
             node.Cells[5].Value = comparisonObject.TargetObjectName;
             node.Cells[6].Value = comparisonObject.TargetObjectInternalName;
             node.Cells[9].Value = comparisonObject.ComparisonObjectType.ToString();
@@ -235,6 +238,10 @@ namespace BismNormalizer.TabularCompare.UI
                     node.ImageIndex = 4;
                     node.Cells[0].Value = "KPI";
                     break;
+                case ComparisonObjectType.Expression:
+                    node.ImageIndex = 22;
+                    node.Cells[0].Value = "Expression";
+                    break;
                 case ComparisonObjectType.Perspective:
                     node.ImageIndex = 15;
                     node.Cells[0].Value = "Perspective";
@@ -257,40 +264,40 @@ namespace BismNormalizer.TabularCompare.UI
             };
 
             DataGridViewComboBoxCell comboCell = (DataGridViewComboBoxCell)node.Cells[8];
-            DataGridViewCell parentUpdateActionCell = node.Parent.Cells[8];
+            DataGridViewCell parentMergeActionCell = node.Parent.Cells[8];
             DataGridViewCell parentStatusCell = node.Parent.Cells[4];
 
             // set drop-down to have limited members based on what is available
-            switch (comparisonObject.UpdateAction)
+            switch (comparisonObject.MergeAction)
             {
-                case UpdateAction.Create:
+                case MergeAction.Create:
                     node.Cells[7].Value = this.ImageList.Images[7];     //7: Create
-                    node.Cells[8].Value = comparisonObject.UpdateAction.ToString();
+                    node.Cells[8].Value = comparisonObject.MergeAction.ToString();
                     comboCell.DataSource = new string[] { "Create", "Skip" };
 
-                    if (parentStatusCell.Value != null && parentUpdateActionCell.Value != null &&
-                        parentStatusCell.Value.ToString() == "Missing in Target" && parentUpdateActionCell.Value.ToString() == "Skip")
+                    if (parentStatusCell.Value != null && parentMergeActionCell.Value != null &&
+                        parentStatusCell.Value.ToString() == "Missing in Target" && parentMergeActionCell.Value.ToString() == "Skip")
                     {
                         // Can only happen if loading from file
                         node.Cells[7].Value = this.ImageList.Images[19];     //19: Skip Gray
-                        node.Cells[8].Value = UpdateAction.Skip.ToString();
+                        node.Cells[8].Value = MergeAction.Skip.ToString();
                         node.Cells[8].Style.ForeColor = Color.DimGray;
                         node.Cells[8].ReadOnly = true;
                         SetNodeTooltip(node, true);
                     }
                     break;
-                case UpdateAction.Update:
+                case MergeAction.Update:
                     node.Cells[7].Value = this.ImageList.Images[6];     //6: Update
-                    node.Cells[8].Value = comparisonObject.UpdateAction.ToString();
+                    node.Cells[8].Value = comparisonObject.MergeAction.ToString();
                     comboCell.DataSource = new string[] { "Update", "Skip" };
                     break;
-                case UpdateAction.Delete:
+                case MergeAction.Delete:
                     node.Cells[7].Value = this.ImageList.Images[5];     //5: Delete
-                    node.Cells[8].Value = comparisonObject.UpdateAction.ToString();
+                    node.Cells[8].Value = comparisonObject.MergeAction.ToString();
                     comboCell.DataSource = new string[] { "Delete", "Skip" };
 
                     //check if parent is also set to delete, in which case make this cell readonly
-                    if (parentUpdateActionCell.Value != null && parentUpdateActionCell.Value.ToString() == "Delete")
+                    if (parentMergeActionCell.Value != null && parentMergeActionCell.Value.ToString() == "Delete")
                     {
                         node.Cells[7].Value = this.ImageList.Images[18];     //18: Delete Gray
                         node.Cells[8].Style.ForeColor = Color.DimGray;
@@ -298,17 +305,17 @@ namespace BismNormalizer.TabularCompare.UI
                         SetNodeTooltip(node, true);
                     }
                     break;
-                case UpdateAction.Skip:
+                case MergeAction.Skip:
                     node.Cells[7].Value = this.ImageList.Images[8];     //8: Skip
-                    node.Cells[8].Value = comparisonObject.UpdateAction.ToString();
+                    node.Cells[8].Value = comparisonObject.MergeAction.ToString();
                     switch (comparisonObject.Status)
                     {
                         case ComparisonObjectStatus.MissingInTarget:
                             comboCell.DataSource = new string[] { "Create", "Skip" };
 
                             //check if parent is also MissingInTarget and Skip, make this cell readonly
-                            if (parentStatusCell.Value != null && parentUpdateActionCell.Value != null &&
-                                parentStatusCell.Value.ToString() == "Missing in Target" && parentUpdateActionCell.Value.ToString() == "Skip")
+                            if (parentStatusCell.Value != null && parentMergeActionCell.Value != null &&
+                                parentStatusCell.Value.ToString() == "Missing in Target" && parentMergeActionCell.Value.ToString() == "Skip")
                             {
                                 node.Cells[7].Value = this.ImageList.Images[19];     //19: Skip Gray
                                 node.Cells[8].Style.ForeColor = Color.DimGray;
@@ -435,14 +442,14 @@ namespace BismNormalizer.TabularCompare.UI
             this.Columns.Add(actionImageColumn);
 
             //8
-            DataGridViewComboBoxColumn updateActionColumn = new DataGridViewComboBoxColumn();
-            updateActionColumn.Name = "UpdateAction";
-            updateActionColumn.HeaderText = "Action";
-            updateActionColumn.MaxDropDownItems = 4;
-            updateActionColumn.FlatStyle = FlatStyle.Flat;
-            updateActionColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
-            updateActionColumn.Width = this.Width / 601 * 83;
-            this.Columns.Add(updateActionColumn);
+            DataGridViewComboBoxColumn mergeActionColumn = new DataGridViewComboBoxColumn();
+            mergeActionColumn.Name = "MergeAction";
+            mergeActionColumn.HeaderText = "Action";
+            mergeActionColumn.MaxDropDownItems = 4;
+            mergeActionColumn.FlatStyle = FlatStyle.Flat;
+            mergeActionColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+            mergeActionColumn.Width = this.Width / 601 * 83;
+            this.Columns.Add(mergeActionColumn);
 
             //9
             DataGridViewTextBoxColumn typeColumn = new DataGridViewTextBoxColumn();
@@ -479,7 +486,7 @@ namespace BismNormalizer.TabularCompare.UI
         /// </summary>
         public void RefreshDiffResultsFromGrid()
         {
-            //this version of the TreeGridView does not support binding from an object collection (or any built in data binding for that matter), so we have to refresh the CubeDiff with changes done by the user in the UI (they can modify the UpdateActions).
+            //this version of the TreeGridView does not support binding from an object collection (or any built in data binding for that matter), so we have to refresh the CubeDiff with changes done by the user in the UI (they can modify the MergeActions).
             foreach (TreeGridNode node in this.Nodes)
             {
                 RefreshComparisonObjFromGrid(node);
@@ -498,10 +505,10 @@ namespace BismNormalizer.TabularCompare.UI
 
             if (comparisonObject != null)
             {
-                comparisonObject.UpdateAction = (UpdateAction)Enum.Parse(typeof(UpdateAction), node.Cells[8].Value.ToString());
+                comparisonObject.MergeAction = (MergeAction)Enum.Parse(typeof(MergeAction), node.Cells[8].Value.ToString());
             }
 
-            //this version of the TreeGridView does not support binding from an object collection (or any built in data binding for that matter), so we have to refresh the CubeDiff with changes done by the user in the UI (they can modify the UpdateActions).
+            //this version of the TreeGridView does not support binding from an object collection (or any built in data binding for that matter), so we have to refresh the CubeDiff with changes done by the user in the UI (they can modify the MergeActions).
             foreach (TreeGridNode childNode in node.Nodes)
             {
                 RefreshComparisonObjFromGrid(childNode);

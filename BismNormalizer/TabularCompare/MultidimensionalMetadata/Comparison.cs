@@ -88,7 +88,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 // check if source is not in target
                 if (!_targetTabularModel.Connections.ContainsName(connectionSource.Name))
                 {
-                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInTarget, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInTarget, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                     _comparisonObjects.Add(comparisonObjectConnection);
                     _comparisonObjectCount += 1;
 
@@ -96,7 +96,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                     foreach (Table tblSource in _sourceTabularModel.Tables.FilterByConnectionId(connectionSource.Id))
                     {
-                        ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                        ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                         comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                         _comparisonObjectCount += 1;
 
@@ -104,7 +104,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Relationship relSource in tblSource.Relationships)
                         {
-                            ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                            ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                             _comparisonObjectCount += 1;
                         }
@@ -115,7 +115,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Measure measureSource in _sourceTabularModel.Measures.FilterByTableName(tblSource.Name))
                         {
-                            ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                            ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                             _comparisonObjectCount += 1;
                         }
@@ -126,7 +126,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Kpi kpiSource in _sourceTabularModel.Kpis.FilterByTableName(tblSource.Name))
                         {
-                            ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                            ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                             _comparisonObjectCount += 1;
                         }
@@ -149,14 +149,14 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // check if connection object definition is different
                     if (connectionSource.ObjectDefinition != connectionTarget.ObjectDefinition)
                     {
-                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.DifferentDefinitions, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, UpdateAction.Update, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
+                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.DifferentDefinitions, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Update, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
                         _comparisonObjects.Add(comparisonObjectConnection);
                         _comparisonObjectCount += 1;
                     }
                     else
                     {
                         // they are equal, ...
-                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.SameDefinition, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, UpdateAction.Skip, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
+                        comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.SameDefinition, connectionSource, connectionSource.Name, connectionSource.Id, connectionSource.ObjectDefinition, MergeAction.Skip, connectionTarget, connectionTarget.Name, connectionTarget.Id, connectionTarget.ObjectDefinition);
                         _comparisonObjects.Add(comparisonObjectConnection);
                         _comparisonObjectCount += 1;
                     }
@@ -168,7 +168,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         // check if source is not in target
                         if (!_targetTabularModel.Tables.FilterByConnectionId(connectionTarget.Id).ContainsName(tblSource.Name))
                         {
-                            ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                            ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInTarget, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                             comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                             _comparisonObjectCount += 1;
 
@@ -177,7 +177,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                             // all relationships in source are not in target (the target table doesn't even exist)
                             foreach (Relationship relSource in tblSource.Relationships)
                             {
-                                ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                                 _comparisonObjectCount += 1;
                             }
@@ -188,7 +188,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                             foreach (Measure measureSource in _sourceTabularModel.Measures.FilterByTableName(tblSource.Name))
                             {
-                                ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                 _comparisonObjectCount += 1;
                             }
@@ -199,7 +199,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                             foreach (Kpi kpiSource in _sourceTabularModel.Kpis.FilterByTableName(tblSource.Name))
                             {
-                                ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                 _comparisonObjectCount += 1;
                             }
@@ -219,13 +219,13 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                             if (tblSource.ObjectDefinition == tblTarget.ObjectDefinition)
                             {
-                                comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.SameDefinition, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, UpdateAction.Skip, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
+                                comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.SameDefinition, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Skip, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
                                 comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                                 _comparisonObjectCount += 1;
                             }
                             else
                             {
-                                comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.DifferentDefinitions, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, UpdateAction.Update, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
+                                comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.DifferentDefinitions, tblSource, tblSource.Name, tblSource.Id, tblSource.ObjectDefinition, MergeAction.Update, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
                                 comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                                 _comparisonObjectCount += 1;
                             }
@@ -240,7 +240,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                                 {
                                     if (relSource.ObjectDefinition == relTarget.ObjectDefinition)
                                     {
-                                        ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.SameDefinition, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, UpdateAction.Skip, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
+                                        ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.SameDefinition, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, MergeAction.Skip, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
                                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                                         _comparisonObjectCount += 1;
                                         foundMatch = true;
@@ -250,7 +250,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                                 //the relationship in the source table doesnt' exist in the target table
                                 if (!foundMatch)
                                 {
-                                    ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                    ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInTarget, relSource, "        " + relSource.Name, relSource.Id, relSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                                     _comparisonObjectCount += 1;
                                 }
@@ -270,7 +270,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                                 }
                                 if (!foundMatch)
                                 {
-                                    ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
+                                    ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                                     _comparisonObjectCount += 1;
                                 }
@@ -290,21 +290,21 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                                     if (measureSource.ObjectDefinition == measureTarget.ObjectDefinition)
                                     {
                                         //Measure has same definition
-                                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.SameDefinition, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, UpdateAction.Skip, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
+                                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.SameDefinition, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, MergeAction.Skip, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
                                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                         _comparisonObjectCount += 1;
                                     }
                                     else
                                     {
                                         //Measure has different definition
-                                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.DifferentDefinitions, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, UpdateAction.Update, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
+                                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.DifferentDefinitions, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, MergeAction.Update, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
                                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                         _comparisonObjectCount += 1;
                                     }
                                 }
                                 else
                                 {
-                                    ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                    ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInTarget, measureSource, "        " + measureSource.Name, measureSource.Id, measureSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                     _comparisonObjectCount += 1;
                                 }
@@ -314,7 +314,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                             {
                                 if (!_sourceTabularModel.Measures.FilterByTableName(tblSource.Name).ContainsName(measureTarget.Name))
                                 {
-                                    ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
+                                    ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                     _comparisonObjectCount += 1;
                                 }
@@ -334,21 +334,21 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                                     if (kpiSource.ObjectDefinition == kpiTarget.ObjectDefinition)
                                     {
                                         //Kpi has same definition
-                                        ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.SameDefinition, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, UpdateAction.Skip, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
+                                        ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.SameDefinition, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, MergeAction.Skip, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
                                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                         _comparisonObjectCount += 1;
                                     }
                                     else
                                     {
                                         //Kpi has different definition
-                                        ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.DifferentDefinitions, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, UpdateAction.Update, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
+                                        ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.DifferentDefinitions, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, MergeAction.Update, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
                                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                         _comparisonObjectCount += 1;
                                     }
                                 }
                                 else
                                 {
-                                    ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                                    ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInTarget, kpiSource, "        " + kpiSource.Name, kpiSource.Id, kpiSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                     _comparisonObjectCount += 1;
                                 }
@@ -358,7 +358,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                             {
                                 if (!_sourceTabularModel.Kpis.FilterByTableName(tblSource.Name).ContainsName(kpiTarget.Name))
                                 {
-                                    ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
+                                    ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
                                     comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                     _comparisonObjectCount += 1;
                                 }
@@ -373,7 +373,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         // check if target is not in source
                         if (!_sourceTabularModel.Tables.FilterByConnectionId(connectionSource.Id).ContainsName(tblTarget.Name))
                         {
-                            ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
+                            ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
                             comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                             _comparisonObjectCount += 1;
 
@@ -382,7 +382,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                             // all relationships in target are not in source (the source table doesn't even exist)
                             foreach (Relationship relTarget in tblTarget.Relationships)
                             {
-                                ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
+                                ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                                 _comparisonObjectCount += 1;
                             }
@@ -393,7 +393,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                             foreach (Measure measureTarget in _targetTabularModel.Measures.FilterByTableName(tblTarget.Name))
                             {
-                                ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
+                                ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                                 _comparisonObjectCount += 1;
                             }
@@ -404,7 +404,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                             foreach (Kpi kpiTarget in _targetTabularModel.Kpis.FilterByTableName(tblTarget.Name))
                             {
-                                ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
+                                ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
                                 comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                                 _comparisonObjectCount += 1;
                             }
@@ -421,7 +421,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 // if target connection is Missing in Source, offer deletion
                 if (!_sourceTabularModel.Connections.ContainsName(bismConnectionTarget.Name))
                 {
-                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, bismConnectionTarget, bismConnectionTarget.Name, bismConnectionTarget.Id, bismConnectionTarget.ObjectDefinition);
+                    ComparisonObject comparisonObjectConnection = new ComparisonObject(ComparisonObjectType.Connection, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, bismConnectionTarget, bismConnectionTarget.Name, bismConnectionTarget.Id, bismConnectionTarget.ObjectDefinition);
                     _comparisonObjects.Add(comparisonObjectConnection);
                     _comparisonObjectCount += 1;
 
@@ -429,7 +429,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                     foreach (Table tblTarget in _targetTabularModel.Tables.FilterByConnectionId(bismConnectionTarget.Id))
                     {
-                        ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
+                        ComparisonObject comparisonObjectTable = new ComparisonObject(ComparisonObjectType.Table, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, tblTarget, tblTarget.Name, tblTarget.Id, tblTarget.ObjectDefinition);
                         comparisonObjectConnection.ChildComparisonObjects.Add(comparisonObjectTable);
                         _comparisonObjectCount += 1;
 
@@ -437,7 +437,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Relationship relTarget in tblTarget.Relationships)
                         {
-                            ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
+                            ComparisonObject comparisonObjectRelation = new ComparisonObject(ComparisonObjectType.Relationship, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, relTarget, "        " + relTarget.Name, relTarget.Id, relTarget.ObjectDefinition);
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectRelation);
                             _comparisonObjectCount += 1;
                         }
@@ -448,7 +448,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Measure measureTarget in _targetTabularModel.Measures.FilterByTableName(tblTarget.Name))
                         {
-                            ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
+                            ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, measureTarget, "        " + measureTarget.Name, measureTarget.Id, measureTarget.ObjectDefinition);
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
                             _comparisonObjectCount += 1;
                         }
@@ -459,7 +459,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
                         foreach (Kpi kpiTarget in _targetTabularModel.Kpis.FilterByTableName(tblTarget.Name))
                         {
-                            ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
+                            ComparisonObject comparisonObjectKpi = new ComparisonObject(ComparisonObjectType.Kpi, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, kpiTarget, "        " + kpiTarget.Name, kpiTarget.Id, kpiTarget.ObjectDefinition);
                             comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectKpi);
                             _comparisonObjectCount += 1;
                         }
@@ -482,7 +482,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // check if source is not in target
                     if (!_targetTabularModel.Actions.ContainsName(actionSource.Name))
                     {
-                        ComparisonObject comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.MissingInTarget, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                        ComparisonObject comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.MissingInTarget, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                         _comparisonObjects.Add(comparisonObjectAction);
                         _comparisonObjectCount += 1;
                     }
@@ -499,14 +499,14 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         // check if Action object definition is different
                         if (actionSource.ObjectDefinition != actionTarget.ObjectDefinition)
                         {
-                            comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.DifferentDefinitions, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, UpdateAction.Update, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
+                            comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.DifferentDefinitions, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, MergeAction.Update, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectAction);
                             _comparisonObjectCount += 1;
                         }
                         else
                         {
                             // they are equal, ...
-                            comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.SameDefinition, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, UpdateAction.Skip, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
+                            comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.SameDefinition, actionSource, actionSource.Name, actionSource.Id, actionSource.ObjectDefinition, MergeAction.Skip, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectAction);
                             _comparisonObjectCount += 1;
                         }
@@ -518,7 +518,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // if target Action is Missing in Source, offer deletion
                     if (!_sourceTabularModel.Actions.ContainsName(actionTarget.Name))
                     {
-                        ComparisonObject comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
+                        ComparisonObject comparisonObjectAction = new ComparisonObject(ComparisonObjectType.Action, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, actionTarget, actionTarget.Name, actionTarget.Id, actionTarget.ObjectDefinition);
                         _comparisonObjects.Add(comparisonObjectAction);
                         _comparisonObjectCount += 1;
                     }
@@ -536,7 +536,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // check if source is not in target
                     if (!_targetTabularModel.Perspectives.ContainsName(perspectiveSource.Name))
                     {
-                        ComparisonObject comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.MissingInTarget, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                        ComparisonObject comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.MissingInTarget, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                         _comparisonObjects.Add(comparisonObjectPerspective);
                         _comparisonObjectCount += 1;
                     }
@@ -556,13 +556,13 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                              (!_comparisonInfo.OptionsInfo.OptionMergePerspectives && perspectiveTarget.ContainsOtherPerspectiveSelections(perspectiveSource) && perspectiveSource.ContainsOtherPerspectiveSelections(perspectiveTarget)) )
                         {
                             // they are equal, ...
-                            comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.SameDefinition, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, UpdateAction.Skip, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
+                            comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.SameDefinition, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, MergeAction.Skip, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectPerspective);
                             _comparisonObjectCount += 1;
                         }
                         else
                         {
-                            comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.DifferentDefinitions, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, UpdateAction.Update, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
+                            comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.DifferentDefinitions, perspectiveSource, perspectiveSource.Name, perspectiveSource.Id, perspectiveSource.ObjectDefinition, MergeAction.Update, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectPerspective);
                             _comparisonObjectCount += 1;
                         }
@@ -574,7 +574,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // if target perspective is Missing in Source, offer deletion
                     if (!_sourceTabularModel.Perspectives.ContainsName(perspectiveTarget.Name))
                     {
-                        ComparisonObject comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
+                        ComparisonObject comparisonObjectPerspective = new ComparisonObject(ComparisonObjectType.Perspective, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, perspectiveTarget, perspectiveTarget.Name, perspectiveTarget.Id, perspectiveTarget.ObjectDefinition);
                         _comparisonObjects.Add(comparisonObjectPerspective);
                         _comparisonObjectCount += 1;
                     }
@@ -592,7 +592,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // check if source is not in target
                     if (!_targetTabularModel.Roles.ContainsName(roleSource.Name))
                     {
-                        ComparisonObject comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.MissingInTarget, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, UpdateAction.Create, null, "", "", "");
+                        ComparisonObject comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.MissingInTarget, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, MergeAction.Create, null, "", "", "");
                         _comparisonObjects.Add(comparisonObjectRole);
                         _comparisonObjectCount += 1;
                     }
@@ -609,14 +609,14 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         // check if role object definition is different
                         if (roleSource.ObjectDefinition != roleTarget.ObjectDefinition)
                         {
-                            comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.DifferentDefinitions, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, UpdateAction.Update, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
+                            comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.DifferentDefinitions, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, MergeAction.Update, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectRole);
                             _comparisonObjectCount += 1;
                         }
                         else
                         {
                             // they are equal, ...
-                            comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.SameDefinition, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, UpdateAction.Skip, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
+                            comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.SameDefinition, roleSource, roleSource.Name, roleSource.Id, roleSource.ObjectDefinition, MergeAction.Skip, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
                             _comparisonObjects.Add(comparisonObjectRole);
                             _comparisonObjectCount += 1;
                         }
@@ -628,7 +628,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     // if target role is Missing in Source, offer deletion
                     if (!_sourceTabularModel.Roles.ContainsName(roleTarget.Name))
                     {
-                        ComparisonObject comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.MissingInSource, null, "", "", "", UpdateAction.Delete, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
+                        ComparisonObject comparisonObjectRole = new ComparisonObject(ComparisonObjectType.Role, ComparisonObjectStatus.MissingInSource, null, "", "", "", MergeAction.Delete, roleTarget, roleTarget.Name, roleTarget.Id, roleTarget.ObjectDefinition);
                         _comparisonObjects.Add(comparisonObjectRole);
                         _comparisonObjectCount += 1;
                     }
@@ -698,7 +698,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.UpdateAction == UpdateAction.Delete)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeleteConnection(comparisonObject.TargetObjectId);
                     OnValidationMessage(new ValidationMessageEventArgs("Delete Connection [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
@@ -706,7 +706,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.UpdateAction == UpdateAction.Create)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     _targetTabularModel.CreateConnection(_sourceTabularModel.Connections.FindById(comparisonObject.SourceObjectId));
                     OnValidationMessage(new ValidationMessageEventArgs("Create Connection [" + comparisonObject.SourceObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
@@ -714,7 +714,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.UpdateAction == UpdateAction.Update)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdateConnection(_sourceTabularModel.Connections.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Connections.FindById(comparisonObject.TargetObjectId));
                     OnValidationMessage(new ValidationMessageEventArgs("Update Connection [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Connection, ValidationMessageStatus.Informational));
@@ -723,7 +723,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection && 
-                    (comparisonObject.UpdateAction == UpdateAction.Skip || comparisonObject.UpdateAction == UpdateAction.Update) &&
+                    (comparisonObject.MergeAction == MergeAction.Skip || comparisonObject.MergeAction == MergeAction.Update) &&
                     (comparisonObject.Status == ComparisonObjectStatus.DifferentDefinitions || comparisonObject.Status == ComparisonObjectStatus.SameDefinition) &&
                     comparisonObject.SourceObjectId != comparisonObject.TargetObjectId)
                 {
@@ -748,7 +748,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.UpdateAction == UpdateAction.Delete)
+                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.MergeAction == MergeAction.Delete)
                     {
                         _targetTabularModel.DeleteTable(childComparisonObject.TargetObjectId);
                         OnValidationMessage(new ValidationMessageEventArgs("Delete Table '" + childComparisonObject.TargetObjectName + "'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
@@ -759,7 +759,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.UpdateAction == UpdateAction.Create)
+                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.MergeAction == MergeAction.Create)
                     {
                         Table tableTarget = _targetTabularModel.Tables.FindByName(childComparisonObject.SourceObjectName);
                         if (tableTarget == null)
@@ -787,7 +787,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.UpdateAction == UpdateAction.Skip &&
+                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.MergeAction == MergeAction.Skip &&
                         (childComparisonObject.Status == ComparisonObjectStatus.DifferentDefinitions || childComparisonObject.Status == ComparisonObjectStatus.SameDefinition) &&
                         childComparisonObject.SourceObjectId != childComparisonObject.TargetObjectId)
                     {
@@ -802,7 +802,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.UpdateAction == UpdateAction.Update)
+                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.MergeAction == MergeAction.Update)
                     {
                         string sourceObjectSubstituteId = childComparisonObject.SourceObjectSubstituteId;
                         bool useSubstituteId = false;
@@ -823,7 +823,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.UpdateAction == UpdateAction.Update)
+                    if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.Table && childComparisonObject.MergeAction == MergeAction.Update)
                     {
                         _targetTabularModel.UpdateRelationshipsForChildrenOfUpdatedTables(_targetTabularModel.Tables.FindById(childComparisonObject.SourceObjectSubstituteId));
                     }
@@ -841,7 +841,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Relationship && grandChildComparisonObject.UpdateAction == UpdateAction.Delete)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Relationship && grandChildComparisonObject.MergeAction == MergeAction.Delete)
                         {
                             Table tableTarget = _targetTabularModel.Tables.FindById(childComparisonObject.TargetObjectId);
                             if (tableTarget != null)
@@ -860,7 +860,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Relationship && grandChildComparisonObject.UpdateAction == UpdateAction.Create)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Relationship && grandChildComparisonObject.MergeAction == MergeAction.Create)
                         {
                             Table tableSource = _sourceTabularModel.Tables.FindById(childComparisonObject.SourceObjectId);
                             Table tableTarget = _targetTabularModel.Tables.FindByName(childComparisonObject.SourceObjectName);
@@ -895,7 +895,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.UpdateAction == UpdateAction.Delete)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.MergeAction == MergeAction.Delete)
                         {
                             _targetTabularModel.DeleteMeasure(grandChildComparisonObject.TargetObjectId);
                             OnValidationMessage(new ValidationMessageEventArgs("Delete Measure '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
@@ -910,10 +910,10 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.UpdateAction == UpdateAction.Delete)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.MergeAction == MergeAction.Delete)
                         {
                             _targetTabularModel.DeleteKpi(grandChildComparisonObject.TargetObjectId);
-                            //OnValidationMessage(new ValidationMessageEventArgs("Delete KPI '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Kpi, ValidationMessageStatus.UpdateActionSuccessful);
+                            //OnValidationMessage(new ValidationMessageEventArgs("Delete KPI '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Kpi, ValidationMessageStatus.MergeActionSuccessful);
                         }
                     }
                 }
@@ -926,7 +926,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.UpdateAction == UpdateAction.Create)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.MergeAction == MergeAction.Create)
                         {
                             if (_targetTabularModel.Measures.ContainsName(_sourceTabularModel.Measures.FindById(grandChildComparisonObject.SourceObjectId).Name) ||
                                 _targetTabularModel.Kpis.ContainsName(_sourceTabularModel.Measures.FindById(grandChildComparisonObject.SourceObjectId).Name))
@@ -948,7 +948,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.UpdateAction == UpdateAction.Update)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Measure && grandChildComparisonObject.MergeAction == MergeAction.Update)
                         {
                             _targetTabularModel.UpdateMeasure(_sourceTabularModel.Measures.FindById(grandChildComparisonObject.SourceObjectId), _targetTabularModel.Measures.FindById(grandChildComparisonObject.TargetObjectId));
                             OnValidationMessage(new ValidationMessageEventArgs("Update Measure '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
@@ -965,7 +965,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.UpdateAction == UpdateAction.Delete)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.MergeAction == MergeAction.Delete)
                         {
                             OnValidationMessage(new ValidationMessageEventArgs("Delete KPI '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Kpi, ValidationMessageStatus.Informational));
                         }
@@ -978,7 +978,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.UpdateAction == UpdateAction.Create)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.MergeAction == MergeAction.Create)
                         {
                             if (_targetTabularModel.Kpis.ContainsName(_sourceTabularModel.Kpis.FindById(grandChildComparisonObject.SourceObjectId).Name) ||
                                 _targetTabularModel.Measures.ContainsName(_sourceTabularModel.Kpis.FindById(grandChildComparisonObject.SourceObjectId).Name))
@@ -1000,7 +1000,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                 {
                     foreach (ComparisonObject grandChildComparisonObject in childComparisonObject.ChildComparisonObjects)
                     {
-                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.UpdateAction == UpdateAction.Update)
+                        if (grandChildComparisonObject.ComparisonObjectType == ComparisonObjectType.Kpi && grandChildComparisonObject.MergeAction == MergeAction.Update)
                         {
                             _targetTabularModel.UpdateKpi(_sourceTabularModel.Kpis.FindById(grandChildComparisonObject.SourceObjectId), _targetTabularModel.Kpis.FindById(grandChildComparisonObject.TargetObjectId));
                             OnValidationMessage(new ValidationMessageEventArgs("Update KPI '" + grandChildComparisonObject.TargetObjectId + "'.", ValidationMessageType.Kpi, ValidationMessageStatus.Informational));
@@ -1019,7 +1019,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.UpdateAction == UpdateAction.Delete)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeleteAction(comparisonObject.TargetObjectId);
                     OnValidationMessage(new ValidationMessageEventArgs("Delete Action [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Action, ValidationMessageStatus.Informational));
@@ -1027,7 +1027,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.UpdateAction == UpdateAction.Create)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     if (_targetTabularModel.AmoDatabase.Cubes.Count > 0)
                     {
@@ -1042,9 +1042,9 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.UpdateAction == UpdateAction.Update)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Action && comparisonObject.MergeAction == MergeAction.Update)
                 {
-                    _targetTabularModel.UpdateAction(_sourceTabularModel.Actions.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Actions.FindById(comparisonObject.TargetObjectId));
+                    _targetTabularModel.MergeAction(_sourceTabularModel.Actions.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Actions.FindById(comparisonObject.TargetObjectId));
                     OnValidationMessage(new ValidationMessageEventArgs("Update Action [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Action, ValidationMessageStatus.Informational));
                 }
             }
@@ -1056,7 +1056,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.UpdateAction == UpdateAction.Delete)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeletePerspective(comparisonObject.TargetObjectId);
                     OnValidationMessage(new ValidationMessageEventArgs("Delete Perspective [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
@@ -1064,7 +1064,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.UpdateAction == UpdateAction.Create)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     if (_targetTabularModel.AmoDatabase.Cubes.Count > 0)
                     {
@@ -1079,7 +1079,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.UpdateAction == UpdateAction.Update)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdatePerspective(_sourceTabularModel.Perspectives.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Perspectives.FindById(comparisonObject.TargetObjectId));
                     OnValidationMessage(new ValidationMessageEventArgs("Update Perspective [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
@@ -1093,7 +1093,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.UpdateAction == UpdateAction.Delete)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeleteRole(comparisonObject.TargetObjectId);
                     OnValidationMessage(new ValidationMessageEventArgs("Delete Role [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
@@ -1101,7 +1101,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.UpdateAction == UpdateAction.Create)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     if (_targetTabularModel.AmoDatabase.Cubes.Count > 0)
                     {
@@ -1116,7 +1116,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.UpdateAction == UpdateAction.Update)
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdateRole(_sourceTabularModel.Roles.FindById(comparisonObject.SourceObjectId), _targetTabularModel.Roles.FindById(comparisonObject.TargetObjectId));
                     OnValidationMessage(new ValidationMessageEventArgs("Update Role [" + comparisonObject.TargetObjectName + "].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
@@ -1230,7 +1230,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             //Recursively call for multiple levels to ensure catch calculated tables or those child of connection
 
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table &&
-                (comparisonObject.UpdateAction == UpdateAction.Create || comparisonObject.UpdateAction == UpdateAction.Update)
+                (comparisonObject.MergeAction == MergeAction.Create || comparisonObject.MergeAction == MergeAction.Update)
                )
             {
                 tablesToProcess.Add(new ProcessingTable(comparisonObject.SourceObjectName, comparisonObject.SourceObjectInternalName));

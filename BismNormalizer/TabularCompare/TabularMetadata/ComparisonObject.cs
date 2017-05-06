@@ -16,7 +16,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             ComparisonObjectStatus status,
             TabularObject sourceObject,
             TabularObject targetObject,
-            UpdateAction updateAction) : base(comparisonObjectType, status, updateAction)
+            MergeAction mergeAction) : base(comparisonObjectType, status, mergeAction)
         {
             _sourceObject = sourceObject;
             _targetObject = targetObject;
@@ -175,29 +175,32 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 case ComparisonObjectType.Connection:
                     sortKey = "A";
                     break;
-                case ComparisonObjectType.Table:
+                case ComparisonObjectType.Expression:
                     sortKey = "B";
                     break;
-                case ComparisonObjectType.Relationship:
+                case ComparisonObjectType.Table:
                     sortKey = "C";
                     break;
-                case ComparisonObjectType.Measure:
+                case ComparisonObjectType.Relationship:
                     sortKey = "D";
                     break;
-                case ComparisonObjectType.Kpi:
+                case ComparisonObjectType.Measure:
                     sortKey = "E";
                     break;
-                case ComparisonObjectType.Action:
+                case ComparisonObjectType.Kpi:
                     sortKey = "F";
                     break;
-                case ComparisonObjectType.Perspective:
+                case ComparisonObjectType.Action:
                     sortKey = "G";
                     break;
-                case ComparisonObjectType.Culture:
+                case ComparisonObjectType.Perspective:
                     sortKey = "H";
                     break;
-                case ComparisonObjectType.Role:
+                case ComparisonObjectType.Culture:
                     sortKey = "I";
+                    break;
+                case ComparisonObjectType.Role:
+                    sortKey = "J";
                     break;
 
                 default:

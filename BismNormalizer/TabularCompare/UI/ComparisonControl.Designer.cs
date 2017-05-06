@@ -430,6 +430,7 @@
             this.TreeGridImageList.Images.SetKeyName(19, "SkipActionGrey.png");
             this.TreeGridImageList.Images.SetKeyName(20, "CreateActionGrey.png");
             this.TreeGridImageList.Images.SetKeyName(21, "Culture.png");
+            this.TreeGridImageList.Images.SetKeyName(22, "Expression.png");
             // 
             // scObjectDefinitions
             // 

@@ -140,6 +140,10 @@ namespace BismNormalizer.TabularCompare.UI
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "KPIs");
                     particularTypeNode.ImageIndex = 4;
                     break;
+                case ValidationMessageType.Expression:
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Expression");
+                    particularTypeNode.ImageIndex = 22;
+                    break;
                 case ValidationMessageType.Perspective:
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Perspectives");
                     particularTypeNode.ImageIndex = 15;

@@ -25,11 +25,11 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
             string sourceObjectName,
             string sourceObjectId,
             string sourceObjectDefinition,
-            UpdateAction updateAction,
+            MergeAction mergeAction,
             ITabularObject targetObject,
             string targetObjectName,
             string targetObjectId,
-            string targetObjectDefinition) : base(comparisonObjectType, status, updateAction)
+            string targetObjectDefinition) : base(comparisonObjectType, status, mergeAction)
         {
             _sourceObject = sourceObject;
             _sourceObjectName = sourceObjectName;

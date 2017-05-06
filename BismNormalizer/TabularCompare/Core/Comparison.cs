@@ -301,7 +301,7 @@ namespace BismNormalizer.TabularCompare.Core
 
         private void RefreshSkipSelectionsFromChildComparisonObjects(ComparisonObject comparisonObject)
         {
-            if (comparisonObject.Status != ComparisonObjectStatus.SameDefinition && comparisonObject.UpdateAction == UpdateAction.Skip && !_comparisonInfo.SkipSelections.Contains(comparisonObject))
+            if (comparisonObject.Status != ComparisonObjectStatus.SameDefinition && comparisonObject.MergeAction == MergeAction.Skip && !_comparisonInfo.SkipSelections.Contains(comparisonObject))
             {
                 _comparisonInfo.SkipSelections.Add(new SkipSelection(comparisonObject));
             }
@@ -331,7 +331,7 @@ namespace BismNormalizer.TabularCompare.Core
                 {
                     if (comparisonObject.Status == skipSelection.Status && comparisonObject.ComparisonObjectType == skipSelection.ComparisonObjectType && (skipSelection.Status == ComparisonObjectStatus.MissingInSource || comparisonObject.SourceObjectInternalName == skipSelection.SourceObjectInternalName) && (skipSelection.Status == ComparisonObjectStatus.MissingInTarget || comparisonObject.TargetObjectInternalName == skipSelection.TargetObjectInternalName))
                     {
-                        comparisonObject.UpdateAction = UpdateAction.Skip;
+                        comparisonObject.MergeAction = MergeAction.Skip;
                         break;
                     }
                 }
@@ -349,7 +349,7 @@ namespace BismNormalizer.TabularCompare.Core
             row += 1;
 
             // Close out groups if necessary
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles like connections for purpose of grouping
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles like connections for purpose of grouping
             {
                 // do we need to close a table group?
                 if (lastTableRow + 1 < row && lastTableRow != -1)
@@ -359,7 +359,7 @@ namespace BismNormalizer.TabularCompare.Core
                 }
                 lastTableRow = row;
 
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/roles like connections for purpose of grouping
+                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Connection || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/roles like connections for purpose of grouping
                 {
                     // do we need to close a connection group?
                     if (lastConnectionRow + 1 < row && lastConnectionRow != -1)
@@ -409,6 +409,9 @@ namespace BismNormalizer.TabularCompare.Core
                     break;
                 case ComparisonObjectType.Role:
                     Ws.Cells[row, 1].Value = "Role";
+                    break;
+                case ComparisonObjectType.Expression:
+                    Ws.Cells[row, 1].Value = "Expression";
                     break;
                 case ComparisonObjectType.Action:
                     Ws.Cells[row, 1].Value = "Action";

@@ -62,29 +62,54 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             base.RemovePropertyFromObjectDefinition("measures");
 
-            _connectionName = "";  
+            _connectionName = "";
+            bool hasMOrQueryPartition = false;
 
-            //Find the primary partition (first one) to determine Connection. Technically it is possible for different partitions in the same table to point to different connections, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the connection gives a warning message listing associated tables).
+            //Associate table with a connection if possible. It's not possible if calc table or if M expression refers to a shared expression, or multiple data sources
             foreach (Partition partition in _tomTable.Partitions)
             {
                 if (partition.SourceType == PartitionSourceType.M)
                 {
-                    //Todo: check dependency tree to see if all partitions refer only to a single connection connection
+                    hasMOrQueryPartition = true;
 
-                    //_connectionName = "NYC Taxi SQL DW";
+                    //Check M dependency tree to see if all partitions refer only to a single connection connection
+                    MDependencyCollection mDependencies = _parentTabularModel.MDependencies.DependenciesReferenceFrom(MDependencyObjectType.Partition, partition.Name);
+                    if (mDependencies.Count == 1 && mDependencies[0].ReferencedObjectType == MDependencyObjectType.Connection)
+                    {
+                        if (_connectionName == "")
+                        {
+                            _connectionName = mDependencies[0].ReferencedObjectName;
+                        }
+                        else if (_connectionName != mDependencies[0].ReferencedObjectName)
+                        {
+                            //Partition depends on a different connection to another partition in same table, so ensure no connection association for the table and stop iterating partitions.
+                            _connectionName = "";
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        //Partition has mutiple dependencies, or depends on an expression instead of data source, so ensure no connection association for the table and stop iterating partitions.
+                        _connectionName = "";
+                        break;
+                    }
                 }
 
+                //If old partition, find the primary partition (first one) to determine Connection. Technically it is possible for different partitions in the same table to point to different connections, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the connection gives a warning message listing associated tables).
                 if (partition.SourceType == PartitionSourceType.Query)
                 {
+                    hasMOrQueryPartition = true;
                     _connectionName = ((QueryPartitionSource)partition.Source).DataSource.Name;
-
-                    //Option to hide partitions only applies to query partitions (calculated tables hold dax defintitions in their partitions)
-                    if (!_parentTabularModel.ComparisonInfo.OptionsInfo.OptionPartitions)
-                    {
-                        base.RemovePropertyFromObjectDefinition("partitions");
-                    }
-
                     break;
+                }
+            }
+
+            if (hasMOrQueryPartition)
+            {
+                //Option to hide partitions only applies to M and query partitions (calculated tables hold dax defintitions in their partitions)
+                if (!_parentTabularModel.ComparisonInfo.OptionsInfo.OptionPartitions)
+                {
+                    base.RemovePropertyFromObjectDefinition("partitions");
                 }
             }
 

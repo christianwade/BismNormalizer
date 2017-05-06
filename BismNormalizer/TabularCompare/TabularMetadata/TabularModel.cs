@@ -24,6 +24,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private Database _database;
         private ConnectionCollection _connections = new ConnectionCollection();
         private TableCollection _tables = new TableCollection();
+        private ExpressionCollection _expressions = new ExpressionCollection();
         private PerspectiveCollection _perspectives = new PerspectiveCollection();
         private CultureCollection _cultures = new CultureCollection();
         private RoleCollection _roles = new RoleCollection();
@@ -64,6 +65,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Don't need try to load from project here as will already be done before instantiated Comparison
                 throw new Amo.ConnectionException($"Could not connect to database {_connectionInfo.DatabaseName}");
             }
+            PopulateMDependencies();
 
             //Shell model
             foreach (DataSource datasource in _database.Model.DataSources)
@@ -76,6 +78,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (Tom.Table table in _database.Model.Tables)
             {
                 _tables.Add(new Table(this, table));
+            }
+            foreach (Tom.NamedExpression expression in _database.Model.Expressions)
+            {
+                _expressions.Add(new Expression(this, expression));
             }
             foreach (ModelRole role in _database.Model.Roles)
             {
@@ -133,8 +139,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 _cultures.Add(new Culture(this, culture));
             }
-
-            PopulateMDependencies();
         }
 
         private void PopulateMDependencies()
@@ -210,6 +214,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public TableCollection Tables => _tables;
 
         /// <summary>
+        /// Collection of expressions for the TabularModel object.
+        /// </summary>
+        public ExpressionCollection Expressions => _expressions;
+
+        /// <summary>
         /// Collection of perspectives for the TabularModel object.
         /// </summary>
         public PerspectiveCollection Perspectives => _perspectives;
@@ -223,6 +232,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Collection of roles for the TabularModel object.
         /// </summary>
         public RoleCollection Roles => _roles;
+
+        /// <summary>
+        /// Collection of M dependencies for the TabularModel object.
+        /// </summary>
+        public MDependencyCollection MDependencies => _mDependencies;
 
         /// <summary>
         /// ConnectionInfo object for the tabular model.
@@ -344,9 +358,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
             else
             {
-                //Todo: perform validation to say can't perform update becaues of different connection types? (then wouldn't even get here)
                 throw new NotImplementedException();
-                throw new NotSupportedException();
             }
         }
 
@@ -441,6 +453,53 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 tableTarget.CreateMeasure(tomMeasureToAddBack);
             }
+        }
+
+        #endregion
+
+        #region Expressions
+
+        /// <summary>
+        /// Delete expression associated with the TabularModel object.
+        /// </summary>
+        /// <param name="name">Name of the expression to be deleted.</param>
+        public void DeleteExpression(string name)
+        {
+            if (_database.Model.Expressions.Contains(name))
+            {
+                _database.Model.Expressions.Remove(name);
+            }
+
+            // shell model
+            if (_expressions.ContainsName(name))
+            {
+                _expressions.Remove(name);
+            }
+        }
+
+        /// <summary>
+        /// Create expression associated with the TabularModel object.
+        /// </summary>
+        /// <param name="tomExpressionSource">Tabular Object Model NamedExpression object from the source tabular model to be abstracted in the target.</param>
+        public void CreateExpression(NamedExpression tomExpressionSource)
+        {
+            NamedExpression tomExpressionTarget = new NamedExpression();
+            tomExpressionSource.CopyTo(tomExpressionTarget);
+            _database.Model.Expressions.Add(tomExpressionTarget);
+
+            // shell model
+            _expressions.Add(new Expression(this, tomExpressionTarget));
+        }
+
+        /// <summary>
+        /// Update expression associated with the TabularModel object.
+        /// </summary>
+        /// <param name="expressionSource">Expression object from the source tabular model to be updated in the target.</param>
+        /// <param name="expressionTarget">Expression object in the target tabular model to be updated.</param>
+        public void UpdateExpression(Expression expressionSource, Expression expressionTarget)
+        {
+            DeleteExpression(expressionTarget.Name);
+            CreateExpression(expressionSource.TomExpression);
         }
 
         #endregion
@@ -540,6 +599,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
+        #region Backup / Restore
+
         /// <summary>
         /// Perspectives, cultures and roles will be affected by changes to tables, measures, etc. and can end up invalid. To avoid this, take a backup.
         /// </summary>
@@ -620,6 +681,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
             }
         }
+
+        #endregion
 
         #region Perspectives
 
@@ -1010,6 +1073,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (namedObjectSource.Name == tomRoleTarget.Name)
                                 {
                                     namedObjectTarget = tomRoleTarget;
+                                    break;
+                                }
+                            }
+                            break;
+                        case ObjectType.Expression:
+                            foreach (NamedExpression tomExpressionTarget in tomCultureTarget.Model.Expressions)
+                            {
+                                if (namedObjectSource.Name == tomExpressionTarget.Name)
+                                {
+                                    namedObjectTarget = tomExpressionTarget;
                                     break;
                                 }
                             }

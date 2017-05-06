@@ -639,7 +639,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    DeleteRelationship(comparisonObject);
+                    DeleteRelationship(childComparisonObject);
                 }
             }
 
@@ -647,7 +647,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    CreateRelationship(comparisonObject, "");
+                    CreateRelationship(childComparisonObject, comparisonObject.SourceObjectName);
                 }
             }
 
@@ -655,7 +655,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    UpdateRelationship(comparisonObject, "");
+                    UpdateRelationship(childComparisonObject, comparisonObject.SourceObjectName);
                 }
             }
 
@@ -677,7 +677,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    CreateMeasure(comparisonObject, "");
+                    CreateMeasure(comparisonObject, comparisonObject.SourceObjectName);
                 }
             }
 
@@ -685,7 +685,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    UpdateMeasure(comparisonObject, "");
+                    UpdateMeasure(comparisonObject, comparisonObject.SourceObjectName);
                 }
             }
 
@@ -702,7 +702,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeletePerspective(comparisonObject.TargetObjectInternalName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete Perspective [{comparisonObject.TargetObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete perspective [{comparisonObject.TargetObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -710,7 +710,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     _targetTabularModel.CreatePerspective(_sourceTabularModel.Perspectives.FindById(comparisonObject.SourceObjectInternalName).TomPerspective);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Perspective [{comparisonObject.SourceObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create perspective [{comparisonObject.SourceObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -718,7 +718,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdatePerspective(_sourceTabularModel.Perspectives.FindById(comparisonObject.SourceObjectInternalName).TomPerspective, _targetTabularModel.Perspectives.FindById(comparisonObject.TargetObjectInternalName).TomPerspective);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Perspective [{comparisonObject.TargetObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update perspective [{comparisonObject.TargetObjectName}].", ValidationMessageType.Perspective, ValidationMessageStatus.Informational));
                 }
             }
 
@@ -734,7 +734,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeleteRole(comparisonObject.TargetObjectInternalName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete Role [{comparisonObject.TargetObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete role [{comparisonObject.TargetObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -742,7 +742,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     _targetTabularModel.CreateRole(_sourceTabularModel.Roles.FindById(comparisonObject.SourceObjectInternalName).TomRole);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Role [{comparisonObject.SourceObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create role [{comparisonObject.SourceObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -750,7 +750,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Role && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdateRole(_sourceTabularModel.Roles.FindById(comparisonObject.SourceObjectInternalName), _targetTabularModel.Roles.FindById(comparisonObject.TargetObjectInternalName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Role [{comparisonObject.TargetObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update role [{comparisonObject.TargetObjectName}].", ValidationMessageType.Role, ValidationMessageStatus.Informational));
                 }
             }
 
@@ -770,7 +770,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture && comparisonObject.MergeAction == MergeAction.Delete)
                 {
                     _targetTabularModel.DeleteCulture(comparisonObject.TargetObjectInternalName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete Culture [{comparisonObject.TargetObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete culture [{comparisonObject.TargetObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -778,7 +778,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture && comparisonObject.MergeAction == MergeAction.Create)
                 {
                     _targetTabularModel.CreateCulture(_sourceTabularModel.Cultures.FindById(comparisonObject.SourceObjectInternalName).TomCulture);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Culture [{comparisonObject.SourceObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create culture [{comparisonObject.SourceObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
                 }
             }
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -786,7 +786,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture && comparisonObject.MergeAction == MergeAction.Update)
                 {
                     _targetTabularModel.UpdateCulture(_sourceTabularModel.Cultures.FindById(comparisonObject.SourceObjectInternalName).TomCulture, _targetTabularModel.Cultures.FindById(comparisonObject.TargetObjectInternalName).TomCulture);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Culture [{comparisonObject.TargetObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update culture [{comparisonObject.TargetObjectName}].", ValidationMessageType.Culture, ValidationMessageStatus.Informational));
                 }
             }
 
@@ -824,7 +824,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Delete)
             {
                 //Check any objects in target that depend on the DataSource are also going to be deleted
-                string warningObjectList = CheckToDependenciesInTarget(comparisonObject, MDependencyObjectType.DataSource, "");
+                List<string> warningObjectList = new List<string>();
+                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject, MDependencyObjectType.DataSource, ref warningObjectList);
 
                 //For old non-M partitions, check if any such tables have reference to this DataSource
                 foreach (Table table in _targetTabularModel.Tables)
@@ -833,19 +834,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     {
                         if (partition.SourceType == PartitionSourceType.Query && table.DataSourceName == comparisonObject.TargetObjectName)
                         {
-                            warningObjectList += $"Table {table.Name}/Partition {partition.Name}, ";
+                            warningObjectList.Add($"Table {table.Name}/Partition {partition.Name}");
+                            toDependencies = true;
                         }
                     }
                 }
 
-                if (warningObjectList == "")
+                if (!toDependencies)
                 {
                     _targetTabularModel.DeleteDataSource(comparisonObject.TargetObjectName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete Data Source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete Data Source {comparisonObject.TargetObjectName} because the following object(s) depend on it, and are not being deleted: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete data source {comparisonObject.TargetObjectName} because the following object(s) depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -855,7 +857,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Create)
             {
                 _targetTabularModel.CreateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName));
-                OnValidationMessage(new ValidationMessageEventArgs($"Create Data Source [{comparisonObject.SourceObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Create data source [{comparisonObject.SourceObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
             }
         }
 
@@ -864,7 +866,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
             {
                 _targetTabularModel.UpdateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName));
-                OnValidationMessage(new ValidationMessageEventArgs($"Update Data Source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Update data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
             }
         }
 
@@ -875,16 +877,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Delete)
             {
                 //Check any objects in target that depend on the DataSource are also going to be deleted
-                string warningObjectList = CheckToDependenciesInTarget(comparisonObject, MDependencyObjectType.Expression, "");
-
-                if (warningObjectList == "")
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsToDependenciesInTarget(comparisonObject, MDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete Expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete Expression {comparisonObject.TargetObjectName} because the following objects depend on it, and are not being deleted: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -894,16 +895,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Create)
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
-                string warningObjectList = CheckFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, "");
-
-                if (warningObjectList == "")
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create Expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -913,16 +913,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Update)
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
-                string warningObjectList = CheckFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, "");
-
-                if (warningObjectList == "")
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update Expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -934,7 +933,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Delete)
             {
                 _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete Table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
             }
         }
 
@@ -943,22 +942,24 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Create)
             {
                 Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
-                string warningObjectList = "";
+                List<string> warningObjectList = new List<string>();
+                bool fromDependencies = false;
 
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    warningObjectList = CheckFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, "");
+                    if (ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, ref warningObjectList))
+                        fromDependencies = true; //Need if clause in case last of n partitions has no dependencies and sets back to true
                 }
 
-                if (warningObjectList == "")
+                if (!fromDependencies)
                 {
                     _targetTabularModel.CreateTable(sourceTable);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create Table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -968,33 +969,36 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Update)
             {
                 Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
-                string warningObjectList = "";
+                List<string> warningObjectList = new List<string>();
+                bool fromDependencies = false;
 
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    warningObjectList = CheckFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, "");
+                    if(ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, ref warningObjectList))
+                        fromDependencies = true; //Need if clause in case last of n partitions has no dependencies and sets back to true
                 }
 
-                if (warningObjectList == "")
+                if (!fromDependencies)
                 {
                     _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update Table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {warningObjectList.Substring(0, warningObjectList.Length - 2)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
                 }
             }
         }
 
         //M Dependency checking
 
-        private string CheckToDependenciesInTarget(ComparisonObject comparisonObject, MDependencyObjectType referencedObjectType, string warningObjectList)
+        private bool ContainsToDependenciesInTarget(ComparisonObject comparisonObject, MDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
             //Check any objects in target that depend on this object are also going to be deleted.
 
+            bool returnVal = false;
             MDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(referencedObjectType, comparisonObject.TargetObjectName);
             foreach (MDependency targetToDependency in targetToDepdendencies)
             {
@@ -1008,7 +1012,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
                                 comparisonObjectToCheck.MergeAction == MergeAction.Skip)
                             {
-                                warningObjectList += $"Expression {comparisonObjectToCheck.TargetObjectName}, ";
+                                string warningObject = $"Expression {comparisonObjectToCheck.TargetObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
                             }
                             break;
                         case MDependencyObjectType.Partition:
@@ -1017,7 +1026,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
                                 comparisonObjectToCheck.MergeAction == MergeAction.Skip)
                             {
-                                warningObjectList += $"Table {comparisonObjectToCheck.TargetObjectName}/Partition {targetToDependency.ObjectName}, ";
+                                string warningObject = $"Table {comparisonObjectToCheck.TargetObjectName}/Partition {targetToDependency.ObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
                             }
                             break;
                         default:
@@ -1025,15 +1039,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
             }
-
-            return warningObjectList;
+            return returnVal;
         }
 
-        private string CheckFromDependenciesInSource(ComparisonObject comparisonObject, MDependencyObjectType objectType, string warningObjectList)
+        private bool ContainsFromDependenciesInSource(ComparisonObject comparisonObject, MDependencyObjectType objectType, ref List<string> warningObjectList)
         {
             //For creation and updates.
             //Check any objects in source that this object depends on are also going to be created if not already in target.
 
+            bool returnVal = false;
             MDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, comparisonObject.SourceObjectName);
             foreach (MDependency sourceFromDependency in sourceFromDepdendencies)
             {
@@ -1048,7 +1062,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
                                 comparisonObjectToCheck.MergeAction == MergeAction.Skip)
                             {
-                                warningObjectList += $"Expression {comparisonObjectToCheck.SourceObjectName}, ";
+                                string warningObject = $"Expression {comparisonObjectToCheck.SourceObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
                             }
                             break;
                         case MDependencyObjectType.DataSource:
@@ -1058,7 +1077,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
                                 comparisonObjectToCheck.MergeAction == MergeAction.Skip)
                             {
-                                warningObjectList += $"Data Source {comparisonObjectToCheck.SourceObjectName}, ";
+                                string warningObject = $"Data Source {comparisonObjectToCheck.SourceObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
                             }
                             break;
                         default:
@@ -1066,8 +1090,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
             }
-
-            return warningObjectList;
+            return returnVal;
         }
 
         //Relationships
@@ -1088,7 +1111,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete Relationship {comparisonObject.TargetObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete relationship {comparisonObject.TargetObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
             }
         }
 
@@ -1101,10 +1124,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Relationship relationshipSource = tableSource.Relationships.FindByInternalName(comparisonObject.SourceObjectInternalName);
                 Table parentTableSource = _sourceTabularModel.Tables.FindByName(relationshipSource.ToTableName);
 
-                string warningMessage = $"Unable to create Relationship {comparisonObject.SourceObjectName.Trim()} because (considering changes) necessary table/column(s) not found in target model.";
+                string warningMessage = $"Unable to create relationship {comparisonObject.SourceObjectName.Trim()} because (considering changes) necessary table/column(s) not found in target model.";
                 if (tableTarget != null && tableTarget.CreateRelationshipWithValidation(relationshipSource, parentTableSource.TomTable, comparisonObject.SourceObjectName.Trim(), ref warningMessage))
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create Relationship {comparisonObject.SourceObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create relationship {comparisonObject.SourceObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
                 }
                 else
                 {
@@ -1125,7 +1148,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 string warningMessage = "";
                 if (tableTarget.UpdateRelationship(relationshipSource, parentTableSource.TomTable, comparisonObject.SourceObjectName.Trim(), ref warningMessage))
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update Relationship {comparisonObject.SourceObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update relationship {comparisonObject.SourceObjectName.Trim()}.", ValidationMessageType.Relationship, ValidationMessageStatus.Informational));
                 }
                 else
                 {
@@ -1153,7 +1176,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete Measure / KPI {comparisonObject.TargetObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete measure / KPI {comparisonObject.TargetObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
             }
         }
 
@@ -1168,7 +1191,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                     if (measureInTarget != null)
                     {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create Measure / KPI {comparisonObject.SourceObjectInternalName} because name already exists in target model.", ValidationMessageType.Measure, ValidationMessageStatus.Warning));
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create measure / KPI {comparisonObject.SourceObjectInternalName} because name already exists in target model.", ValidationMessageType.Measure, ValidationMessageStatus.Warning));
                         return;
                     }
                 }
@@ -1179,7 +1202,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Measure measureSource = tableSource.Measures.FindByName(comparisonObject.SourceObjectInternalName);
 
                 tableTarget.CreateMeasure(measureSource.TomMeasure);
-                OnValidationMessage(new ValidationMessageEventArgs($"Create Measure / KPI {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Create measure / KPI {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
             }
         }
 
@@ -1193,7 +1216,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Measure measureSource = tableSource.Measures.FindByName(comparisonObject.SourceObjectInternalName);
 
                 tableTarget.UpdateMeasure(measureSource.TomMeasure);
-                OnValidationMessage(new ValidationMessageEventArgs($"Update Measure / KPI {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Update measure / KPI {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
             }
         }
 

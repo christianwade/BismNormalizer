@@ -41,13 +41,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             switch (referencedObjectType)
             {
                 case "PARTITION":
-                    _objectType = MDependencyObjectType.Partition;
+                    _referencedObjectType = MDependencyObjectType.Partition;
                     break;
                 case "M_EXPRESSION":
-                    _objectType = MDependencyObjectType.Expression;
+                    _referencedObjectType = MDependencyObjectType.Expression;
                     break;
                 case "DATA_SOURCE":
-                    _objectType = MDependencyObjectType.Connection;
+                    _referencedObjectType = MDependencyObjectType.Connection;
                     break;
                 default:
                     break;

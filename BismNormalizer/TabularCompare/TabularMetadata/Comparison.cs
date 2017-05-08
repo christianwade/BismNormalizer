@@ -832,10 +832,24 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     foreach (Partition partition in table.TomTable.Partitions)
                     {
-                        if (partition.SourceType == PartitionSourceType.Query && table.DataSourceName == comparisonObject.TargetObjectName)
+                        if (partition.SourceType == PartitionSourceType.Query && 
+                            table.DataSourceName == comparisonObject.TargetObjectName)
                         {
-                            warningObjectList.Add($"Table {table.Name}/Partition {partition.Name}");
-                            toDependencies = true;
+                            foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
+                            {
+                                if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
+                                    comparisonObjectToCheck.SourceObjectName == table.Name &&
+                                    comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                {
+                                    string warningObject = $"Table {table.Name}/Partition {partition.Name}";
+                                    if (!warningObjectList.Contains(warningObject))
+                                    {
+                                        warningObjectList.Add(warningObject);
+                                    }
+                                    toDependencies = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -865,8 +879,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
             {
-                _targetTabularModel.UpdateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName));
-                OnValidationMessage(new ValidationMessageEventArgs($"Update data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                DataSource sourceDataSource = _sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName);
+                DataSource targetDataSource = _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName);
+
+                if (sourceDataSource.TomDataSource.Type == DataSourceType.Provider && targetDataSource.TomDataSource.Type == DataSourceType.Structured)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update data source {comparisonObject.TargetObjectName} because the source is a provider and the target is structured, which is not supported.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
+                }
+                else
+                {
+                    _targetTabularModel.UpdateDataSource(sourceDataSource, targetDataSource);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                }
             }
         }
 
@@ -896,14 +920,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, ref warningObjectList))
+                if (!ContainsFromDependenciesInSource(comparisonObject, comparisonObject.SourceObjectName, MDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
                     OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    if (!nonStructuredDataSource)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
                 }
             }
         }
@@ -914,14 +945,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Expression, ref warningObjectList))
+                if (!ContainsFromDependenciesInSource(comparisonObject, comparisonObject.SourceObjectName, MDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
                     OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    if (!nonStructuredDataSource)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
                 }
             }
         }
@@ -944,12 +982,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
                 List<string> warningObjectList = new List<string>();
                 bool fromDependencies = false;
+                bool nonStructuredDataSourceLocal = false;
 
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, ref warningObjectList))
-                        fromDependencies = true; //Need if clause in case last of n partitions has no dependencies and sets back to true
+                    if (ContainsFromDependenciesInSource(comparisonObject, partition.Name, MDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    {
+                        fromDependencies = true;
+                        if (nonStructuredDataSource)
+                            nonStructuredDataSourceLocal = true;
+                    }
+
+                    //For old non-M partitions, check if data source references exist
+                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
                 }
 
                 if (!fromDependencies)
@@ -959,7 +1006,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    if (!nonStructuredDataSourceLocal)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
                 }
             }
         }
@@ -971,12 +1025,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
                 List<string> warningObjectList = new List<string>();
                 bool fromDependencies = false;
+                bool nonStructuredDataSourceLocal = false;
 
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if(ContainsFromDependenciesInSource(comparisonObject, MDependencyObjectType.Partition, ref warningObjectList))
-                        fromDependencies = true; //Need if clause in case last of n partitions has no dependencies and sets back to true
+                    if (ContainsFromDependenciesInSource(comparisonObject, partition.Name, MDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    {
+                        fromDependencies = true;
+                        if (nonStructuredDataSource)
+                            nonStructuredDataSourceLocal = true;
+                    }
+
+                    //For old non-M partitions, check if data source references exist
+                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
                 }
 
                 if (!fromDependencies)
@@ -986,12 +1049,19 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    if (!nonStructuredDataSourceLocal)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
                 }
             }
         }
 
-        //M Dependency checking
+        //Dependency checking
 
         private bool ContainsToDependenciesInTarget(ComparisonObject comparisonObject, MDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
         {
@@ -1042,13 +1112,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsFromDependenciesInSource(ComparisonObject comparisonObject, MDependencyObjectType objectType, ref List<string> warningObjectList)
+        private bool ContainsFromDependenciesInSource(ComparisonObject comparisonObject, string sourceObjectName, MDependencyObjectType objectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
         {
             //For creation and updates.
             //Check any objects in source that this object depends on are also going to be created if not already in target.
 
             bool returnVal = false;
-            MDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, comparisonObject.SourceObjectName);
+            nonStructuredDataSource = false;
+
+            //Note, in case of partitions, sourceObjectName != comparisonObject.SourceObjectName
+            MDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, sourceObjectName);
             foreach (MDependency sourceFromDependency in sourceFromDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -1084,9 +1157,55 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                                 returnVal = true;
                             }
+                            //Check if existing data source is provider instead of structured (and not being updated - can assume if is being updated, the source is structured)
+                            if (_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
+                                comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
+                                comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
+                                comparisonObjectToCheck.Status == ComparisonObjectStatus.DifferentDefinitions &&
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                            {
+                                string warningObject = $"Data Source {comparisonObjectToCheck.SourceObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
+                                nonStructuredDataSource = true;
+                            }
                             break;
                         default:
                             break;
+                    }
+                }
+            }
+            return returnVal;
+        }
+
+        private bool ContainsOldPartitionDependency(Partition partition, ref List<string> warningObjectList)
+        {
+            //Only for old partition types
+
+            bool returnVal = false;
+
+            if (partition.SourceType == PartitionSourceType.Query &&
+                !_targetTabularModel.DataSources.ContainsName(((QueryPartitionSource)partition.Source).DataSource.Name))
+            {
+                string dataSourceName = ((QueryPartitionSource)partition.Source).DataSource.Name;
+
+                //For old non-M partitions, check if data source references exist
+                foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
+                {
+                    if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
+                        comparisonObjectToCheck.SourceObjectName == dataSourceName &&
+                        comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
+                        comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                    {
+                        string warningObject = $"Data Source {dataSourceName}";
+                        if (!warningObjectList.Contains(warningObject))
+                        {
+                            warningObjectList.Add(warningObject);
+                        }
+                        returnVal = true;
                     }
                 }
             }

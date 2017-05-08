@@ -347,14 +347,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 providerTarget.ImpersonationMode = providerSource.ImpersonationMode;
                 providerTarget.Account = providerSource.Account;
             }
-            else if (dataSourceSource.TomDataSource is StructuredDataSource && dataSourceTarget.TomDataSource is StructuredDataSource)
+            else if (dataSourceSource.TomDataSource is StructuredDataSource) //(can replace a provider with a structured, but not vice versa) && dataSourceTarget.TomDataSource is StructuredDataSource)
             {
-                StructuredDataSource structuredSource = (StructuredDataSource)dataSourceSource.TomDataSource;
-                StructuredDataSource structuredTarget = (StructuredDataSource)dataSourceTarget.TomDataSource;
-                
-                //todo: test this!
-                structuredTarget.Description = structuredSource.Description;
-                structuredTarget.ContextExpression = structuredSource.ContextExpression;
+                DeleteDataSource(dataSourceTarget.Name);
+                CreateDataSource(dataSourceSource);
             }
             else
             {
@@ -1330,31 +1326,62 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Set passwords
                 foreach (Tom.DataSource dataSource in _database.Model.DataSources)
                 {
-                    if (dataSource.Type == DataSourceType.Provider)
+                    switch (dataSource.Type)
                     {
-                        ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
+                        case DataSourceType.Structured:
+                            //todo: StructuredDataSource structuredDataSource = (StructuredDataSource)dataSource;
 
-                        if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
-                        {
-                            PasswordPromptEventArgs args = new PasswordPromptEventArgs();
-                            args.ConnectionName = dataSource.Name;
-                            args.Username = providerDataSource.Account;
-                            _parentComparison.OnPasswordPrompt(args);
-                            if (args.UserCancelled)
+                            //if (structuredDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
+                            //{
+                            //    PasswordPromptEventArgs args = new PasswordPromptEventArgs();
+                            //    args.ConnectionName = dataSource.Name;
+                            //    args.Username = structuredDataSource.Account;
+                            //    _parentComparison.OnPasswordPrompt(args);
+                            //    if (args.UserCancelled)
+                            //    {
+                            //        // Show cancelled for all rows
+                            //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
+                            //        foreach (ProcessingTable table in _tablesToProcess)
+                            //        {
+                            //            _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                            //        }
+                            //        _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
+                            //        return;
+                            //    }
+                            //    structuredDataSource.Account = args.Username;
+                            //    structuredDataSource.Password = args.Password;
+                            //    argsAllConnections.Add(args);
+                            //}
+
+
+                            break;
+                        case DataSourceType.Provider:
+                            ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
+
+                            if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
                             {
-                                // Show cancelled for all rows
-                                _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
-                                foreach (ProcessingTable table in _tablesToProcess)
+                                PasswordPromptEventArgs args = new PasswordPromptEventArgs();
+                                args.ConnectionName = dataSource.Name;
+                                args.Username = providerDataSource.Account;
+                                _parentComparison.OnPasswordPrompt(args);
+                                if (args.UserCancelled)
                                 {
-                                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                                    // Show cancelled for all rows
+                                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
+                                    foreach (ProcessingTable table in _tablesToProcess)
+                                    {
+                                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                                    }
+                                    _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
+                                    return;
                                 }
-                                _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
-                                return;
+                                providerDataSource.Account = args.Username;
+                                providerDataSource.Password = args.Password;
+                                argsAllConnections.Add(args);
                             }
-                            providerDataSource.Account = args.Username;
-                            providerDataSource.Password = args.Password;
-                            argsAllConnections.Add(args);
-                        }
+                            break;
+                        default:
+                            break;
                     }
                 }
 

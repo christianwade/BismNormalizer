@@ -14,7 +14,7 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Type of comparison object. For example, Table, Measure, Relationship, etc.
     /// </summary>
-    public enum ComparisonObjectType { DataSource, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Expression, Action };
+    public enum ComparisonObjectType { DataSource, Table, Relationship, Measure, Kpi, Perspective, Culture, Role, Expression, Action, Connection }; //Need connection for backwards compatibility when deserializing from xml. Set to data source.
 
     /// <summary>
     /// Status of comparison object, such as Same Definition, Different Definitions and Missing In Target.

@@ -780,21 +780,21 @@ namespace BismNormalizer.TabularCompare.UI
             }
         }
 
-        public void ShowHideNodes(bool hide)
+        public void ShowHideNodes(bool hide, bool sameDefinitionFilter = false)
         {
-            ShowHideNodes(this.Nodes, hide);
+            ShowHideNodes(this.Nodes, hide, sameDefinitionFilter);
         }
-        private void ShowHideNodes(TreeGridNodeCollection nodes, bool hide)
+        private void ShowHideNodes(TreeGridNodeCollection nodes, bool hide, bool sameDefinitionFilter = false)
         {
             foreach (TreeGridNode node in nodes)
             {
-                if (node.Cells[8].Value.ToString() == "Skip")
+                if (node.Cells[8].Value.ToString() == "Skip" && (!sameDefinitionFilter || (sameDefinitionFilter && node.Cells[4].Value.ToString() == "Same Definition")))
                 {
-                    // if currently selected skip item contains Delete or Create children, then need to keep visible - or result in orphans
+                    // if currently selected skip item contains Update, Delete or Create children, then need to keep visible - or result in orphans
                     bool foundCreateOrDeleteChild = false;
                     foreach (TreeGridNode childNode in node.Nodes)
                     {
-                        if (childNode.Cells[8].Value.ToString() == "Delete" || childNode.Cells[8].Value.ToString() == "Create")
+                        if (childNode.Cells[8].Value.ToString() == "Update" || childNode.Cells[8].Value.ToString() == "Delete" || childNode.Cells[8].Value.ToString() == "Create")
                         {
                             foundCreateOrDeleteChild = true;
                             break;

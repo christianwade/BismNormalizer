@@ -65,7 +65,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Don't need try to load from project here as will already be done before instantiated Comparison
                 throw new Amo.ConnectionException($"Could not connect to database {_connectionInfo.DatabaseName}");
             }
-            PopulateMDependencies();
+            PopulateCalcDependencies();
 
             //Shell model
             foreach (Tom.DataSource dataSource in _database.Model.DataSources)
@@ -141,7 +141,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        private void PopulateMDependencies()
+        private void PopulateCalcDependencies()
         {
             string command = "SELECT * FROM $System.DISCOVER_CALC_DEPENDENCY WHERE OBJECT_TYPE = 'PARTITION' OR OBJECT_TYPE = 'M_EXPRESSION';";
             XmlNodeList rows = _connectionInfo.ExecuteXmlaCommand(_server, command);

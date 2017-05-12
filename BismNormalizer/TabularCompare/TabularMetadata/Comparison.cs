@@ -817,251 +817,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #region Private methods for validation
 
-        //DataSources
-
-        private void DeleteDataSource(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Delete)
-            {
-                //Check any objects in target that depend on the DataSource are also going to be deleted
-                List<string> warningObjectList = new List<string>();
-                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
-
-                //For old non-M partitions, check if any such tables have reference to this DataSource
-                foreach (Table table in _targetTabularModel.Tables)
-                {
-                    foreach (Partition partition in table.TomTable.Partitions)
-                    {
-                        if (partition.SourceType == PartitionSourceType.Query && 
-                            table.DataSourceName == comparisonObject.TargetObjectName)
-                        {
-                            foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
-                            {
-                                if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
-                                    comparisonObjectToCheck.SourceObjectName == table.Name &&
-                                    comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip)
-                                {
-                                    string warningObject = $"Table {table.Name}/Partition {partition.Name}";
-                                    if (!warningObjectList.Contains(warningObject))
-                                    {
-                                        warningObjectList.Add(warningObject);
-                                    }
-                                    toDependencies = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!toDependencies)
-                {
-                    _targetTabularModel.DeleteDataSource(comparisonObject.TargetObjectName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete data source {comparisonObject.TargetObjectName} because the following object(s) depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
-                }
-            }
-        }
-
-        private void CreateDataSource(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Create)
-            {
-                _targetTabularModel.CreateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName));
-                OnValidationMessage(new ValidationMessageEventArgs($"Create data source [{comparisonObject.SourceObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
-            }
-        }
-
-        private void UpdateDataSource(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
-            {
-                DataSource sourceDataSource = _sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName);
-                DataSource targetDataSource = _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName);
-
-                if (sourceDataSource.TomDataSource.Type == DataSourceType.Provider && targetDataSource.TomDataSource.Type == DataSourceType.Structured)
-                {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update data source {comparisonObject.TargetObjectName} because the source is a provider and the target is structured, which is not supported.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
-                }
-                else
-                {
-                    _targetTabularModel.UpdateDataSource(sourceDataSource, targetDataSource);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
-                }
-            }
-        }
-
-        //Expressions
-
-        private void DeleteExpression(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Delete)
-            {
-                //Check any objects in target that depend on the DataSource are also going to be deleted
-                List<string> warningObjectList = new List<string>();
-                if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
-                {
-                    _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
-                }
-            }
-        }
-
-        private void CreateExpression(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Create)
-            {
-                //Check any objects in source that this expression depends on are also going to be created if not already in target
-                List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
-                {
-                    _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    if (!nonStructuredDataSource)
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
-                    }
-                    else
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
-                    }
-                }
-            }
-        }
-
-        private void UpdateExpression(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Update)
-            {
-                //Check any objects in source that this expression depends on are also going to be created if not already in target
-                List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
-                {
-                    _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    if (!nonStructuredDataSource)
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
-                    }
-                    else
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
-                    }
-                }
-            }
-        }
-
-        //Tables
-
-        private void DeleteTable(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Delete)
-            {
-                _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
-            }
-        }
-
-        private void CreateTable(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Create)
-            {
-                Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
-                List<string> warningObjectList = new List<string>();
-                bool fromDependencies = false;
-                bool nonStructuredDataSourceLocal = false;
-
-                foreach (Partition partition in sourceTable.TomTable.Partitions)
-                {
-                    //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
-                    {
-                        fromDependencies = true;
-                        if (nonStructuredDataSource)
-                            nonStructuredDataSourceLocal = true;
-                    }
-
-                    //For old non-M partitions, check if data source references exist
-                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
-                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
-                }
-
-                if (!fromDependencies)
-                {
-                    _targetTabularModel.CreateTable(sourceTable);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    if (!nonStructuredDataSourceLocal)
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
-                    }
-                    else
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
-                    }
-                }
-            }
-        }
-
-        private void UpdateTable(ComparisonObject comparisonObject)
-        {
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Update)
-            {
-                Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
-                List<string> warningObjectList = new List<string>();
-                bool fromDependencies = false;
-                bool nonStructuredDataSourceLocal = false;
-
-                foreach (Partition partition in sourceTable.TomTable.Partitions)
-                {
-                    //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
-                    {
-                        fromDependencies = true;
-                        if (nonStructuredDataSource)
-                            nonStructuredDataSourceLocal = true;
-                    }
-
-                    //For old non-M partitions, check if data source references exist
-                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
-                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
-                }
-
-                if (!fromDependencies)
-                {
-                    _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
-                }
-                else
-                {
-                    if (!nonStructuredDataSourceLocal)
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
-                    }
-                    else
-                    {
-                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a data source that is provider and not being updated: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
-                    }
-                }
-            }
-        }
-
-        //Dependency checking
+        #region Calc dependencies validation
 
         private bool ContainsToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
         {
@@ -1141,8 +897,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                                 returnVal = true;
                             }
+
                             break;
                         case CalcDependencyObjectType.DataSource:
+
                             if (!_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
@@ -1156,12 +914,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                                 returnVal = true;
                             }
-                            //Check if existing data source is provider instead of structured (and not being updated - can assume if is being updated, the source is structured)
-                            if (_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
-                                comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
-                                comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
+
+                            //Check if target data source type is provider and source is structured. Won't be updated.
+                            if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.DifferentDefinitions &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
+                                _targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
+                                _sourceTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
+                                _targetTabularModel.DataSources.FindByName(sourceFromDependency.ReferencedObjectName).TomDataSource.Type == DataSourceType.Provider &&
+                                _sourceTabularModel.DataSources.FindByName(sourceFromDependency.ReferencedObjectName).TomDataSource.Type == DataSourceType.Structured) //Don't need to check if Skip or not because can't update if different data source types anyway
                             {
                                 string warningObject = $"Data Source {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -1171,6 +932,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 returnVal = true;
                                 nonStructuredDataSource = true;
                             }
+
                             break;
                         default:
                             break;
@@ -1209,6 +971,252 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
             }
             return returnVal;
+        }
+
+        #endregion
+
+        //DataSources
+
+        private void DeleteDataSource(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Delete)
+            {
+                //Check any objects in target that depend on the DataSource are also going to be deleted
+                List<string> warningObjectList = new List<string>();
+                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
+
+                //For old non-M partitions, check if any such tables have reference to this DataSource
+                foreach (Table table in _targetTabularModel.Tables)
+                {
+                    foreach (Partition partition in table.TomTable.Partitions)
+                    {
+                        if (partition.SourceType == PartitionSourceType.Query && 
+                            table.DataSourceName == comparisonObject.TargetObjectName)
+                        {
+                            foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
+                            {
+                                if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
+                                    comparisonObjectToCheck.SourceObjectName == table.Name &&
+                                    comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                {
+                                    string warningObject = $"Table {table.Name}/Partition {partition.Name}";
+                                    if (!warningObjectList.Contains(warningObject))
+                                    {
+                                        warningObjectList.Add(warningObject);
+                                    }
+                                    toDependencies = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!toDependencies)
+                {
+                    _targetTabularModel.DeleteDataSource(comparisonObject.TargetObjectName);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete data source {comparisonObject.TargetObjectName} because the following object(s) depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
+                }
+            }
+        }
+
+        private void CreateDataSource(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Create)
+            {
+                _targetTabularModel.CreateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName));
+                OnValidationMessage(new ValidationMessageEventArgs($"Create data source [{comparisonObject.SourceObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+            }
+        }
+
+        private void UpdateDataSource(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
+            {
+                DataSource sourceDataSource = _sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName);
+                DataSource targetDataSource = _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName);
+
+                if (sourceDataSource.TomDataSource.Type != targetDataSource.TomDataSource.Type)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update data source {comparisonObject.TargetObjectName} because the source/target types (provider/structured) don't match, which is not supported.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
+                }
+                else
+                {
+                    _targetTabularModel.UpdateDataSource(sourceDataSource, targetDataSource);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update data source [{comparisonObject.TargetObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
+                }
+            }
+        }
+
+        //Expressions
+
+        private void DeleteExpression(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Delete)
+            {
+                //Check any objects in target that depend on the DataSource are also going to be deleted
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
+                {
+                    _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                }
+            }
+        }
+
+        private void CreateExpression(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Create)
+            {
+                //Check any objects in source that this expression depends on are also going to be created if not already in target
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                {
+                    _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    if (!nonStructuredDataSource)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create expression {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a structured data source that is provider in the target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                }
+            }
+        }
+
+        private void UpdateExpression(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Update)
+            {
+                //Check any objects in source that this expression depends on are also going to be created if not already in target
+                List<string> warningObjectList = new List<string>();
+                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                {
+                    _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    if (!nonStructuredDataSource)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update expression {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a structured data source that is provider in the target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    }
+                }
+            }
+        }
+
+        //Tables
+
+        private void DeleteTable(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Delete)
+            {
+                _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+            }
+        }
+
+        private void CreateTable(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Create)
+            {
+                Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
+                List<string> warningObjectList = new List<string>();
+                bool fromDependencies = false;
+                bool nonStructuredDataSourceLocal = false;
+
+                foreach (Partition partition in sourceTable.TomTable.Partitions)
+                {
+                    //Check any objects in source that this partition depends on are also going to be created if not already in target
+                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    {
+                        fromDependencies = true;
+                        if (nonStructuredDataSource)
+                            nonStructuredDataSourceLocal = true;
+                    }
+
+                    //For old non-M partitions, check if data source references exist
+                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                }
+
+                if (!fromDependencies)
+                {
+                    _targetTabularModel.CreateTable(sourceTable);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    if (!nonStructuredDataSourceLocal)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to create table {comparisonObject.SourceObjectName} because it depends on the following objects, which (considering changes) are missing from target and/or depend on a structured data source that is provider in the target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                }
+            }
+        }
+
+        private void UpdateTable(ComparisonObject comparisonObject)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Update)
+            {
+                Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
+                List<string> warningObjectList = new List<string>();
+                bool fromDependencies = false;
+                bool nonStructuredDataSourceLocal = false;
+
+                foreach (Partition partition in sourceTable.TomTable.Partitions)
+                {
+                    //Check any objects in source that this partition depends on are also going to be created if not already in target
+                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    {
+                        fromDependencies = true;
+                        if (nonStructuredDataSource)
+                            nonStructuredDataSourceLocal = true;
+                    }
+
+                    //For old non-M partitions, check if data source references exist
+                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                }
+
+                if (!fromDependencies)
+                {
+                    _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    if (!nonStructuredDataSourceLocal)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because version from the source depends on the following objects, which (considering changes) are missing from target and/or depend on a structured data source that is provider in the target: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                    }
+                }
+            }
         }
 
         //Relationships

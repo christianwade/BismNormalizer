@@ -789,6 +789,11 @@ namespace BismNormalizer.TabularCompare.UI
             treeGridComparisonResults.ShowHideNodes(true);
         }
 
+        private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
+        {
+            treeGridComparisonResults.ShowHideNodes(true, sameDefinitionFilter: true);
+        }
+
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
         {
             treeGridComparisonResults.ShowHideNodes(false);

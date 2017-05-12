@@ -30,7 +30,7 @@ namespace BismNormalizer.TabularCompare.Core
             ComparisonObjectStatus status,
             MergeAction mergeAction)
         {
-            _comparisonObjectType = comparisonObjectType;
+            _comparisonObjectType = (comparisonObjectType == ComparisonObjectType.Connection ? ComparisonObjectType.DataSource : comparisonObjectType); //Need to support connection for backwards compatibility when deserializing from xml
             _status = status;
             _mergeAction = mergeAction;
             _childComparisonObjects = new List<ComparisonObject>();
@@ -46,7 +46,10 @@ namespace BismNormalizer.TabularCompare.Core
         public ComparisonObjectType ComparisonObjectType 
         {
             get { return _comparisonObjectType; }
-            set { _comparisonObjectType = value; }
+            set
+            {
+                _comparisonObjectType = (value == ComparisonObjectType.Connection ? ComparisonObjectType.DataSource : value); //Need to support connection for backwards compatibility when deserializing from xml
+            }
         }
 
         /// <summary>

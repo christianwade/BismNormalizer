@@ -349,7 +349,7 @@ namespace BismNormalizer.TabularCompare.Core
             row += 1;
 
             // Close out groups if necessary
-            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles like datasources for purpose of grouping
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/cultures/roles/expressions like datasources for purpose of grouping
             {
                 // do we need to close a table group?
                 if (lastTableRow + 1 < row && lastTableRow != -1)
@@ -359,16 +359,17 @@ namespace BismNormalizer.TabularCompare.Core
                 }
                 lastTableRow = row;
 
-                if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) //treat perspectives/roles like datasources for purpose of grouping
-                {
-                    // do we need to close a datasource group?
-                    if (lastDataSourceRow + 1 < row && lastDataSourceRow != -1)
-                    {
-                        Ws.Application.Rows[Convert.ToString(lastDataSourceRow + 1) + ":" + Convert.ToString(row - 1)].Select();
-                        Ws.Application.Selection.Rows.Group();
-                    }
-                    lastDataSourceRow = row;
-                }
+                //Todo: delete (no longer group tables by data source)
+                //if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource || comparisonObject.ComparisonObjectType == ComparisonObjectType.Table || comparisonObject.ComparisonObjectType == ComparisonObjectType.Perspective || comparisonObject.ComparisonObjectType == ComparisonObjectType.Culture || comparisonObject.ComparisonObjectType == ComparisonObjectType.Role || comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression || comparisonObject.ComparisonObjectType == ComparisonObjectType.Action) ///treat perspectives/cultures/roles/expressions like datasources for purpose of grouping
+                //{
+                //    // do we need to close a datasource group?
+                //    if (lastDataSourceRow + 1 < row && lastDataSourceRow != -1)
+                //    {
+                //        Ws.Application.Rows[Convert.ToString(lastDataSourceRow + 1) + ":" + Convert.ToString(row - 1)].Select();
+                //        Ws.Application.Selection.Rows.Group();
+                //    }
+                //    lastDataSourceRow = row;
+                //}
             }
 
             //Type column
@@ -379,25 +380,22 @@ namespace BismNormalizer.TabularCompare.Core
                     break;
                 case ComparisonObjectType.Table:
                     Ws.Cells[row, 1].Value = "Table";
-                    Ws.Cells[row, 1].InsertIndent(3);
-                    Ws.Cells[row, 2].InsertIndent(3);
-                    Ws.Cells[row, 4].InsertIndent(3);
                     break;
                 case ComparisonObjectType.Relationship:
                     Ws.Cells[row, 1].Value = "Relationship";
-                    Ws.Cells[row, 1].InsertIndent(6);
+                    Ws.Cells[row, 1].InsertIndent(3);
                     Ws.Cells[row, 2].InsertIndent(3);
                     Ws.Cells[row, 4].InsertIndent(3);
                     break;
                 case ComparisonObjectType.Measure:
                     Ws.Cells[row, 1].Value = "Measure";
-                    Ws.Cells[row, 1].InsertIndent(6);
+                    Ws.Cells[row, 1].InsertIndent(3);
                     Ws.Cells[row, 2].InsertIndent(3);
                     Ws.Cells[row, 4].InsertIndent(3);
                     break;
                 case ComparisonObjectType.Kpi:
                     Ws.Cells[row, 1].Value = "KPI";
-                    Ws.Cells[row, 1].InsertIndent(6);
+                    Ws.Cells[row, 1].InsertIndent(3);
                     Ws.Cells[row, 2].InsertIndent(3);
                     Ws.Cells[row, 4].InsertIndent(3);
                     break;

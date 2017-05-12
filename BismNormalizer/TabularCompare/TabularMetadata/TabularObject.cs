@@ -41,8 +41,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //Order table columns
             if (namedMetaDataObject is Tom.Table)
             {
-                //_objectDefinition = OrderTableColumns(_objectDefinition);
+                _objectDefinition = SortTableColumns(_objectDefinition);
             }
+        }
+
+        private string SortTableColumns(string json)
+        {
+            JObject jObj = (JObject)JsonConvert.DeserializeObject(json);
+
+            foreach (var prop in jObj.Properties())
+            {
+                if (prop.Value.Type == JTokenType.Array && prop.Name == "columns")
+                {
+                    var vals = prop.Values()
+                        .OfType<JObject>()
+                        .OrderBy(x => x.Property("name").Value.ToString())
+                        .ToList();
+                    prop.Value = JContainer.FromObject(vals);
+                }
+            }
+
+            return jObj.ToString(Formatting.Indented);
         }
 
         private void RemoveAnnotationsFromObjectDefinition(JToken token)
@@ -62,21 +81,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 tokenToRemove.Remove();
             }
-        }
-
-        private string OrderTableColumns(string json)
-        {
-            var jObj = (JObject)JsonConvert.DeserializeObject(json);
-            var props = jObj.Properties().ToList();
-            foreach (var prop in props)
-            {
-                prop.Remove();
-            }
-            foreach (var prop in props.OrderBy(p => p.Name))
-            {
-                jObj.Add(prop);
-            }
-            return jObj.ToString(Formatting.Indented);
         }
 
         /// <summary>
@@ -107,49 +111,4 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
     }
 }
-
-#region sample code: custom list of properties with custom ordering ...
-
-//List<string> propertiesToSerialize = new List<string>(new string[]
-//    {
-//                    "name",
-//                    "connectionString",
-//                    "impersonationMode",
-//                    "account"
-//    });
-//base.PopulateObjectDefinition(propertiesToSerialize, _tabularDatasource.Clone());
-//----------------------------------
-//JsonSerializerSettings settings = new JsonSerializerSettings();
-//settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-//#region Other settings
-////settings.NullValueHandling = NullValueHandling.Ignore;
-////settings.MissingMemberHandling = MissingMemberHandling.Ignore;
-////settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-////settings.ObjectCreationHandling = ObjectCreationHandling.Auto;
-////settings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-//#endregion
-//
-//settings.ContractResolver = new BismContractResolver(propertiesToSerialize);
-//settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-//_objectDefinition = JValue.Parse(json).ToString(Formatting.Indented, settings);
-//----------------------------------
-//private class BismContractResolver : Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver
-//{
-//    private IList<string> _propertiesToIgnore = null;
-//    public BismContractResolver(IList<string> propertiesToIgnore)
-//    {
-//        _propertiesToIgnore = propertiesToIgnore;
-//    }
-//    protected override IList<JsonProperty> CreateProperties(Type type, Newtonsoft.Json.MemberSerialization memberSerialization)
-//    {
-//        IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization).Where(p => _propertiesToSerialize.Contains(p.PropertyName)).ToList();
-//        foreach (JsonProperty prop in properties)
-//        {
-//            prop.Order = _propertiesToIgnore.IndexOf(prop.PropertyName) + 1;
-//        }
-//        return properties.OrderBy(p => p.Order).ToList();
-//    }
-//}
-
-#endregion
 

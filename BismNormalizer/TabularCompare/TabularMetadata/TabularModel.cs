@@ -1455,7 +1455,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         private void UpdateWithScript()
         {
-            //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes (e.g. display folder) to table without changes to the partition or column structure, this command will still lose the data due to previous operations, so reconnect and run script instead
+            //_database.Update(Amo.UpdateOptions.ExpandFull); //If make minor changes to table (e.g. display folder) without changes to the partition or column structure, this command will still lose the data due to TOM applying a full log of operations. So instead reconnect and run TMSL script.
 
             //includeRestrictedInformation only includes passwords in connections if they were added during this session (does not allow derivation of passwords from the server)
             string tmslCommand = JsonScripter.ScriptCreateOrReplace(_database, includeRestrictedInformation: true);

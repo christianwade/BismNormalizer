@@ -784,11 +784,11 @@ namespace BismNormalizer.TabularCompare.UI
         {
             ShowHideNodes(this.Nodes, hide, sameDefinitionFilter);
         }
-        private void ShowHideNodes(TreeGridNodeCollection nodes, bool hide, bool sameDefinitionFilter = false)
+        private void ShowHideNodes(TreeGridNodeCollection nodes, bool hide, bool sameDefinitionFilter)
         {
             foreach (TreeGridNode node in nodes)
             {
-                if (node.Cells[8].Value.ToString() == "Skip" && (!sameDefinitionFilter || (sameDefinitionFilter && node.Cells[4].Value.ToString() == "Same Definition")))
+                if (node.Cells[8].Value.ToString() == "Skip" && (!sameDefinitionFilter || (sameDefinitionFilter && hide && node.Cells[4].Value.ToString() == "Same Definition")))
                 {
                     // if currently selected skip item contains Update, Delete or Create children, then need to keep visible - or result in orphans
                     bool foundCreateOrDeleteChild = false;
@@ -819,7 +819,7 @@ namespace BismNormalizer.TabularCompare.UI
                         !(node.Cells[8].Value.ToString() == "Skip " &&
                          (node.Nodes.Count == 0 || !NodeContainsEditableChildren(node, hide))));
                 }
-                ShowHideNodes(node.Nodes, hide);
+                ShowHideNodes(node.Nodes, hide, sameDefinitionFilter);
             }
         }
 

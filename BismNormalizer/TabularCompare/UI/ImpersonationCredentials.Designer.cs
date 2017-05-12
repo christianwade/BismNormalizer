@@ -78,7 +78,7 @@
             this.groupBox1.Size = new System.Drawing.Size(338, 113);
             this.groupBox1.TabIndex = 24;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "User Credentials";
+            this.groupBox1.Text = "Credentials";
             // 
             // txtPassword
             // 

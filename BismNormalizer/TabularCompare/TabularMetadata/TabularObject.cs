@@ -37,6 +37,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             JToken token = JToken.Parse(_objectDefinition);
             RemoveAnnotationsFromObjectDefinition(token);
             _objectDefinition = token.ToString(Formatting.Indented);
+
+            //Order table columns
+            if (namedMetaDataObject is Tom.Table)
+            {
+                //_objectDefinition = OrderTableColumns(_objectDefinition);
+            }
         }
 
         private void RemoveAnnotationsFromObjectDefinition(JToken token)
@@ -56,6 +62,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 tokenToRemove.Remove();
             }
+        }
+
+        private string OrderTableColumns(string json)
+        {
+            var jObj = (JObject)JsonConvert.DeserializeObject(json);
+            var props = jObj.Properties().ToList();
+            foreach (var prop in props)
+            {
+                prop.Remove();
+            }
+            foreach (var prop in props.OrderBy(p => p.Name))
+            {
+                jObj.Add(prop);
+            }
+            return jObj.ToString(Formatting.Indented);
         }
 
         /// <summary>

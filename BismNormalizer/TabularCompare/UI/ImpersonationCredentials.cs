@@ -7,11 +7,17 @@ namespace BismNormalizer.TabularCompare.UI
 {
     public partial class ImpersonationCredentials : Form
     {
+        private string _authenticationKind;
         private string _connectionName;
         private string _username;
         private string _password;
         private float _dpiScaleFactor;
 
+        public string AuthenticationKind
+        {
+            get { return _authenticationKind; }
+            set { _authenticationKind = value; }
+        }
         public string ConnectionName
         {
             get { return _connectionName; }
@@ -58,6 +64,17 @@ namespace BismNormalizer.TabularCompare.UI
 
             this.KeyPreview = true;
 
+            switch (_authenticationKind)
+            {
+                case "Windows":
+                    this.Text = "Impersonation Credentials";
+                    break;
+
+                default:
+                    this.Text = "Database Username & Password";
+                    break;
+            }
+
             txtConnectionName.Text = _connectionName;
             txtUsername.Text = _username;
             txtPassword.Text = _password;
@@ -73,25 +90,15 @@ namespace BismNormalizer.TabularCompare.UI
                 return;
             }
 
-            //Validate username/password in domain and cancel closing if invalid
-            bool valid = false;
+            if (_authenticationKind == "Windows")
+            {
+                //Validate username/password in domain and cancel closing if invalid
+                bool valid = false;
 
-            //Try domain first, then machine, then app directory
-            try
-            {
-                using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
-                {
-                    if (context.ValidateCredentials(txtUsername.Text, txtPassword.Text))
-                    {
-                        valid = true;
-                    }
-                }
-            }
-            catch
-            {
+                //Try domain first, then machine, then app directory
                 try
                 {
-                    using (PrincipalContext context = new PrincipalContext(ContextType.Machine))
+                    using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
                     {
                         if (context.ValidateCredentials(txtUsername.Text, txtPassword.Text))
                         {
@@ -99,16 +106,11 @@ namespace BismNormalizer.TabularCompare.UI
                         }
                     }
                 }
-                catch (System.IO.FileNotFoundException)
-                {
-                    //FileNotFoundException on some machines because missing registry key, so ignore. http://stackoverflow.com/questions/34971400/c-sharp-cannot-use-principalcontextcontexttype-machine-on-windows-10-the-sy
-                    valid = true;
-                }
                 catch
                 {
                     try
                     {
-                        using (PrincipalContext context = new PrincipalContext(ContextType.ApplicationDirectory))
+                        using (PrincipalContext context = new PrincipalContext(ContextType.Machine))
                         {
                             if (context.ValidateCredentials(txtUsername.Text, txtPassword.Text))
                             {
@@ -116,19 +118,37 @@ namespace BismNormalizer.TabularCompare.UI
                             }
                         }
                     }
-                    catch
+                    catch (System.IO.FileNotFoundException)
                     {
-                        //If here, was unable validate, so might still be good credentials (especially if unexpected exception like FileNotFoundException above)
+                        //FileNotFoundException on some machines because missing registry key, so ignore. http://stackoverflow.com/questions/34971400/c-sharp-cannot-use-principalcontextcontexttype-machine-on-windows-10-the-sy
                         valid = true;
                     }
+                    catch
+                    {
+                        try
+                        {
+                            using (PrincipalContext context = new PrincipalContext(ContextType.ApplicationDirectory))
+                            {
+                                if (context.ValidateCredentials(txtUsername.Text, txtPassword.Text))
+                                {
+                                    valid = true;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            //If here, was unable validate, so might still be good credentials (especially if unexpected exception like FileNotFoundException above)
+                            valid = true;
+                        }
+                    }
                 }
-            }
 
-            if (!valid)
-            {
-                MessageBox.Show("Username or password is invalid.", "BISM Normalizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.Cancel = true;
-                return;
+                if (!valid)
+                {
+                    MessageBox.Show("Username or password is invalid.", "BISM Normalizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    e.Cancel = true;
+                    return;
+                }
             }
 
             _username = txtUsername.Text;

@@ -825,7 +825,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in target that depend on the DataSource are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, MDependencyObjectType.DataSource, ref warningObjectList);
+                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
 
                 //For old non-M partitions, check if any such tables have reference to this DataSource
                 foreach (Table table in _targetTabularModel.Tables)
@@ -902,7 +902,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in target that depend on the DataSource are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, MDependencyObjectType.Expression, ref warningObjectList))
+                if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
                     OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -920,7 +920,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, MDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
                     OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -945,7 +945,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, MDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
                     OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -987,7 +987,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, MDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                     {
                         fromDependencies = true;
                         if (nonStructuredDataSource)
@@ -1030,7 +1030,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, MDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                     {
                         fromDependencies = true;
                         if (nonStructuredDataSource)
@@ -1063,20 +1063,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         //Dependency checking
 
-        private bool ContainsToDependenciesInTarget(string targetObjectName, MDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
+        private bool ContainsToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
             //Check any objects in target that depend on this object are also going to be deleted.
 
             bool returnVal = false;
-            MDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(referencedObjectType, targetObjectName);
-            foreach (MDependency targetToDependency in targetToDepdendencies)
+            CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(referencedObjectType, targetObjectName);
+            foreach (CalcDependency targetToDependency in targetToDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
                 {
                     switch (targetToDependency.ObjectType)
                     {
-                        case MDependencyObjectType.Expression:
+                        case CalcDependencyObjectType.Expression:
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.ObjectName &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
@@ -1090,7 +1090,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 returnVal = true;
                             }
                             break;
-                        case MDependencyObjectType.Partition:
+                        case CalcDependencyObjectType.Partition:
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.TableName &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
@@ -1112,7 +1112,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsFromDependenciesInSource(string sourceObjectName, MDependencyObjectType objectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
+        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType objectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
         {
             //For creation and updates.
             //Check any objects in source that this object depends on are also going to be created if not already in target.
@@ -1120,14 +1120,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             bool returnVal = false;
             nonStructuredDataSource = false;
 
-            MDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, sourceObjectName);
-            foreach (MDependency sourceFromDependency in sourceFromDepdendencies)
+            CalcDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, sourceObjectName);
+            foreach (CalcDependency sourceFromDependency in sourceFromDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
                 {
                     switch (sourceFromDependency.ReferencedObjectType)
                     {
-                        case MDependencyObjectType.Expression:
+                        case CalcDependencyObjectType.Expression:
                             if (!_targetTabularModel.Expressions.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
@@ -1142,7 +1142,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 returnVal = true;
                             }
                             break;
-                        case MDependencyObjectType.DataSource:
+                        case CalcDependencyObjectType.DataSource:
                             if (!_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&

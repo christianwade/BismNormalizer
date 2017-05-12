@@ -180,7 +180,8 @@ namespace BismNormalizer.TabularCompare.UI
         private void HandlePasswordPrompt(object sender, PasswordPromptEventArgs e)
         {
             ImpersonationCredentials credentialsForm = new ImpersonationCredentials();
-            credentialsForm.ConnectionName = e.ConnectionName;
+            credentialsForm.AuthenticationKind = e.AuthenticationKind;
+            credentialsForm.ConnectionName = e.DataSourceName;
             credentialsForm.Username = e.Username;
             credentialsForm.StartPosition = FormStartPosition.CenterParent;
             credentialsForm.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));

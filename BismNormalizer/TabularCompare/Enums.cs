@@ -39,5 +39,5 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Type of dependency. For example, DataSource, Partition, Expression.
     /// </summary>
-    public enum MDependencyObjectType { DataSource, Partition, Expression };
+    public enum CalcDependencyObjectType { DataSource, Partition, Expression };
 }

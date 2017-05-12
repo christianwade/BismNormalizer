@@ -73,14 +73,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     hasMOrQueryPartition = true;
 
                     //Check M dependency tree to see if all partitions refer only to a single DataSource
-                    MDependencyCollection mDependencies = _parentTabularModel.MDependencies.DependenciesReferenceFrom(MDependencyObjectType.Partition, partition.Name);
-                    if (mDependencies.Count == 1 && mDependencies[0].ReferencedObjectType == MDependencyObjectType.DataSource)
+                    CalcDependencyCollection calcDependencies = _parentTabularModel.MDependencies.DependenciesReferenceFrom(CalcDependencyObjectType.Partition, partition.Name);
+                    if (calcDependencies.Count == 1 && calcDependencies[0].ReferencedObjectType == CalcDependencyObjectType.DataSource)
                     {
                         if (_dataSourceName == "")
                         {
-                            _dataSourceName = mDependencies[0].ReferencedObjectName;
+                            _dataSourceName = calcDependencies[0].ReferencedObjectName;
                         }
-                        else if (_dataSourceName != mDependencies[0].ReferencedObjectName)
+                        else if (_dataSourceName != calcDependencies[0].ReferencedObjectName)
                         {
                             //Partition depends on a different DataSource to another partition in same table, so ensure no DataSource association for the table and stop iterating partitions.
                             _dataSourceName = "";

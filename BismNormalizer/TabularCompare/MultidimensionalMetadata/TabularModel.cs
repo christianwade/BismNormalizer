@@ -2557,7 +2557,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                     if (dataSource.ImpersonationInfo != null && dataSource.ImpersonationInfo.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
                     {
                         PasswordPromptEventArgs args = new PasswordPromptEventArgs();
-                        args.ConnectionName = dataSource.Name;
+                        args.DataSourceName = dataSource.Name;
                         args.Username = dataSource.ImpersonationInfo.Account;
                         _parentComparison.OnPasswordPrompt(args);
                         if (args.UserCancelled)

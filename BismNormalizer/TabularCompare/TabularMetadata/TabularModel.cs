@@ -28,7 +28,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private PerspectiveCollection _perspectives = new PerspectiveCollection();
         private CultureCollection _cultures = new CultureCollection();
         private RoleCollection _roles = new RoleCollection();
-        private MDependencyCollection _mDependencies = new MDependencyCollection();
+        private CalcDependencyCollection _calcDependencies = new CalcDependencyCollection();
         private List<Tom.Perspective> _tomPerspectivesBackup;
         private List<Tom.Culture> _tomCulturesBackup;
         private List<Tom.ModelRole> _tomRolesBackup;
@@ -167,7 +167,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     if (col.Name == "REFERENCED_EXPRESSION") referencedExpression = col.InnerText;
                 }
 
-                _mDependencies.Add(new MDependency(this,
+                _calcDependencies.Add(new CalcDependency(this,
                     objectType,
                     tableName,
                     objectName,
@@ -236,7 +236,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// Collection of M dependencies for the TabularModel object.
         /// </summary>
-        public MDependencyCollection MDependencies => _mDependencies;
+        public CalcDependencyCollection MDependencies => _calcDependencies;
 
         /// <summary>
         /// ConnectionInfo object for the tabular model.
@@ -1326,42 +1326,68 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Set passwords
                 foreach (Tom.DataSource dataSource in _database.Model.DataSources)
                 {
+                    PasswordPromptEventArgs args = new PasswordPromptEventArgs();
                     switch (dataSource.Type)
                     {
                         case DataSourceType.Structured:
-                            //todo: StructuredDataSource structuredDataSource = (StructuredDataSource)dataSource;
 
-                            //if (structuredDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
-                            //{
-                            //    PasswordPromptEventArgs args = new PasswordPromptEventArgs();
-                            //    args.ConnectionName = dataSource.Name;
-                            //    args.Username = structuredDataSource.Account;
-                            //    _parentComparison.OnPasswordPrompt(args);
-                            //    if (args.UserCancelled)
-                            //    {
-                            //        // Show cancelled for all rows
-                            //        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
-                            //        foreach (ProcessingTable table in _tablesToProcess)
-                            //        {
-                            //            _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
-                            //        }
-                            //        _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
-                            //        return;
-                            //    }
-                            //    structuredDataSource.Account = args.Username;
-                            //    structuredDataSource.Password = args.Password;
-                            //    argsAllConnections.Add(args);
-                            //}
+                            StructuredDataSource structuredDataSource = (StructuredDataSource)dataSource;
+                            args.AuthenticationKind = structuredDataSource.Credential.AuthenticationKind;
 
+                            switch (structuredDataSource.Credential.AuthenticationKind)
+                            {
+                                case "Windows":
+                                    //Same as impersonate account
+                                    args.DataSourceName = dataSource.Name;
+                                    args.Username = structuredDataSource.Credential.Username;
+                                    _parentComparison.OnPasswordPrompt(args);
+                                    if (args.UserCancelled)
+                                    {
+                                        // Show cancelled for all rows
+                                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
+                                        foreach (ProcessingTable table in _tablesToProcess)
+                                        {
+                                            _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                                        }
+                                        _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
+                                        return;
+                                    }
+                                    structuredDataSource.Credential.Username    = args.Username;
+                                    structuredDataSource.Credential.Password = args.Password;
+                                    argsAllConnections.Add(args);
+                                    break;
 
+                                case "UsernamePassword":
+                                    //Same as impersonate account
+                                    args.DataSourceName = dataSource.Name;
+                                    args.Username = structuredDataSource.Credential.Username;
+                                    _parentComparison.OnPasswordPrompt(args);
+                                    if (args.UserCancelled)
+                                    {
+                                        // Show cancelled for all rows
+                                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
+                                        foreach (ProcessingTable table in _tablesToProcess)
+                                        {
+                                            _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                                        }
+                                        _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
+                                        return;
+                                    }
+                                    structuredDataSource.Credential.Username = args.Username;
+                                    structuredDataSource.Credential.Password = args.Password;
+                                    argsAllConnections.Add(args);
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         case DataSourceType.Provider:
                             ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
 
                             if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
                             {
-                                PasswordPromptEventArgs args = new PasswordPromptEventArgs();
-                                args.ConnectionName = dataSource.Name;
+                                args.AuthenticationKind = "Windows";
+                                args.DataSourceName = dataSource.Name;
                                 args.Username = providerDataSource.Account;
                                 _parentComparison.OnPasswordPrompt(args);
                                 if (args.UserCancelled)

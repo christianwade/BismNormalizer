@@ -6,31 +6,31 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     /// <summary>
     /// Dependency between partitions, M expressions and data sources
     /// </summary>
-    public class MDependency
+    public class CalcDependency
     {
         private TabularModel _parentTabularModel;
-        private MDependencyObjectType _objectType;
+        private CalcDependencyObjectType _objectType;
         private string _tableName;
         private string _objectName;
         private string _expression;
-        private MDependencyObjectType _referencedObjectType;
+        private CalcDependencyObjectType _referencedObjectType;
         private string _referencedObjectName;
         private string _referencedExpression;
 
         /// <summary>
-        /// Initializes a new instance of an MDependency class using multiple parameters    .
+        /// Initializes a new instance of an CalcDependency class using multiple parameters    .
         /// </summary>
-        /// <param name="parentTabularModel">TabularModel object that the MDependency object belongs to.</param>
-        public MDependency(TabularModel parentTabularModel, string objectType, string tableName, string objectName, string expression, string referencedObjectType, string referencedObjectName, string referencedExpression)
+        /// <param name="parentTabularModel">TabularModel object that the CalcDependency object belongs to.</param>
+        public CalcDependency(TabularModel parentTabularModel, string objectType, string tableName, string objectName, string expression, string referencedObjectType, string referencedObjectName, string referencedExpression)
         {
             _parentTabularModel = parentTabularModel;
             switch (objectType)
             {
                 case "PARTITION":
-                    _objectType = MDependencyObjectType.Partition;
+                    _objectType = CalcDependencyObjectType.Partition;
                     break;
                 case "M_EXPRESSION":
-                    _objectType = MDependencyObjectType.Expression;
+                    _objectType = CalcDependencyObjectType.Expression;
                     break;
                 default:
                     break;
@@ -41,13 +41,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             switch (referencedObjectType)
             {
                 case "PARTITION":
-                    _referencedObjectType = MDependencyObjectType.Partition;
+                    _referencedObjectType = CalcDependencyObjectType.Partition;
                     break;
                 case "M_EXPRESSION":
-                    _referencedObjectType = MDependencyObjectType.Expression;
+                    _referencedObjectType = CalcDependencyObjectType.Expression;
                     break;
                 case "DATA_SOURCE":
-                    _referencedObjectType = MDependencyObjectType.DataSource;
+                    _referencedObjectType = CalcDependencyObjectType.DataSource;
                     break;
                 default:
                     break;
@@ -69,7 +69,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// The object type of the dependency.
         /// </summary>
-        public MDependencyObjectType ObjectType => _objectType;
+        public CalcDependencyObjectType ObjectType => _objectType;
         
         /// <summary>
         /// The table name of the dependency.
@@ -89,7 +89,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// The referenced object type of the dependency.
         /// </summary>
-        public MDependencyObjectType ReferencedObjectType => _referencedObjectType;
+        public CalcDependencyObjectType ReferencedObjectType => _referencedObjectType;
 
         /// <summary>
         /// The referenced object name of the dependency.

@@ -4,31 +4,31 @@ using System.Collections.Generic;
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
     /// <summary>
-    /// Represents a collection of MDependency objects.
+    /// Represents a collection of CalcDependency objects.
     /// </summary>
-    public class MDependencyCollection : List<MDependency>
+    public class CalcDependencyCollection : List<CalcDependency>
     {
         /// <summary>
-        /// Returns collection of M dependencies that the object identified by the params references (directly or indirectly).
+        /// Returns collection of calc dependencies that the object identified by the params references (directly or indirectly).
         /// </summary>
         /// <param name="objectType">Type of the object to look up dependencies.</param>
         /// <param name="objectName">Name of the object to look up dependencies.</param>
         /// <returns></returns>
-        public MDependencyCollection DependenciesReferenceFrom(MDependencyObjectType objectType, string objectName)
+        public CalcDependencyCollection DependenciesReferenceFrom(CalcDependencyObjectType objectType, string objectName)
         {
-            MDependencyCollection returnVal = new MDependencyCollection();
+            CalcDependencyCollection returnVal = new CalcDependencyCollection();
             LookUpDependenciesReferenceFrom(objectType, objectName, returnVal);
             return returnVal;
         }
 
-        private void LookUpDependenciesReferenceFrom(MDependencyObjectType objectType, string objectName, MDependencyCollection returnVal)
+        private void LookUpDependenciesReferenceFrom(CalcDependencyObjectType objectType, string objectName, CalcDependencyCollection returnVal)
         {
-            foreach (MDependency mDependency in this)
+            foreach (CalcDependency calcDependency in this)
             {
-                if (mDependency.ObjectType == objectType && mDependency.ObjectName == objectName)
+                if (calcDependency.ObjectType == objectType && calcDependency.ObjectName == objectName)
                 {
-                    LookUpDependenciesReferenceFrom(mDependency.ReferencedObjectType, mDependency.ReferencedObjectName, returnVal);
-                    returnVal.Add(mDependency);
+                    LookUpDependenciesReferenceFrom(calcDependency.ReferencedObjectType, calcDependency.ReferencedObjectName, returnVal);
+                    returnVal.Add(calcDependency);
                 }
             }
         }
@@ -39,21 +39,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="objectType">Type of the object to look up dependencies.</param>
         /// <param name="objectName">Name of the object to look up dependencies.</param>
         /// <returns></returns>
-        public MDependencyCollection DependenciesReferenceTo(MDependencyObjectType referencedObjectType, string referencedObjectName)
+        public CalcDependencyCollection DependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName)
         {
-            MDependencyCollection returnVal = new MDependencyCollection();
+            CalcDependencyCollection returnVal = new CalcDependencyCollection();
             LookUpDependenciesReferenceTo(referencedObjectType, referencedObjectName, returnVal);
             return returnVal;
         }
 
-        private void LookUpDependenciesReferenceTo(MDependencyObjectType referencedObjectType, string referencedObjectName, MDependencyCollection returnVal)
+        private void LookUpDependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName, CalcDependencyCollection returnVal)
         {
-            foreach (MDependency mDependency in this)
+            foreach (CalcDependency calcDependency in this)
             {
-                if (mDependency.ReferencedObjectType == referencedObjectType && mDependency.ReferencedObjectName == referencedObjectName)
+                if (calcDependency.ReferencedObjectType == referencedObjectType && calcDependency.ReferencedObjectName == referencedObjectName)
                 {
-                    LookUpDependenciesReferenceTo(mDependency.ObjectType, mDependency.ObjectName, returnVal);
-                    returnVal.Add(mDependency);
+                    LookUpDependenciesReferenceTo(calcDependency.ObjectType, calcDependency.ObjectName, returnVal);
+                    returnVal.Add(calcDependency);
                 }
             }
         }
@@ -62,14 +62,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Find an object in the collection by name.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>MDependency object if found. Null if not found.</returns>
-        public MDependency FindByName(string name)
+        /// <returns>CalcDependency object if found. Null if not found.</returns>
+        public CalcDependency FindByName(string name)
         {
-            foreach (MDependency mDependency in this)
+            foreach (CalcDependency calcDependency in this)
             {
-                if (mDependency.ObjectName == name)
+                if (calcDependency.ObjectName == name)
                 {
-                    return mDependency;
+                    return calcDependency;
                 }
             }
             return null;
@@ -82,9 +82,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <returns>True if the object is found, or False if it's not found.</returns>
         public bool ContainsName(string name)
         {
-            foreach (MDependency mDependency in this)
+            foreach (CalcDependency calcDependency in this)
             {
-                if (mDependency.ObjectName == name)
+                if (calcDependency.ObjectName == name)
                 {
                     return true;
                 }
@@ -99,11 +99,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <returns>True if the object was removed, or False if was not found.</returns>
         public bool Remove(string name)
         {
-            foreach (MDependency mDependency in this)
+            foreach (CalcDependency calcDependency in this)
             {
-                if (mDependency.ObjectName == name)
+                if (calcDependency.ObjectName == name)
                 {
-                    this.Remove(mDependency);
+                    this.Remove(calcDependency);
                     return true;
                 }
             }

@@ -195,8 +195,8 @@
     <Compile Include="TabularCompare\PasswordPromptEventArgs.cs" />
     <Compile Include="TabularCompare\TabularMetadata\Expression.cs" />
     <Compile Include="TabularCompare\TabularMetadata\ExpressionCollection.cs" />
-    <Compile Include="TabularCompare\TabularMetadata\MDependency.cs" />
-    <Compile Include="TabularCompare\TabularMetadata\MDependencyCollection.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\CalcDependency.cs" />
+    <Compile Include="TabularCompare\TabularMetadata\CalcDependencyCollection.cs" />
     <Compile Include="TabularCompare\UI\HighDpiUtils.cs" />
     <Compile Include="TabularCompare\ValidationMessageEventArgs.cs" />
     <Compile Include="DemoHarness.cs" />

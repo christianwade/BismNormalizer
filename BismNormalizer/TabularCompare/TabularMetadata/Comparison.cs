@@ -818,13 +818,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #region Calc dependencies validation
 
-        private bool ContainsToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType referencedObjectType, ref List<string> warningObjectList)
+        private bool ContainsToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
             //Check any objects in target that depend on this object are also going to be deleted.
 
             bool returnVal = false;
-            CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(referencedObjectType, targetObjectName);
+            CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(targetObjectType, targetObjectName);
             foreach (CalcDependency targetToDependency in targetToDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -832,14 +832,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     switch (targetToDependency.ObjectType)
                     {
                         case CalcDependencyObjectType.Expression:
-                            //Does this expression have a dependency on the object about to be deleted?
+                            //Does this expression (comparisonObjectToCheck) have a dependency on the object about to be deleted (targetObjectName)?
 
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.ObjectName &&
                                 (
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||  //This skip covers other objects for deletion that are being skipped + other objects not being touched in target that may depend on this one.
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Update   //The updated object may or may not depend on this one, but better to be on the safe side (especially if retain partitions).
-                                                                                                //Create is not possible to have a dependency on this one. Deletes are fine and will be allowed.
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||       //Skip covers if this expression is for deletion and being skipped, or if same defintion and not being touched in target (in either case, dependency will remain).
+                                    (
+                                        comparisonObjectToCheck.MergeAction == MergeAction.Update && //Updates (if successful) are fine because covered by source dependency checking. So need to check if the update will be unsuccessful (and therefore dependency will remain).
+                                        ContainsFromDependenciesInSource(comparisonObjectToCheck.TargetObjectName, CalcDependencyObjectType.Expression)
+                                    )                                                                //Create expression is not possible to have a dependency on this object about to be deleted. Delete expression is fine.
                                 )
                             )
                             {
@@ -852,14 +854,22 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             }
                             break;
                         case CalcDependencyObjectType.Partition:
-                            //Does this partition have a dependency on the object about to be deleted?
+                            //Does this table (comparisonObjectToCheck) have a dependency on the object about to be deleted (targetObjectName)?
 
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.TableName &&
                                 (
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||  //This skip covers other objects for deletion that are being skipped + other objects not being touched in target that may depend on this one.
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Update   //The updated object may or may not depend on this one, but better to be on the safe side (especially if retain partitions).
-                                                                                                //Create is not possible to have a dependency on this one. Deletes are fine and will be allowed.
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||       //Skip covers if this table is for deletion and being skipped, or if same defintion and not being touched in target (in either case, dependency will remain).
+                                    (
+                                        comparisonObjectToCheck.MergeAction == MergeAction.Update && //Updates (if successful) are fine because covered by source dependency checking. So need to check if the update will be unsuccessful (and therefore dependency will remain).
+                                        (
+                                            ContainsFromDependenciesInSourceForTable(_sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName)) ||
+                                            _targetTabularModel.CanRetainPartitions(                 //But also check if doing retain partitions on this table (if so, dependency will remain).
+                                                _sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
+                                                _targetTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
+                                                out string retainPartitionsMessage)
+                                        )
+                                    )                                                                //Create table is not possible to have a dependency on this object about to be deleted. Delete table is fine.
                                 )
                             )
                             {
@@ -879,15 +889,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType objectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
+        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
         {
             //For creation and updates.
-            //Check any objects in source that this object depends on are also going to be created if not already in target.
+            //Check any objects in source that this object depends on are also going to be created/updated if not already in target.
 
             bool returnVal = false;
             nonStructuredDataSource = false;
 
-            CalcDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(objectType, sourceObjectName);
+            CalcDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(sourceObjectType, sourceObjectName);
             foreach (CalcDependency sourceFromDependency in sourceFromDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -895,13 +905,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     switch (sourceFromDependency.ReferencedObjectType)
                     {
                         case CalcDependencyObjectType.Expression:
-                            //Does the object about to be created/updated have a dependency on this expression?
+                            //Does the object about to be created/updated (sourceObjectName) have a source dependency on this expression (comparisonObjectToCheck)?
 
                             if (!_targetTabularModel.Expressions.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
-                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)  //Deletes are impossible for this object to depend on, so don't need to detect. Updates and other Skips can assume are fine, so don't need to detect.
+                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&  //Creates being skipped (dependency will be missing).
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                //Deletes are impossible for this object to depend on, so don't need to detect. Other Skips can assume are fine, so don't need to detect.
                             {
                                 string warningObject = $"Expression {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -913,13 +924,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                             break;
                         case CalcDependencyObjectType.DataSource:
-                            //Does the object about to be created/updated have a dependency on this data source?
+                            //Does the object about to be created/updated (sourceObjectName) have a source dependency on this data source (comparisonObjectToCheck)?
 
                             if (!_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
-                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)  //Deletes are impossible for this object to depend on, so don't need to detect. Updates and other Skips can assume are fine, so don't need to detect.
+                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&  //Creates being skipped (dependency will be missing).
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                //Deletes are impossible for this object to depend on, so don't need to detect. Other Skips can assume are fine, so don't need to detect.
                             {
                                 string warningObject = $"Data Source {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -951,6 +963,26 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         default:
                             break;
                     }
+                }
+            }
+            return returnVal;
+        }
+
+        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType)
+        {
+            List<string> warningObjectList = new List<string>();
+            return ContainsFromDependenciesInSource(sourceObjectName, sourceObjectType, ref warningObjectList, out bool nonStructuredDataSource);
+        }
+
+        private bool ContainsFromDependenciesInSourceForTable(Table sourceTable)
+        {
+            bool returnVal = false;
+            foreach (Partition partition in sourceTable.TomTable.Partitions)
+            {
+                if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition))
+                {
+                    returnVal = true;
+                    break;
                 }
             }
             return returnVal;
@@ -1033,7 +1065,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete data source {comparisonObject.TargetObjectName} because the following object(s) depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete data source {comparisonObject.TargetObjectName} because the following object(s) depend on it: {String.Join(", ", warningObjectList)}.", ValidationMessageType.DataSource, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -1081,7 +1113,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it, and are not being deleted: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -1194,29 +1226,34 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Update)
             {
-                Table sourceTable = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
+                Table tableSource = _sourceTabularModel.Tables.FindByName(comparisonObject.SourceObjectName);
+                Table tableTarget = _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName);
                 List<string> warningObjectList = new List<string>();
                 bool fromDependencies = false;
                 bool nonStructuredDataSourceLocal = false;
 
-                foreach (Partition partition in sourceTable.TomTable.Partitions)
+                //Will this table retain partitions? If yes, don't need to bother with source dependency (target dependency checking will cover for deletes).
+                if (!_targetTabularModel.CanRetainPartitions(tableSource, tableTarget, out string retainPartitionsMessageTemp))
                 {
-                    //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    //Check any objects in source that this table depends on are also going to be created if not already in target
+                    foreach (Partition partition in tableSource.TomTable.Partitions)
                     {
-                        fromDependencies = true;
-                        if (nonStructuredDataSource)
-                            nonStructuredDataSourceLocal = true;
-                    }
+                        if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                        {
+                            fromDependencies = true;
+                            if (nonStructuredDataSource)
+                                nonStructuredDataSourceLocal = true;
+                        }
 
-                    //For old non-M partitions, check if data source references exist
-                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
-                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                        //For old non-M partitions, check if data source references exist
+                        if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                            fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                    }
                 }
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName), out string retainPartitionsMessage);
+                    _targetTabularModel.UpdateTable(tableSource, tableTarget, out string retainPartitionsMessage);
                     OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
                 }
                 else

@@ -420,17 +420,17 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="tableTarget">Table object in the target tabular model to be updated.</param>
         public void UpdateTable(Table tableSource, Table tableTarget, out string retainPartitionsMessage)
         {
+            bool canRetainPartitions = CanRetainPartitions(tableSource, tableTarget, out retainPartitionsMessage);
             Tom.Table tomTableTargetOrig = tableTarget.TomTable.Clone();
-            string partitionsDefinitionOrig = tableTarget.PartitionsDefinition;
-
             List<SingleColumnRelationship> tomRelationshipsToAddBack = DeleteTable(tableTarget.Name);
             CreateTable(tableSource);
 
             //get back the newly created table
             tableTarget = _tables.FindByName(tableSource.Name);
 
-            //retain partitions depending on option
-            RetainPartitions(tableTarget, tomTableTargetOrig, partitionsDefinitionOrig, out retainPartitionsMessage);
+            //retain partitions if possible
+            if (canRetainPartitions)
+                RetainPartitions(tableTarget, tomTableTargetOrig, out retainPartitionsMessage);
 
             //add back deleted relationships where possible
             foreach (SingleColumnRelationship tomRelationshipToAddBack in tomRelationshipsToAddBack)
@@ -456,16 +456,17 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        private void RetainPartitions(Table tableTarget, Tom.Table tomTableTargetOrig, string partitionsDefinitionOrig, out string retainPartitionsMessage)
+        public bool CanRetainPartitions(Table tableSource, Table tableTarget, out string retainPartitionsMessage)
         {
             retainPartitionsMessage = "";
 
             //only applies to db deployment, and need option checked
-            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions) return;
+            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+                return false;
 
-            //both new and orig tables need to have M or query partitions, else do nothing. Also need to match (won't copy query partition to M table). If a table has no partitions, do nothing.
-            PartitionSourceType sourceTypeTarget = PartitionSourceType.None; 
-            foreach (Partition partition in tableTarget.TomTable.Partitions)
+            //both tables need to have M or query partitions. Also type needs to match (won't copy query partition to M table). If a table has no partitions, do nothing.
+            PartitionSourceType sourceTypeTarget = PartitionSourceType.None;
+            foreach (Partition partition in tableSource.TomTable.Partitions)
             {
                 sourceTypeTarget = partition.SourceType;
                 break;
@@ -473,11 +474,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query))
             {
                 retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
-                return;
+                return false;
             }
 
             PartitionSourceType sourceTypeOrig = PartitionSourceType.None;
-            foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
+            foreach (Partition partitionOrig in tableTarget.TomTable.Partitions)
             {
                 sourceTypeOrig = partitionOrig.SourceType;
                 break;
@@ -485,24 +486,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (!(sourceTypeOrig == PartitionSourceType.M || sourceTypeOrig == PartitionSourceType.Query))
             {
                 retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
-                return;
+                return false;
             }
 
             if (sourceTypeOrig != sourceTypeTarget)
             {
                 retainPartitionsMessage = $"Retain partitions not applied because source partition type is {sourceTypeTarget.ToString()} and target partition type is {sourceTypeOrig.ToString()}.";
-                return;
+                return false;
             }
 
-            if (partitionsDefinitionOrig == tableTarget.PartitionsDefinition)
+            if (tableSource.PartitionsDefinition == tableTarget.PartitionsDefinition)
             {
                 retainPartitionsMessage = "Source & target partition definitions match, so retain partitions not necessary.";
-                return;
+                return false;
             }
 
+            return true;
+        }
+
+        private void RetainPartitions(Table modifiedTableTarget, Tom.Table tomTableTargetOrig, out string retainPartitionsMessage)
+        {
             //Actually do the retain partitions
             retainPartitionsMessage = "Retain target partitions applied: ";
-            tableTarget.TomTable.Partitions.Clear();
+            modifiedTableTarget.TomTable.Partitions.Clear();
             foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
             {
                 Partition partitionTarget = partitionOrig.Clone();
@@ -511,7 +517,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     QueryPartitionSource querySource = (QueryPartitionSource)partitionTarget.Source;
                     querySource.DataSource = _dataSources.FindByName(querySource.DataSource?.Name).TomDataSource;
                 }
-                tableTarget.TomTable.Partitions.Add(partitionTarget);
+                modifiedTableTarget.TomTable.Partitions.Add(partitionTarget);
                 retainPartitionsMessage += $"{partitionTarget.Name}, ";
             }
             retainPartitionsMessage = retainPartitionsMessage.Substring(0, retainPartitionsMessage.Length - 2) + ".";

@@ -221,10 +221,10 @@ namespace BismNormalizer.CommandLine
                 if (   ((skipOption == ComparisonObjectStatus.MissingInSource.ToString() && comparisonObj.Status == ComparisonObjectStatus.MissingInSource) ||
                         (skipOption == ComparisonObjectStatus.MissingInTarget.ToString() && comparisonObj.Status == ComparisonObjectStatus.MissingInTarget) ||
                         (skipOption == ComparisonObjectStatus.DifferentDefinitions.ToString() && comparisonObj.Status == ComparisonObjectStatus.DifferentDefinitions)
-                       ) && comparisonObj.UpdateAction != UpdateAction.Skip
+                       ) && comparisonObj.MergeAction != MergeAction.Skip
                    )
                 {
-                    comparisonObj.UpdateAction = UpdateAction.Skip;
+                    comparisonObj.MergeAction = MergeAction.Skip;
                     string objectName = (string.IsNullOrEmpty(comparisonObj.SourceObjectName) ? comparisonObj.TargetObjectName : comparisonObj.SourceObjectName).TrimStart();
                     Console.WriteLine($"Skip due to /Skip argument {skipOption} on {comparisonObj.ComparisonObjectType.ToString()} object {objectName}");
                 }

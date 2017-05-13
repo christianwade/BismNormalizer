@@ -35,10 +35,10 @@
             this.chkMeasureDependencies = new System.Windows.Forms.CheckBox();
             this.chkPerspectives = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkRetainPartitions = new System.Windows.Forms.CheckBox();
             this.chkMergeCultures = new System.Windows.Forms.CheckBox();
             this.chkCultures = new System.Windows.Forms.CheckBox();
             this.chkMergePerspectives = new System.Windows.Forms.CheckBox();
+            this.chkRetainPartitions = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.chkAffectedTables = new System.Windows.Forms.CheckBox();
             this.cboProcessingOption = new System.Windows.Forms.ComboBox();
@@ -99,7 +99,7 @@
             this.chkMeasureDependencies.AutoSize = true;
             this.chkMeasureDependencies.Checked = true;
             this.chkMeasureDependencies.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkMeasureDependencies.Location = new System.Drawing.Point(13, 187);
+            this.chkMeasureDependencies.Location = new System.Drawing.Point(13, 208);
             this.chkMeasureDependencies.Name = "chkMeasureDependencies";
             this.chkMeasureDependencies.Size = new System.Drawing.Size(47, 17);
             this.chkMeasureDependencies.TabIndex = 7;
@@ -122,6 +122,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.chkRetainPartitions);
             this.groupBox1.Controls.Add(this.chkMergeCultures);
             this.groupBox1.Controls.Add(this.chkCultures);
             this.groupBox1.Controls.Add(this.chkMergePerspectives);
@@ -131,20 +132,10 @@
             this.groupBox1.Controls.Add(this.chkRoles);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(337, 231);
+            this.groupBox1.Size = new System.Drawing.Size(337, 256);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Comparison Options";
-            // 
-            // chkRetainPartitions
-            // 
-            this.chkRetainPartitions.AutoSize = true;
-            this.chkRetainPartitions.Location = new System.Drawing.Point(13, 91);
-            this.chkRetainPartitions.Name = "chkRetainPartitions";
-            this.chkRetainPartitions.Size = new System.Drawing.Size(247, 17);
-            this.chkRetainPartitions.TabIndex = 10;
-            this.chkRetainPartitions.Text = "For table updates, retain partitions (not replace)";
-            this.chkRetainPartitions.UseVisualStyleBackColor = true;
             // 
             // chkMergeCultures
             // 
@@ -179,17 +170,26 @@
             this.chkMergePerspectives.Text = "For perspective updates, merge selections (not replace)";
             this.chkMergePerspectives.UseVisualStyleBackColor = true;
             // 
+            // chkRetainPartitions
+            // 
+            this.chkRetainPartitions.AutoSize = true;
+            this.chkRetainPartitions.Location = new System.Drawing.Point(13, 181);
+            this.chkRetainPartitions.Name = "chkRetainPartitions";
+            this.chkRetainPartitions.Size = new System.Drawing.Size(247, 17);
+            this.chkRetainPartitions.TabIndex = 10;
+            this.chkRetainPartitions.Text = "For table updates, retain partitions (not replace)";
+            this.chkRetainPartitions.UseVisualStyleBackColor = true;
+            // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.chkRetainPartitions);
             this.groupBox2.Controls.Add(this.chkAffectedTables);
             this.groupBox2.Controls.Add(this.cboProcessingOption);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(12, 249);
+            this.groupBox2.Location = new System.Drawing.Point(12, 274);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(337, 126);
+            this.groupBox2.Size = new System.Drawing.Size(337, 101);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Database Deployment";

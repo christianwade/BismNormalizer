@@ -505,7 +505,7 @@ namespace BismNormalizer.TabularCompare.Core
         public static int FindRowCount(Microsoft.AnalysisServices.Core.Server server, string tableName, string databaseName)
         {
             string dax = String.Format("EVALUATE ROW( \"RowCount\", COUNTROWS('{0}'))", tableName);
-            XmlNodeList rows = ExecuteDaxXmlaCommand(server, dax, databaseName);
+            XmlNodeList rows = ExecuteXmlaCommand(server, databaseName, dax);
 
             foreach (XmlNode row in rows)
             {
@@ -530,16 +530,15 @@ namespace BismNormalizer.TabularCompare.Core
         }
 
         /// <summary>
-        /// Executes DAX command.
+        /// Executes an XMLA command on the tabular model for the connection.
         /// </summary>
         /// <param name="server"></param>
         /// <param name="commandStatement"></param>
-        /// <param name="databaseName"></param>
-        /// <returns>XmlNodeList results.</returns>
-        public static XmlNodeList ExecuteDaxXmlaCommand(Microsoft.AnalysisServices.Core.Server server, string commandStatement, string databaseName)
+        /// <returns>XmlNodeList containing results of the command execution.</returns>
+        public static XmlNodeList ExecuteXmlaCommand(Microsoft.AnalysisServices.Core.Server server, string catalog, string commandStatement)
         {
             XmlWriter xmlWriter = server.StartXmlaRequest(XmlaRequestType.Undefined);
-            WriteSoapEnvelopeWithDaxCommandStatement(xmlWriter, server.SessionID, commandStatement, databaseName);
+            WriteSoapEnvelopeWithCommandStatement(xmlWriter, server.SessionID, catalog, commandStatement);
             System.Xml.XmlReader xmlReader = server.EndXmlaRequest();
             xmlReader.MoveToContent();
             string fullEnvelopeResponseFromServer = xmlReader.ReadOuterXml();
@@ -554,11 +553,28 @@ namespace BismNormalizer.TabularCompare.Core
             return rows;
         }
 
-        private static void WriteSoapEnvelopeWithDaxCommandStatement(XmlWriter xmlWriter, string sessionId, string commandStatement, string databaseName)
+        private static void WriteSoapEnvelopeWithCommandStatement(XmlWriter xmlWriter, string sessionId, string catalog, string commandStatement)
         {
-            //--------------------------------------------------------------------------------
-            // This is a sample of the XMLA request we'll write:
-            //
+            #region Examples
+
+            //EXAMPLE1
+            // <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+            //   <Header>
+            //     <Session soap:mustUnderstand="1" SessionId="THE SESSION ID HERE" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:schemas-microsoft-com:xml-analysis" />
+            //   </Header>
+            //   <Body>
+            //      <Execute xmlns="urn:schemas-microsoft-com:xml-analysis">
+            //          <Command>
+            //              <Statement>
+            //                  SystemGetSubdirs 'd:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Data'
+            //              </Statement>
+            //          </Command>
+            //          <Properties/>
+            //      </Execute>
+            //   </Body>
+            // </Envelope>
+
+            //EXAMPLE2
             //<Envelope xmlns=""http://schemas.xmlsoap.org/soap/envelope/"">
             //   <Header>
             //     <Session soap:mustUnderstand="1" SessionId="THE SESSION ID HERE" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:schemas-microsoft-com:xml-analysis" />
@@ -580,7 +596,9 @@ namespace BismNormalizer.TabularCompare.Core
             //		</Execute>
             //	</Body>
             //</Envelope>
-            //--------------------------------------------------------------------------------
+
+            #endregion
+
             xmlWriter.WriteStartElement("Envelope", "http://schemas.xmlsoap.org/soap/envelope/");
             xmlWriter.WriteStartElement("Header");
             if (sessionId != null)
@@ -593,16 +611,22 @@ namespace BismNormalizer.TabularCompare.Core
             xmlWriter.WriteEndElement(); // </Header>
             xmlWriter.WriteStartElement("Body");
             xmlWriter.WriteStartElement("Execute", "urn:schemas-microsoft-com:xml-analysis");
+
             xmlWriter.WriteStartElement("Command");
             xmlWriter.WriteElementString("Statement", commandStatement);
             xmlWriter.WriteEndElement(); // </Command>
+
             xmlWriter.WriteStartElement("Properties");
-            xmlWriter.WriteStartElement("PropertyList");
-            xmlWriter.WriteElementString("Catalog", databaseName);
-            xmlWriter.WriteElementString("Format", "Tabular");
-            xmlWriter.WriteElementString("Content", "Data");
-            xmlWriter.WriteEndElement(); // </PropertyList>
+            if (!String.IsNullOrEmpty(catalog))
+            {
+                xmlWriter.WriteStartElement("PropertyList");
+                xmlWriter.WriteElementString("Catalog", catalog);
+                xmlWriter.WriteElementString("Format", "Tabular");
+                xmlWriter.WriteElementString("Content", "Data");
+                xmlWriter.WriteEndElement(); // </PropertyList>
+            }
             xmlWriter.WriteEndElement(); // </Properties>
+
             xmlWriter.WriteEndElement(); // </Execute>
             xmlWriter.WriteEndElement(); // </Body>
             xmlWriter.WriteEndElement(); // </Envelope>

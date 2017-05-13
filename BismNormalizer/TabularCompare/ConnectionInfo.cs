@@ -389,7 +389,7 @@ namespace BismNormalizer.TabularCompare
                     string dataDir = amoServer.ServerProperties["DataDir"].Value;
                     if (dataDir.EndsWith("\\")) dataDir = dataDir.Substring(0, dataDir.Length - 1);
                     string commandStatement = String.Format("SystemGetSubdirs '{0}'", dataDir);
-                    XmlNodeList rows = ExecuteXmlaCommand(amoServer, commandStatement);
+                    XmlNodeList rows = Core.Comparison.ExecuteXmlaCommand(amoServer, "", commandStatement);
 
                     string dbDir = "";
                     foreach (XmlNode row in rows)
@@ -508,73 +508,6 @@ $@"{{
             _compatibilityLevel = tabularDatabase.CompatibilityLevel;
             _directQuery = ((tabularDatabase.Model != null && tabularDatabase.Model.DefaultMode == Microsoft.AnalysisServices.Tabular.ModeType.DirectQuery) || 
                              tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.InMemoryWithDirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQueryWithInMemory);
-        }
-
-        /// <summary>
-        /// Executes an XMLA command on the tabular model for the connection.
-        /// </summary>
-        /// <param name="server"></param>
-        /// <param name="commandStatement"></param>
-        /// <returns>XmlNodeList containing results of the command execution.</returns>
-        public XmlNodeList ExecuteXmlaCommand(Microsoft.AnalysisServices.Core.Server server, string commandStatement)
-        {
-            XmlWriter xmlWriter = server.StartXmlaRequest(XmlaRequestType.Undefined);
-            WriteSoapEnvelopeWithCommandStatement(xmlWriter, server.SessionID, commandStatement);
-            System.Xml.XmlReader xmlReader = server.EndXmlaRequest();
-            xmlReader.MoveToContent();
-            string fullEnvelopeResponseFromServer = xmlReader.ReadOuterXml();
-            xmlReader.Close();
-
-            XmlDocument documentResponse = new XmlDocument();
-            documentResponse.LoadXml(fullEnvelopeResponseFromServer);
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(documentResponse.NameTable);
-            nsmgr.AddNamespace("myns1", "urn:schemas-microsoft-com:xml-analysis");
-            nsmgr.AddNamespace("myns2", "urn:schemas-microsoft-com:xml-analysis:rowset");
-            XmlNodeList rows = documentResponse.SelectNodes("//myns1:ExecuteResponse/myns1:return/myns2:root/myns2:row", nsmgr);
-            return rows;
-        }
-
-        private void WriteSoapEnvelopeWithCommandStatement(XmlWriter xmlWriter, string sessionId, string commandStatement)
-        {
-            //--------------------------------------------------------------------------------
-            // This is a sample of the XMLA request we'll write:
-            //
-            // <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-            //   <Header>
-            //     <Session soap:mustUnderstand="1" SessionId="THE SESSION ID HERE" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:schemas-microsoft-com:xml-analysis" />
-            //   </Header>
-            //   <Body>
-            //      <Execute xmlns="urn:schemas-microsoft-com:xml-analysis">
-            //          <Command>
-            //              <Statement>
-            //                  SystemGetSubdirs 'd:\Program Files\Microsoft SQL Server\MSAS11.MSSQLSERVER\OLAP\Data'
-            //              </Statement>
-            //          </Command>
-            //          <Properties/>
-            //      </Execute>
-            //   </Body>
-            // </Envelope>
-            //--------------------------------------------------------------------------------
-            xmlWriter.WriteStartElement("Envelope", "http://schemas.xmlsoap.org/soap/envelope/");
-            xmlWriter.WriteStartElement("Header");
-            if (sessionId != null)
-            {
-                xmlWriter.WriteStartElement("Session", "urn:schemas-microsoft-com:xml-analysis");
-                xmlWriter.WriteAttributeString("soap", "mustUnderstand", "http://schemas.xmlsoap.org/soap/envelope/", "1");
-                xmlWriter.WriteAttributeString("SessionId", sessionId);
-                xmlWriter.WriteEndElement(); // </Session>
-            }
-            xmlWriter.WriteEndElement(); // </Header>
-            xmlWriter.WriteStartElement("Body");
-            xmlWriter.WriteStartElement("Execute", "urn:schemas-microsoft-com:xml-analysis");
-            xmlWriter.WriteStartElement("Command");
-            xmlWriter.WriteElementString("Statement", commandStatement);
-            xmlWriter.WriteEndElement(); // </Command>
-            xmlWriter.WriteStartElement("Properties");
-            xmlWriter.WriteEndElement(); // </Properties>
-            xmlWriter.WriteEndElement(); // </Execute>
-            xmlWriter.WriteEndElement(); // </Body>
-            xmlWriter.WriteEndElement(); // </Envelope>
         }
     }
 }

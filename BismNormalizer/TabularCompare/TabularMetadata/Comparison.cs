@@ -639,7 +639,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    DeleteRelationship(childComparisonObject);
+                    DeleteRelationship(childComparisonObject);                                    //Relationship
                 }
             }
 
@@ -647,7 +647,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    CreateRelationship(childComparisonObject, comparisonObject.SourceObjectName);
+                    CreateRelationship(childComparisonObject, comparisonObject.SourceObjectName); //Relationship, Table
                 }
             }
 
@@ -655,7 +655,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    UpdateRelationship(childComparisonObject, comparisonObject.SourceObjectName);
+                    UpdateRelationship(childComparisonObject, comparisonObject.SourceObjectName); //Relationship, Table
                 }
             }
 
@@ -669,7 +669,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    DeleteMeasure(comparisonObject);
+                    DeleteMeasure(childComparisonObject);                                    //Measure
                 }
             }
 
@@ -677,7 +677,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    CreateMeasure(comparisonObject, comparisonObject.SourceObjectName);
+                    CreateMeasure(childComparisonObject, comparisonObject.SourceObjectName); //Measure, Table
                 }
             }
 
@@ -685,7 +685,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
-                    UpdateMeasure(comparisonObject, comparisonObject.SourceObjectName);
+                    UpdateMeasure(childComparisonObject, comparisonObject.SourceObjectName); //Measure, Table
                 }
             }
 
@@ -833,10 +833,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     switch (targetToDependency.ObjectType)
                     {
                         case CalcDependencyObjectType.Expression:
+                            //Does this expression have a dependency on the object about to be deleted?
+
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.ObjectName &&
-                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                (
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||  //This skip covers other objects for deletion that are being skipped + other objects not being touched in target that may depend on this one.
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Update   //The updated object may or may not depend on this one, but better to be on the safe side (especially if retain partitions).
+                                                                                                //Create is not possible to have a dependency on this one. Deletes are fine and will be allowed.
+                                )
+                            )
                             {
                                 string warningObject = $"Expression {comparisonObjectToCheck.TargetObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -847,10 +853,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             }
                             break;
                         case CalcDependencyObjectType.Partition:
+                            //Does this partition have a dependency on the object about to be deleted?
+
                             if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
                                 comparisonObjectToCheck.TargetObjectName == targetToDependency.TableName &&
-                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                (
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip ||  //This skip covers other objects for deletion that are being skipped + other objects not being touched in target that may depend on this one.
+                                    comparisonObjectToCheck.MergeAction == MergeAction.Update   //The updated object may or may not depend on this one, but better to be on the safe side (especially if retain partitions).
+                                                                                                //Create is not possible to have a dependency on this one. Deletes are fine and will be allowed.
+                                )
+                            )
                             {
                                 string warningObject = $"Table {comparisonObjectToCheck.TargetObjectName}/Partition {targetToDependency.ObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -884,11 +896,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     switch (sourceFromDependency.ReferencedObjectType)
                     {
                         case CalcDependencyObjectType.Expression:
+                            //Does the object about to be created/updated have a dependency on this expression?
+
                             if (!_targetTabularModel.Expressions.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Expression &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)  //Deletes are impossible for this object to depend on, so don't need to detect. Updates and other Skips can assume are fine, so don't need to detect.
                             {
                                 string warningObject = $"Expression {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -900,12 +914,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                             break;
                         case CalcDependencyObjectType.DataSource:
+                            //Does the object about to be created/updated have a dependency on this data source?
 
                             if (!_targetTabularModel.DataSources.ContainsName(sourceFromDependency.ReferencedObjectName) &&
                                 comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.DataSource &&
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)  //Deletes are impossible for this object to depend on, so don't need to detect. Updates and other Skips can assume are fine, so don't need to detect.
                             {
                                 string warningObject = $"Data Source {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
@@ -1058,7 +1073,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Delete)
             {
-                //Check any objects in target that depend on the DataSource are also going to be deleted
+                //Check any objects in target that depend on the expression are also going to be deleted
                 List<string> warningObjectList = new List<string>();
                 if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
                 {
@@ -1202,8 +1217,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName));
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    _targetTabularModel.UpdateTable(sourceTable, _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName), out string retainPartitionsMessage);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
                 }
                 else
                 {

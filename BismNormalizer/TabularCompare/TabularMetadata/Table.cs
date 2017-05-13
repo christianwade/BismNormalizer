@@ -16,9 +16,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     {
         private TabularModel _parentTabularModel;
         private Tom.Table _tomTable;
+        private string _partitionsDefinition;
+        private string _dataSourceName;
         private RelationshipCollection _relationships = new RelationshipCollection();
         private MeasureCollection _measures = new MeasureCollection();
-        private string _dataSourceName;
 
         /// <summary>
         /// Initializes a new instance of the Table class using multiple parameters.
@@ -37,6 +38,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// TabularModel object that the Table object belongs to.
         /// </summary>
         public TabularModel ParentTabularModel => _parentTabularModel;
+
+        /// <summary>
+        /// For tables with M/query partitions, return the partitions definition.
+        /// </summary>
+        public string PartitionsDefinition => _partitionsDefinition;
 
         /// <summary>
         /// Name of the DataSource object that the Table object belongs to.
@@ -62,6 +68,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             base.RemovePropertyFromObjectDefinition("measures");
 
+            _partitionsDefinition = "";
             _dataSourceName = "";
             bool hasMOrQueryPartition = false;
 
@@ -106,6 +113,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             if (hasMOrQueryPartition)
             {
+                _partitionsDefinition = base.RetrievePropertyFromObjectDefinition("partitions");
+
                 //Option to hide partitions only applies to M and query partitions (calculated tables hold dax defintitions in their partitions)
                 if (!_parentTabularModel.ComparisonInfo.OptionsInfo.OptionPartitions)
                 {

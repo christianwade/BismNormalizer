@@ -41,17 +41,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //Order table columns
             if (namedMetaDataObject is Tom.Table)
             {
-                _objectDefinition = SortTableColumns(_objectDefinition);
+                _objectDefinition = SortArray(_objectDefinition, "columns");
+                _objectDefinition = SortArray(_objectDefinition, "partitions");
             }
         }
 
-        private string SortTableColumns(string json)
+        private string SortArray(string json, string arrayName)
         {
             JObject jObj = (JObject)JsonConvert.DeserializeObject(json);
 
             foreach (var prop in jObj.Properties())
             {
-                if (prop.Value.Type == JTokenType.Array && prop.Name == "columns")
+                if (prop.Value.Type == JTokenType.Array && prop.Name == arrayName)
                 {
                     var vals = prop.Values()
                         .OfType<JObject>()
@@ -89,9 +90,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="propertyToRemove"></param>
         public void RemovePropertyFromObjectDefinition(string propertyToRemove)
         {
-            JObject jobj = JObject.Parse(_objectDefinition);
-            jobj.Remove(propertyToRemove);
-            _objectDefinition = jobj.ToString(Formatting.Indented);
+            JObject jObj = JObject.Parse(_objectDefinition);
+            jObj.Remove(propertyToRemove);
+            _objectDefinition = jObj.ToString(Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Retrieve a JSON property definition from the full object definition. An example is partitions.
+        /// </summary>
+        /// <param name="propertyToRetrieve"></param>
+        /// <returns>Property definition retrieved.</returns>
+        public string RetrievePropertyFromObjectDefinition(string propertyToRetrieve)
+        {
+            JObject jObj = JObject.Parse(_objectDefinition);
+            JProperty property = jObj.Property(propertyToRetrieve);
+            return property.ToString();
         }
 
         /// <summary>

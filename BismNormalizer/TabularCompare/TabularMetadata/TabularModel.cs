@@ -65,7 +65,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Don't need try to load from project here as will already be done before instantiated Comparison
                 throw new Amo.ConnectionException($"Could not connect to database {_connectionInfo.DatabaseName}");
             }
-            PopulateCalcDependencies();
+            InitializeCalcDependencies();
 
             //Shell model
             foreach (Tom.DataSource dataSource in _database.Model.DataSources)
@@ -141,10 +141,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        private void PopulateCalcDependencies()
+        private void InitializeCalcDependencies()
         {
+            _calcDependencies.Clear();
             string command = "SELECT * FROM $System.DISCOVER_CALC_DEPENDENCY WHERE OBJECT_TYPE = 'PARTITION' OR OBJECT_TYPE = 'M_EXPRESSION';";
-            XmlNodeList rows = _connectionInfo.ExecuteXmlaCommand(_server, command);
+            XmlNodeList rows = Core.Comparison.ExecuteXmlaCommand(_server, _connectionInfo.DatabaseName, command);
 
             foreach (XmlNode row in rows)
             {
@@ -417,9 +418,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// </summary>
         /// <param name="tableSource">Table object from the source tabular model to be updated in the target.</param>
         /// <param name="tableTarget">Table object in the target tabular model to be updated.</param>
-        public void UpdateTable(Table tableSource, Table tableTarget)
+        public void UpdateTable(Table tableSource, Table tableTarget, out string retainPartitionsMessage)
         {
             Tom.Table tomTableTargetOrig = tableTarget.TomTable.Clone();
+            string partitionsDefinitionOrig = tableTarget.PartitionsDefinition;
 
             List<SingleColumnRelationship> tomRelationshipsToAddBack = DeleteTable(tableTarget.Name);
             CreateTable(tableSource);
@@ -428,7 +430,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             tableTarget = _tables.FindByName(tableSource.Name);
 
             //retain partitions depending on option
-            RetainPartitions(tableTarget, tomTableTargetOrig);
+            RetainPartitions(tableTarget, tomTableTargetOrig, partitionsDefinitionOrig, out retainPartitionsMessage);
 
             //add back deleted relationships where possible
             foreach (SingleColumnRelationship tomRelationshipToAddBack in tomRelationshipsToAddBack)
@@ -454,10 +456,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        private void RetainPartitions(Table tableTarget, Tom.Table tomTableTargetOrig)
+        private void RetainPartitions(Table tableTarget, Tom.Table tomTableTargetOrig, string partitionsDefinitionOrig, out string retainPartitionsMessage)
         {
+            retainPartitionsMessage = "";
+
             //only applies to db deployment, and need option checked
-            if (_connectionInfo.UseProject || !_comparisonInfo.OptionsInfo.OptionRetainPartitions) return;
+            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions) return;
 
             //both new and orig tables need to have M or query partitions, else do nothing. Also need to match (won't copy query partition to M table). If a table has no partitions, do nothing.
             PartitionSourceType sourceTypeTarget = PartitionSourceType.None; 
@@ -466,7 +470,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 sourceTypeTarget = partition.SourceType;
                 break;
             }
-            if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query)) return;
+            if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query))
+            {
+                retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
+                return;
+            }
 
             PartitionSourceType sourceTypeOrig = PartitionSourceType.None;
             foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
@@ -474,17 +482,26 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 sourceTypeOrig = partitionOrig.SourceType;
                 break;
             }
-            if (!(sourceTypeOrig == PartitionSourceType.M || sourceTypeOrig == PartitionSourceType.Query)) return;
+            if (!(sourceTypeOrig == PartitionSourceType.M || sourceTypeOrig == PartitionSourceType.Query))
+            {
+                retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
+                return;
+            }
+
             if (sourceTypeOrig != sourceTypeTarget)
             {
-                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs(
-                    $"Table {tableTarget.Name} has been updated, but retain partitions has not been applied because source partition type is {sourceTypeTarget.ToString()} and target partition type is {sourceTypeOrig.ToString()}.",
-                    ValidationMessageType.Table,
-                    ValidationMessageStatus.Warning));
+                retainPartitionsMessage = $"Retain partitions not applied because source partition type is {sourceTypeTarget.ToString()} and target partition type is {sourceTypeOrig.ToString()}.";
+                return;
+            }
+
+            if (partitionsDefinitionOrig == tableTarget.PartitionsDefinition)
+            {
+                retainPartitionsMessage = "Source & target partition definitions match, so retain partitions not necessary.";
                 return;
             }
 
             //Actually do the retain partitions
+            retainPartitionsMessage = "Retain target partitions applied: ";
             tableTarget.TomTable.Partitions.Clear();
             foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
             {
@@ -495,7 +512,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     querySource.DataSource = _dataSources.FindByName(querySource.DataSource?.Name).TomDataSource;
                 }
                 tableTarget.TomTable.Partitions.Add(partitionTarget);
+                retainPartitionsMessage += $"{partitionTarget.Name}, ";
             }
+            retainPartitionsMessage = retainPartitionsMessage.Substring(0, retainPartitionsMessage.Length - 2) + ".";
         }
 
         #endregion

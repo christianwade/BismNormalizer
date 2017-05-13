@@ -50,6 +50,7 @@ namespace BismNormalizer.TabularCompare.UI
             chkRoles.Checked = _comparisonInfo.OptionsInfo.OptionRoles;
             //chkActions.Checked = _comparisonInfo.OptionsInfo.OptionActions;
             chkPartitions.Checked = _comparisonInfo.OptionsInfo.OptionPartitions;
+            chkRetainPartitions.Checked = _comparisonInfo.OptionsInfo.OptionRetainPartitions;
             chkMeasureDependencies.Checked = _comparisonInfo.OptionsInfo.OptionMeasureDependencies;
             string processingOption = _comparisonInfo.OptionsInfo.OptionProcessingOption.ToString();
             cboProcessingOption.Text = processingOption == "DoNotProcess" ? "Do Not Process" : processingOption;
@@ -67,6 +68,7 @@ namespace BismNormalizer.TabularCompare.UI
             //_comparisonInfo.OptionsInfo.OptionActions = chkActions.Checked;
             _comparisonInfo.OptionsInfo.OptionActions = false;
             _comparisonInfo.OptionsInfo.OptionPartitions = chkPartitions.Checked;
+            _comparisonInfo.OptionsInfo.OptionRetainPartitions = chkRetainPartitions.Checked;
             _comparisonInfo.OptionsInfo.OptionMeasureDependencies = chkMeasureDependencies.Checked;
             _comparisonInfo.OptionsInfo.OptionProcessingOption = (ProcessingOption)Enum.Parse(typeof(ProcessingOption), cboProcessingOption.Text.Replace(" ", ""));
             //_comparisonInfo.OptionsInfo.OptionTransaction = chkTransaction.Checked;
@@ -88,34 +90,13 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void Options_KeyDown(object sender, KeyEventArgs e)
         {
-            return;
-
-            #region Todo3 Uncomment for Chargeable Version
-
-            //if (e.Control && e.Shift && e.KeyCode == Keys.L)
-            //{
-            //    if (MessageBox.Show("Are you sure you want to deactivate the current license?\n\nNOTE: once deactivated on a particular machine, the licensing provider does not allow reactivation on that same machine.", "BISM Normalizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-            //    {
-            //        return;
-            //    }
-
-            //    CryptoLicense license = Comparison.CreateLicense();
-
-            //    if (license.IsEvaluationLicense() == true || license.Status == LicenseStatus.Deactivated)
-            //    {
-            //        MessageBox.Show("Unable to deactivate license. Either evaluation version or already deactivated.", "BISM Normalizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    }
-            //    else
-            //    {
-            //        license.Deactivate();
-            //        MessageBox.Show(license.GetAllStatusExceptionsAsString() + "\nPlease uninstall BISM Normalizer from Add/Remove Programs", "BISM Normalizer", MessageBoxButtons.OK, MessageBoxIcon.None);
-            //        Application.Exit();
-            //    }
-
-            //    license.Dispose();
-            //}
-
-            #endregion
+            if (e.Control && e.Shift && e.KeyCode == Keys.D)
+            {
+                if (MessageBox.Show($"Are you sure you want to toggle 192 Device DPI from optimized for {(Settings.Default.OptionHighDpiLocal ? "local" : "Remote Desktop")} to {(Settings.Default.OptionHighDpiLocal ? "Remote Desktop" : "local")}?", "BISM Normalizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    Settings.Default.OptionHighDpiLocal = !Settings.Default.OptionHighDpiLocal;
+                }
+            }
         }
 
         public ComparisonInfo ComparisonInfo

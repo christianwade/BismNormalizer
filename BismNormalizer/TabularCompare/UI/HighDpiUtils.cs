@@ -106,6 +106,19 @@ namespace BismNormalizer.TabularCompare.UI
                         HighDPIUtils.PrimaryFudgeFactor = 0.66f;
                         HighDPIUtils.SecondaryFudgeFactor = 1.1f;
                     }
+                    else if (factor >= 1.7)
+                    {
+                        if (!Settings.Default.OptionHighDpiLocal)
+                        {
+                            HighDPIUtils.PrimaryFudgeFactor = 0.72f;
+                            HighDPIUtils.SecondaryFudgeFactor = 1.6f;
+                        }
+                        else
+                        {
+                            HighDPIUtils.PrimaryFudgeFactor = 0.54f;
+                            HighDPIUtils.SecondaryFudgeFactor = 1.2f;
+                        }
+                    }
                 }
             }
             catch (Exception)

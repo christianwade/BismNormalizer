@@ -35,6 +35,7 @@
             this.chkMeasureDependencies = new System.Windows.Forms.CheckBox();
             this.chkPerspectives = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkRetainPartitions = new System.Windows.Forms.CheckBox();
             this.chkMergeCultures = new System.Windows.Forms.CheckBox();
             this.chkCultures = new System.Windows.Forms.CheckBox();
             this.chkMergePerspectives = new System.Windows.Forms.CheckBox();
@@ -50,7 +51,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(274, 348);
+            this.btnCancel.Location = new System.Drawing.Point(274, 393);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 21;
@@ -61,7 +62,7 @@
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(193, 348);
+            this.btnOK.Location = new System.Drawing.Point(193, 393);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 20;
@@ -76,7 +77,7 @@
             this.chkRoles.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRoles.Location = new System.Drawing.Point(13, 124);
             this.chkRoles.Name = "chkRoles";
-            this.chkRoles.Size = new System.Drawing.Size(99, 27);
+            this.chkRoles.Size = new System.Drawing.Size(86, 17);
             this.chkRoles.TabIndex = 5;
             this.chkRoles.Text = "Include roles";
             this.chkRoles.UseVisualStyleBackColor = true;
@@ -86,9 +87,9 @@
             this.chkPartitions.AutoSize = true;
             this.chkPartitions.Location = new System.Drawing.Point(13, 152);
             this.chkPartitions.Name = "chkPartitions";
-            this.chkPartitions.Size = new System.Drawing.Size(266, 27);
+            this.chkPartitions.Size = new System.Drawing.Size(224, 17);
             this.chkPartitions.TabIndex = 6;
-            this.chkPartitions.Text = "Consider M/query partitions when comparing tables";
+            this.chkPartitions.Text = "Consider partitions when comparing tables";
             this.chkPartitions.UseVisualStyleBackColor = true;
             // 
             // chkMeasureDependencies
@@ -98,9 +99,9 @@
             this.chkMeasureDependencies.AutoSize = true;
             this.chkMeasureDependencies.Checked = true;
             this.chkMeasureDependencies.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkMeasureDependencies.Location = new System.Drawing.Point(13, 176);
+            this.chkMeasureDependencies.Location = new System.Drawing.Point(13, 187);
             this.chkMeasureDependencies.Name = "chkMeasureDependencies";
-            this.chkMeasureDependencies.Size = new System.Drawing.Size(60, 27);
+            this.chkMeasureDependencies.Size = new System.Drawing.Size(47, 17);
             this.chkMeasureDependencies.TabIndex = 7;
             this.chkMeasureDependencies.Text = "XXX";
             this.chkMeasureDependencies.UseVisualStyleBackColor = true;
@@ -110,7 +111,7 @@
             this.chkPerspectives.AutoSize = true;
             this.chkPerspectives.Location = new System.Drawing.Point(13, 25);
             this.chkPerspectives.Name = "chkPerspectives";
-            this.chkPerspectives.Size = new System.Drawing.Size(137, 27);
+            this.chkPerspectives.Size = new System.Drawing.Size(124, 17);
             this.chkPerspectives.TabIndex = 3;
             this.chkPerspectives.Text = "Include perspectives";
             this.chkPerspectives.UseVisualStyleBackColor = true;
@@ -130,10 +131,20 @@
             this.groupBox1.Controls.Add(this.chkRoles);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(337, 223);
+            this.groupBox1.Size = new System.Drawing.Size(337, 231);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Comparison Options";
+            // 
+            // chkRetainPartitions
+            // 
+            this.chkRetainPartitions.AutoSize = true;
+            this.chkRetainPartitions.Location = new System.Drawing.Point(13, 91);
+            this.chkRetainPartitions.Name = "chkRetainPartitions";
+            this.chkRetainPartitions.Size = new System.Drawing.Size(247, 17);
+            this.chkRetainPartitions.TabIndex = 10;
+            this.chkRetainPartitions.Text = "For table updates, retain partitions (not replace)";
+            this.chkRetainPartitions.UseVisualStyleBackColor = true;
             // 
             // chkMergeCultures
             // 
@@ -141,7 +152,7 @@
             this.chkMergeCultures.Enabled = false;
             this.chkMergeCultures.Location = new System.Drawing.Point(37, 98);
             this.chkMergeCultures.Name = "chkMergeCultures";
-            this.chkMergeCultures.Size = new System.Drawing.Size(283, 27);
+            this.chkMergeCultures.Size = new System.Drawing.Size(270, 17);
             this.chkMergeCultures.TabIndex = 9;
             this.chkMergeCultures.Text = "For culture updates, merge translations (not replace)";
             this.chkMergeCultures.UseVisualStyleBackColor = true;
@@ -151,7 +162,7 @@
             this.chkCultures.AutoSize = true;
             this.chkCultures.Location = new System.Drawing.Point(15, 75);
             this.chkCultures.Name = "chkCultures";
-            this.chkCultures.Size = new System.Drawing.Size(114, 27);
+            this.chkCultures.Size = new System.Drawing.Size(101, 17);
             this.chkCultures.TabIndex = 8;
             this.chkCultures.Text = "Include cultures";
             this.chkCultures.UseVisualStyleBackColor = true;
@@ -163,7 +174,7 @@
             this.chkMergePerspectives.Enabled = false;
             this.chkMergePerspectives.Location = new System.Drawing.Point(35, 48);
             this.chkMergePerspectives.Name = "chkMergePerspectives";
-            this.chkMergePerspectives.Size = new System.Drawing.Size(300, 27);
+            this.chkMergePerspectives.Size = new System.Drawing.Size(287, 17);
             this.chkMergePerspectives.TabIndex = 4;
             this.chkMergePerspectives.Text = "For perspective updates, merge selections (not replace)";
             this.chkMergePerspectives.UseVisualStyleBackColor = true;
@@ -172,12 +183,13 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.chkRetainPartitions);
             this.groupBox2.Controls.Add(this.chkAffectedTables);
             this.groupBox2.Controls.Add(this.cboProcessingOption);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(12, 241);
+            this.groupBox2.Location = new System.Drawing.Point(12, 249);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(337, 99);
+            this.groupBox2.Size = new System.Drawing.Size(337, 126);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Database Deployment";
@@ -189,7 +201,7 @@
             this.chkAffectedTables.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkAffectedTables.Location = new System.Drawing.Point(13, 64);
             this.chkAffectedTables.Name = "chkAffectedTables";
-            this.chkAffectedTables.Size = new System.Drawing.Size(172, 27);
+            this.chkAffectedTables.Size = new System.Drawing.Size(159, 17);
             this.chkAffectedTables.TabIndex = 9;
             this.chkAffectedTables.Text = "Process only affected tables";
             this.chkAffectedTables.UseVisualStyleBackColor = true;
@@ -223,7 +235,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(361, 383);
+            this.ClientSize = new System.Drawing.Size(361, 428);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -261,5 +273,6 @@
         private System.Windows.Forms.CheckBox chkAffectedTables;
         private System.Windows.Forms.CheckBox chkMergeCultures;
         private System.Windows.Forms.CheckBox chkCultures;
+        private System.Windows.Forms.CheckBox chkRetainPartitions;
     }
 }

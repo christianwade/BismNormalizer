@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ComparisonControl));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlHeader = new System.Windows.Forms.Panel();
             this.spltSourceTarget = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
@@ -42,6 +42,7 @@
             this.btnCompareTabularModels = new System.Windows.Forms.ToolStripButton();
             this.ddSelectActions = new System.Windows.Forms.ToolStripDropDownButton();
             this.mnuHideSkipObjects = new System.Windows.Forms.ToolStripMenuItem();
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuShowSkipObjects = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuSkipAllObjectsMissingInSource = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,7 +68,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtTargetObjectDefinition = new BismNormalizer.TabularCompare.UI.SynchronizedScrollRichTextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).BeginInit();
             this.spltSourceTarget.Panel1.SuspendLayout();
@@ -213,6 +213,13 @@
             this.mnuHideSkipObjects.Size = new System.Drawing.Size(303, 22);
             this.mnuHideSkipObjects.Text = "Hide Skip Objects";
             this.mnuHideSkipObjects.Click += new System.EventHandler(this.mnuHideSkipObjects_Click);
+            // 
+            // hideSkipObjectsWithSameDefinitionToolStripMenuItem
+            // 
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Name = "hideSkipObjectsWithSameDefinitionToolStripMenuItem";
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Text = "Hide Skip Objects with Same Definition";
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Click += new System.EventHandler(this.mnuHideSkipObjectsWithSameDefinition_Click);
             // 
             // mnuShowSkipObjects
             // 
@@ -375,24 +382,24 @@
             this.treeGridComparisonResults.AllowUserToDeleteRows = false;
             this.treeGridComparisonResults.AllowUserToResizeRows = false;
             this.treeGridComparisonResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.treeGridComparisonResults.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.treeGridComparisonResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.treeGridComparisonResults.Comparison = null;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.treeGridComparisonResults.DefaultCellStyle = dataGridViewCellStyle2;
             this.treeGridComparisonResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeGridComparisonResults.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.treeGridComparisonResults.ImageList = this.TreeGridImageList;
@@ -506,13 +513,6 @@
             this.label5.Size = new System.Drawing.Size(119, 13);
             this.label5.TabIndex = 1;
             this.label5.Text = "Target Object Definition";
-            // 
-            // hideSkipObjectsWithSameDefinitionToolStripMenuItem
-            // 
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Name = "hideSkipObjectsWithSameDefinitionToolStripMenuItem";
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Text = "Hide Skip Objects with Same Definition";
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Click += new System.EventHandler(this.mnuHideSkipObjectsWithSameDefinition_Click);
             // 
             // ComparisonControl
             // 

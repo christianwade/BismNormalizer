@@ -743,6 +743,12 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
 
             #region Tables
 
+            //retain partitions depending on option
+            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+            {
+                OnValidationMessage(new ValidationMessageEventArgs("Option to retain partitions is set, but it is not supported for models with compatibility level 1100 or 1103. It will be ignored.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+            }
+
             // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {

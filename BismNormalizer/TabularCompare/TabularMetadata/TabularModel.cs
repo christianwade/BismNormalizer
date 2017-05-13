@@ -413,7 +413,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         /// <summary>
-        /// Update tablre associated with the TabularModel object.
+        /// Update table associated with the TabularModel object.
         /// </summary>
         /// <param name="tableSource">Table object from the source tabular model to be updated in the target.</param>
         /// <param name="tableTarget">Table object in the target tabular model to be updated.</param>
@@ -426,6 +426,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             //get back the newly created table
             tableTarget = _tables.FindByName(tableSource.Name);
+
+            //retain partitions depending on option
+            RetainPartitions(tableTarget, tomTableTargetOrig);
 
             //add back deleted relationships where possible
             foreach (SingleColumnRelationship tomRelationshipToAddBack in tomRelationshipsToAddBack)
@@ -448,6 +451,50 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (Tom.Measure tomMeasureToAddBack in tomTableTargetOrig.Measures)
             {
                 tableTarget.CreateMeasure(tomMeasureToAddBack);
+            }
+        }
+
+        private void RetainPartitions(Table tableTarget, Tom.Table tomTableTargetOrig)
+        {
+            //only applies to db deployment, and need option checked
+            if (_connectionInfo.UseProject || !_comparisonInfo.OptionsInfo.OptionRetainPartitions) return;
+
+            //both new and orig tables need to have M or query partitions, else do nothing. Also need to match (won't copy query partition to M table). If a table has no partitions, do nothing.
+            PartitionSourceType sourceTypeTarget = PartitionSourceType.None; 
+            foreach (Partition partition in tableTarget.TomTable.Partitions)
+            {
+                sourceTypeTarget = partition.SourceType;
+                break;
+            }
+            if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query)) return;
+
+            PartitionSourceType sourceTypeOrig = PartitionSourceType.None;
+            foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
+            {
+                sourceTypeOrig = partitionOrig.SourceType;
+                break;
+            }
+            if (!(sourceTypeOrig == PartitionSourceType.M || sourceTypeOrig == PartitionSourceType.Query)) return;
+            if (sourceTypeOrig != sourceTypeTarget)
+            {
+                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs(
+                    $"Table {tableTarget.Name} has been updated, but retain partitions has not been applied because source partition type is {sourceTypeTarget.ToString()} and target partition type is {sourceTypeOrig.ToString()}.",
+                    ValidationMessageType.Table,
+                    ValidationMessageStatus.Warning));
+                return;
+            }
+
+            //Actually do the retain partitions
+            tableTarget.TomTable.Partitions.Clear();
+            foreach (Partition partitionOrig in tomTableTargetOrig.Partitions)
+            {
+                Partition partitionTarget = partitionOrig.Clone();
+                if (partitionTarget.SourceType == PartitionSourceType.Query)
+                {
+                    QueryPartitionSource querySource = (QueryPartitionSource)partitionTarget.Source;
+                    querySource.DataSource = _dataSources.FindByName(querySource.DataSource?.Name).TomDataSource;
+                }
+                tableTarget.TomTable.Partitions.Add(partitionTarget);
             }
         }
 

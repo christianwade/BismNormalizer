@@ -580,7 +580,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #region DataSources
 
-            // do deletions first to minimize chance of conflict
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
             {
                 DeleteDataSource(comparisonObject);

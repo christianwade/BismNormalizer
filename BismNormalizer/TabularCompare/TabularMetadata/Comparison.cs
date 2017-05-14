@@ -818,7 +818,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #region Calc dependencies validation
 
-        private bool ContainsToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
+        private bool HasBlockingToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
             //Check any objects in target that depend on this object are also going to be deleted.
@@ -840,7 +840,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     comparisonObjectToCheck.MergeAction == MergeAction.Skip ||       //Skip covers if this expression is for deletion and being skipped, or if same defintion and not being touched in target (in either case, dependency will remain).
                                     (
                                         comparisonObjectToCheck.MergeAction == MergeAction.Update && //Updates (if successful) are fine because covered by source dependency checking. So need to check if the update will be unsuccessful (and therefore dependency will remain).
-                                        ContainsFromDependenciesInSource(comparisonObjectToCheck.TargetObjectName, CalcDependencyObjectType.Expression)
+                                        HasBlockingFromDependenciesInSource(comparisonObjectToCheck.TargetObjectName, CalcDependencyObjectType.Expression)
                                     )                                                                //Create expression is not possible to have a dependency on this object about to be deleted. Delete expression is fine.
                                 )
                             )
@@ -863,7 +863,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     (
                                         comparisonObjectToCheck.MergeAction == MergeAction.Update && //Updates (if successful) are fine because covered by source dependency checking. So need to check if the update will be unsuccessful (and therefore dependency will remain).
                                         (
-                                            ContainsFromDependenciesInSourceForTable(_sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName)) ||
+                                            HasBlockingFromDependenciesInSourceForTable(_sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName)) ||
                                             _targetTabularModel.CanRetainPartitions(                 //But also check if doing retain partitions on this table (if so, dependency will remain).
                                                 _sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
                                                 _targetTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
@@ -889,7 +889,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
+        private bool HasBlockingFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
         {
             //For creation and updates.
             //Check any objects in source that this object depends on are also going to be created/updated if not already in target.
@@ -968,18 +968,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType)
+        private bool HasBlockingFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType)
         {
             List<string> warningObjectList = new List<string>();
-            return ContainsFromDependenciesInSource(sourceObjectName, sourceObjectType, ref warningObjectList, out bool nonStructuredDataSource);
+            return HasBlockingFromDependenciesInSource(sourceObjectName, sourceObjectType, ref warningObjectList, out bool nonStructuredDataSource);
         }
 
-        private bool ContainsFromDependenciesInSourceForTable(Table sourceTable)
+        private bool HasBlockingFromDependenciesInSourceForTable(Table sourceTable)
         {
             bool returnVal = false;
             foreach (Partition partition in sourceTable.TomTable.Partitions)
             {
-                if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition))
+                if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition))
                 {
                     returnVal = true;
                     break;
@@ -988,7 +988,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool ContainsOldPartitionDependency(Partition partition, ref List<string> warningObjectList)
+        private bool HasBlockingOldPartitionDependency(Partition partition, ref List<string> warningObjectList)
         {
             //Only for old partition types
 
@@ -1029,7 +1029,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in target that depend on the DataSource are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                bool toDependencies = ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
+                bool toDependencies = HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
 
                 //For old non-M partitions, check if any such tables have reference to this DataSource
                 foreach (Table table in _targetTabularModel.Tables)
@@ -1106,7 +1106,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in target that depend on the expression are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
+                if (!HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
                     OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1124,7 +1124,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!HasBlockingFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
                     OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1149,7 +1149,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!ContainsFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!HasBlockingFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
                     OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1191,7 +1191,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                     {
                         fromDependencies = true;
                         if (nonStructuredDataSource)
@@ -1199,7 +1199,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
 
                     //For old non-M partitions, check if data source references exist
-                    if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                    if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
                         fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
                 }
 
@@ -1238,7 +1238,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     //Check any objects in source that this table depends on are also going to be created if not already in target
                     foreach (Partition partition in tableSource.TomTable.Partitions)
                     {
-                        if (ContainsFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                        if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                         {
                             fromDependencies = true;
                             if (nonStructuredDataSource)
@@ -1246,7 +1246,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         }
 
                         //For old non-M partitions, check if data source references exist
-                        if (ContainsOldPartitionDependency(partition, ref warningObjectList))
+                        if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
                             fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
                     }
                 }

@@ -1235,7 +1235,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //Will this table retain partitions? If yes, don't need to bother with source dependency (target dependency checking will cover for deletes).
                 if (!_targetTabularModel.CanRetainPartitions(tableSource, tableTarget, out string retainPartitionsMessageTemp))
                 {
-                    //Check any objects in source that this table depends on are also going to be created if not already in target
+                    //Check any objects in source that this table depends on are also going to be created/updated if not already in target
                     foreach (Partition partition in tableSource.TomTable.Partitions)
                     {
                         if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))

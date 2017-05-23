@@ -55,15 +55,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             _referencedObjectName = referencedObjectName;
             _referencedExpression = referencedExpression;
 
-            //cbw todo delete:
-            if (_objectName == "FactInternetSales" && _expression.Contains("#\"Filtered Rows\""))
-            {
-                _objectName = "InternetSalesFiltered";
-            }
-            if (_objectName == "FactInternetSales" && _expression.Contains("#\"Merged Queries\""))
-            {
-                _objectName = "InternetSalesMerged";
-            }
+            ////cbw todo delete:
+            //if (_objectName == "FactInternetSales" && _expression.Contains("#\"Filtered Rows\""))
+            //{
+            //    _objectName = "InternetSalesFiltered";
+            //}
+            //if (_objectName == "FactInternetSales" && _expression.Contains("#\"Merged Queries\""))
+            //{
+            //    _objectName = "InternetSalesMerged";
+            //}
         }
 
         /// <summary>

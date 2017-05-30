@@ -1034,7 +1034,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 List<string> warningObjectList = new List<string>();
                 bool toDependencies = HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
 
-                //For old non-M partitions, check if any such tables have reference to this DataSource
+                //For old non-M partitions, check if any such tables have reference to this DataSource, and will not be deleted
                 foreach (Table table in _targetTabularModel.Tables)
                 {
                     foreach (Partition partition in table.TomTable.Partitions)
@@ -1044,10 +1044,25 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         {
                             foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
                             {
-                                if (comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
-                                    comparisonObjectToCheck.SourceObjectName == table.Name &&
-                                    comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&
-                                    comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                                if (
+                                       (
+                                            comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
+                                            comparisonObjectToCheck.TargetObjectName == table.Name
+                                       ) &&
+                                       (
+                                           (    //Skipped deletes, dependency will remain
+                                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInSource &&
+                                                comparisonObjectToCheck.MergeAction == MergeAction.Skip
+                                           ) ||
+                                           (    //Same definition, dependency will remain
+                                                comparisonObjectToCheck.Status == ComparisonObjectStatus.SameDefinition
+                                           ) ||
+                                           (    //Different definition, and skip update (source already dependencies covered), dependency will remain
+                                                comparisonObjectToCheck.Status == ComparisonObjectStatus.DifferentDefinitions &&
+                                                comparisonObjectToCheck.MergeAction == MergeAction.Skip
+                                           )
+                                       )
+                                )
                                 {
                                     string warningObject = $"Table {table.Name}/Partition {partition.Name}";
                                     if (!warningObjectList.Contains(warningObject))
@@ -1391,11 +1406,17 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                //If we get here, can create measure/kpi
                 Table tableSource = _sourceTabularModel.Tables.FindByName(tableName);
                 Table tableTarget = _targetTabularModel.Tables.FindByName(tableName);
-                Measure measureSource = tableSource.Measures.FindByName(comparisonObject.SourceObjectInternalName);
 
+                if (tableTarget == null)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create measure / KPI {comparisonObject.SourceObjectInternalName} because (considering changes) target table does not exist.", ValidationMessageType.Measure, ValidationMessageStatus.Warning));
+                    return;
+                }
+
+                //If we get here, can create measure/kpi
+                Measure measureSource = tableSource.Measures.FindByName(comparisonObject.SourceObjectInternalName);
                 tableTarget.CreateMeasure(measureSource.TomMeasure);
                 OnValidationMessage(new ValidationMessageEventArgs($"Create measure / KPI {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.Measure, ValidationMessageStatus.Informational));
             }

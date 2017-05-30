@@ -821,7 +821,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private bool HasBlockingToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
-            //Check any objects in target that depend on this object are also going to be deleted.
+            //Check any objects in target that depend on this object are also going to be deleted or updated.
 
             bool returnVal = false;
             CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(targetObjectType, targetObjectName);
@@ -840,7 +840,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     comparisonObjectToCheck.MergeAction == MergeAction.Skip ||       //Skip covers if this expression is for deletion and being skipped, or if same defintion and not being touched in target (in either case, dependency will remain).
                                     (
                                         comparisonObjectToCheck.MergeAction == MergeAction.Update && //Updates (if successful) are fine because covered by source dependency checking. So need to check if the update will be unsuccessful (and therefore dependency will remain).
-                                        HasBlockingFromDependenciesInSource(comparisonObjectToCheck.TargetObjectName, CalcDependencyObjectType.Expression)
+                                        HasBlockingFromDependenciesInSource(
+                                            "", //Expressions don't have table value
+                                            comparisonObjectToCheck.TargetObjectName, 
+                                            CalcDependencyObjectType.Expression)
                                     )                                                                //Create expression is not possible to have a dependency on this object about to be deleted. Delete expression is fine.
                                 )
                             )
@@ -889,15 +892,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool HasBlockingFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
+        private bool HasBlockingFromDependenciesInSource(string sourceTableName, string sourceObjectName, CalcDependencyObjectType sourceObjectType, ref List<string> warningObjectList, out bool nonStructuredDataSource)
         {
             //For creation and updates.
-            //Check any objects in source that this object depends on are also going to be created/updated if not already in target.
+            //Check any objects in source that this object depends on are also going to be created OR updated (if not already in target).
 
             bool returnVal = false;
             nonStructuredDataSource = false;
 
-            CalcDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(sourceObjectType, sourceObjectName);
+            CalcDependencyCollection sourceFromDepdendencies = _sourceTabularModel.MDependencies.DependenciesReferenceFrom(sourceObjectType, sourceTableName, sourceObjectName);
             foreach (CalcDependency sourceFromDependency in sourceFromDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -968,10 +971,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return returnVal;
         }
 
-        private bool HasBlockingFromDependenciesInSource(string sourceObjectName, CalcDependencyObjectType sourceObjectType)
+        private bool HasBlockingFromDependenciesInSource(string sourceTableName, string sourceObjectName, CalcDependencyObjectType sourceObjectType)
         {
             List<string> warningObjectList = new List<string>();
-            return HasBlockingFromDependenciesInSource(sourceObjectName, sourceObjectType, ref warningObjectList, out bool nonStructuredDataSource);
+            return HasBlockingFromDependenciesInSource(sourceTableName, sourceObjectName, sourceObjectType, ref warningObjectList, out bool nonStructuredDataSource);
         }
 
         private bool HasBlockingFromDependenciesInSourceForTable(Table sourceTable)
@@ -979,7 +982,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             bool returnVal = false;
             foreach (Partition partition in sourceTable.TomTable.Partitions)
             {
-                if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition))
+                if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition))
                 {
                     returnVal = true;
                     break;
@@ -1113,7 +1116,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 else
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                    string message = $"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.";
+                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+                    {
+                        message += " Note: the option to retain partitions is on, which may be affecting this.";
+                    }
+                    OnValidationMessage(new ValidationMessageEventArgs(message, ValidationMessageType.Expression, ValidationMessageStatus.Warning));
                 }
             }
         }
@@ -1124,7 +1132,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!HasBlockingFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!HasBlockingFromDependenciesInSource(
+                    "", //can assume blank table for an expression
+                    comparisonObject.SourceObjectName, 
+                    CalcDependencyObjectType.Expression, 
+                    ref warningObjectList, 
+                    out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.CreateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName).TomExpression);
                     OnValidationMessage(new ValidationMessageEventArgs($"Create expression [{comparisonObject.SourceObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1149,7 +1162,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             {
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
-                if (!HasBlockingFromDependenciesInSource(comparisonObject.SourceObjectName, CalcDependencyObjectType.Expression, ref warningObjectList, out bool nonStructuredDataSource))
+                if (!HasBlockingFromDependenciesInSource(
+                    "", //Can assume blank table for expression
+                    comparisonObject.SourceObjectName, 
+                    CalcDependencyObjectType.Expression, 
+                    ref warningObjectList, 
+                    out bool nonStructuredDataSource))
                 {
                     _targetTabularModel.UpdateExpression(_sourceTabularModel.Expressions.FindByName(comparisonObject.SourceObjectName), _targetTabularModel.Expressions.FindByName(comparisonObject.TargetObjectName));
                     OnValidationMessage(new ValidationMessageEventArgs($"Update expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1191,7 +1209,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Partition partition in sourceTable.TomTable.Partitions)
                 {
                     //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                     {
                         fromDependencies = true;
                         if (nonStructuredDataSource)
@@ -1238,7 +1256,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     //Check any objects in source that this table depends on are also going to be created/updated if not already in target
                     foreach (Partition partition in tableSource.TomTable.Partitions)
                     {
-                        if (HasBlockingFromDependenciesInSource(partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                        if (HasBlockingFromDependenciesInSource(tableSource.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
                         {
                             fromDependencies = true;
                             if (nonStructuredDataSource)

@@ -14,6 +14,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private string _objectName;
         private string _expression;
         private CalcDependencyObjectType _referencedObjectType;
+        private string _referencedTableName;
         private string _referencedObjectName;
         private string _referencedExpression;
 
@@ -21,7 +22,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Initializes a new instance of an CalcDependency class using multiple parameters    .
         /// </summary>
         /// <param name="parentTabularModel">TabularModel object that the CalcDependency object belongs to.</param>
-        public CalcDependency(TabularModel parentTabularModel, string objectType, string tableName, string objectName, string expression, string referencedObjectType, string referencedObjectName, string referencedExpression)
+        public CalcDependency(TabularModel parentTabularModel, string objectType, string tableName, string objectName, string expression, string referencedObjectType, string referencedTableName, string referencedObjectName, string referencedExpression)
         {
             _parentTabularModel = parentTabularModel;
             switch (objectType)
@@ -52,18 +53,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 default:
                     break;
             }
+            _referencedTableName = referencedTableName;
             _referencedObjectName = referencedObjectName;
             _referencedExpression = referencedExpression;
-
-            ////cbw todo delete:
-            //if (_objectName == "FactInternetSales" && _expression.Contains("#\"Filtered Rows\""))
-            //{
-            //    _objectName = "InternetSalesFiltered";
-            //}
-            //if (_objectName == "FactInternetSales" && _expression.Contains("#\"Merged Queries\""))
-            //{
-            //    _objectName = "InternetSalesMerged";
-            //}
         }
 
         /// <summary>
@@ -90,6 +82,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// The referenced object type of the dependency.
         /// </summary>
         public CalcDependencyObjectType ReferencedObjectType => _referencedObjectType;
+
+        /// <summary>
+        /// The referenced object name of the dependency.
+        /// </summary>
+        public string ReferencedTableName => _referencedTableName;
 
         /// <summary>
         /// The referenced object name of the dependency.

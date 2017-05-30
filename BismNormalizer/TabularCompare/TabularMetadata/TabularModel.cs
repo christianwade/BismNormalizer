@@ -154,6 +154,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 string objectName = "";
                 string expression = "";
                 string referencedObjectType = "";
+                string referencedTableName = "";
                 string referencedObjectName = "";
                 string referencedExpression = "";
 
@@ -164,6 +165,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     if (col.Name == "OBJECT") objectName = col.InnerText;
                     if (col.Name == "EXPRESSION") expression = col.InnerText;
                     if (col.Name == "REFERENCED_OBJECT_TYPE") referencedObjectType = col.InnerText;
+                    if (col.Name == "REFERENCED_TABLE") referencedTableName = col.InnerText;
                     if (col.Name == "REFERENCED_OBJECT") referencedObjectName = col.InnerText;
                     if (col.Name == "REFERENCED_EXPRESSION") referencedExpression = col.InnerText;
                 }
@@ -174,6 +176,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     objectName,
                     expression,
                     referencedObjectType,
+                    referencedTableName,
                     referencedObjectName,
                     referencedExpression
                     )

@@ -14,20 +14,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="objectType">Type of the object to look up dependencies.</param>
         /// <param name="objectName">Name of the object to look up dependencies.</param>
         /// <returns></returns>
-        public CalcDependencyCollection DependenciesReferenceFrom(CalcDependencyObjectType objectType, string objectName)
+        public CalcDependencyCollection DependenciesReferenceFrom(CalcDependencyObjectType objectType, string tableName, string objectName)
         {
             CalcDependencyCollection returnVal = new CalcDependencyCollection();
-            LookUpDependenciesReferenceFrom(objectType, objectName, returnVal);
+            LookUpDependenciesReferenceFrom(objectType, tableName, objectName, returnVal);
             return returnVal;
         }
 
-        private void LookUpDependenciesReferenceFrom(CalcDependencyObjectType objectType, string objectName, CalcDependencyCollection returnVal)
+        private void LookUpDependenciesReferenceFrom(CalcDependencyObjectType objectType, string tableName, string objectName, CalcDependencyCollection returnVal)
         {
             foreach (CalcDependency calcDependency in this)
             {
-                if (calcDependency.ObjectType == objectType && calcDependency.ObjectName == objectName)
+                if (calcDependency.ObjectType == objectType && calcDependency.TableName == tableName && calcDependency.ObjectName == objectName)
                 {
-                    LookUpDependenciesReferenceFrom(calcDependency.ReferencedObjectType, calcDependency.ReferencedObjectName, returnVal);
+                    LookUpDependenciesReferenceFrom(calcDependency.ReferencedObjectType, calcDependency.ReferencedTableName, calcDependency.ReferencedObjectName, returnVal);
                     returnVal.Add(calcDependency);
                 }
             }

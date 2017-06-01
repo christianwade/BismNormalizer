@@ -47,20 +47,36 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void ImpersonationCredentials_Load(object sender, EventArgs e)
         {
+            //if (_dpiScaleFactor > 1)
+            //{
+            //    //DPI
+            //    _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+            //    float fudgeFactor = HighDPIUtils.SecondaryFudgeFactor;
+            //    this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
+            //    this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+            //    foreach (Control control in HighDPIUtils.GetChildInControl(this))
+            //    {
+            //        control.Font = new Font(control.Font.FontFamily,
+            //                                control.Font.Size * _dpiScaleFactor * fudgeFactor,
+            //                                control.Font.Style);
+            //    }
+            //}
+
             if (_dpiScaleFactor > 1)
             {
                 //DPI
-                _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
-                float fudgeFactor = HighDPIUtils.SecondaryFudgeFactor;
-                this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
-                this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
+                float dpiScaleFactorFudged = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+
+                this.Scale(new SizeF(dpiScaleFactorFudged * 0.44f, dpiScaleFactorFudged * 0.38f));
+                this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged * 0.6f);
                 foreach (Control control in HighDPIUtils.GetChildInControl(this))
                 {
                     control.Font = new Font(control.Font.FontFamily,
-                                            control.Font.Size * _dpiScaleFactor * fudgeFactor,
-                                            control.Font.Style);
+                                      control.Font.Size * dpiScaleFactorFudged * HighDPIUtils.PrimaryFudgeFactor,
+                                      control.Font.Style);
                 }
             }
+
 
             this.KeyPreview = true;
 

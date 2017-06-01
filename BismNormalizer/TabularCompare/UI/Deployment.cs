@@ -188,6 +188,7 @@ namespace BismNormalizer.TabularCompare.UI
             credentialsForm.Font = new Font(credentialsForm.Font.FontFamily,
                                             credentialsForm.Font.Size * _dpiScaleFactor,
                                             credentialsForm.Font.Style);
+            credentialsForm.DpiScaleFactor = _dpiScaleFactor;
             credentialsForm.ShowDialog();
             if (credentialsForm.DialogResult == DialogResult.OK)
             {

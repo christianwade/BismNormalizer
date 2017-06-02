@@ -56,6 +56,7 @@ namespace BismNormalizer.TabularCompare.UI
                 _deployStatus = DeploymentStatus.Deploying;
 
                 _comparison.PasswordPrompt += HandlePasswordPrompt;
+                _comparison.BlobKeyPrompt += HandleBlobPrompt;
                 _comparison.DeploymentMessage += HandleDeploymentMessage;
                 _comparison.DeploymentComplete += HandleDeploymentComplete;
 
@@ -199,6 +200,30 @@ namespace BismNormalizer.TabularCompare.UI
             else
             {
                 e.Password = null;
+                e.UserCancelled = true;
+            }
+        }
+
+        private void HandleBlobPrompt(object sender, BlobKeyEventArgs e)
+        {
+            BlobCredentials credentialsForm = new BlobCredentials();
+            credentialsForm.AuthenticationKind = e.AuthenticationKind;
+            credentialsForm.ConnectionName = e.DataSourceName;
+            credentialsForm.StartPosition = FormStartPosition.CenterParent;
+            credentialsForm.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor));
+            credentialsForm.Font = new Font(credentialsForm.Font.FontFamily,
+                                            credentialsForm.Font.Size * _dpiScaleFactor,
+                                            credentialsForm.Font.Style);
+            credentialsForm.DpiScaleFactor = _dpiScaleFactor;
+            credentialsForm.ShowDialog();
+            if (credentialsForm.DialogResult == DialogResult.OK)
+            {
+                e.AccountKey = credentialsForm.AccountKey;
+                e.UserCancelled = false;
+            }
+            else
+            {
+                e.AccountKey = null;
                 e.UserCancelled = true;
             }
         }

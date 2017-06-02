@@ -1396,8 +1396,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //   3. Re-apply the passwords.
                 //Above steps allow backing out of deployment.
 
-                List<PasswordPromptEventArgs> argsAllConnections = new List<PasswordPromptEventArgs>();
-
                 //Set passwords
                 foreach (Tom.DataSource dataSource in _database.Model.DataSources)
                 {
@@ -1427,9 +1425,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                         _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
                                         return;
                                     }
-                                    structuredDataSource.Credential.Username    = args.Username;
+                                    structuredDataSource.Credential.Username = args.Username;
                                     structuredDataSource.Credential.Password = args.Password;
-                                    argsAllConnections.Add(args);
                                     break;
 
                                 case "UsernamePassword":
@@ -1450,8 +1447,31 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     }
                                     structuredDataSource.Credential.Username = args.Username;
                                     structuredDataSource.Credential.Password = args.Password;
-                                    argsAllConnections.Add(args);
                                     break;
+
+                                case "Key":
+                                    //if (structuredDataSource.ConnectionDetails.Protocol == "azure-blobs")
+                                    //{
+                                    //}
+                                    BlobKeyEventArgs keyArgs = new BlobKeyEventArgs();
+
+                                    //Same as impersonate account
+                                    keyArgs.DataSourceName = dataSource.Name;
+                                    _parentComparison.OnBlobKeyPrompt(keyArgs);
+                                    if (keyArgs.UserCancelled)
+                                    {
+                                        // Show cancelled for all rows
+                                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Deployment has been cancelled.", DeploymentStatus.Cancel));
+                                        foreach (ProcessingTable table in _tablesToProcess)
+                                        {
+                                            _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Cancelled", DeploymentStatus.Cancel));
+                                        }
+                                        _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
+                                        return;
+                                    }
+                                    structuredDataSource.Credential.Password = keyArgs.AccountKey;
+                                    break;
+
                                 default:
                                     break;
                             }
@@ -1478,7 +1498,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 }
                                 providerDataSource.Account = args.Username;
                                 providerDataSource.Password = args.Password;
-                                argsAllConnections.Add(args);
                             }
                             break;
                         default:
@@ -1488,28 +1507,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 UpdateWithScript();
                 _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(_deployRowWorkItem, "Success. Metadata deployed.", DeploymentStatus.Success));
-
-                ////Reset passwords - No longer required since using includeRestrictedInformation in ScriptCreateOrReplace (from UpdateWithScript)
-                //foreach (DataSource dataSource in _database.Model.DataSources)
-                //{
-                //    if (dataSource.Type == DataSourceType.Provider)
-                //    {
-                //        ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
-
-                //        if (providerDataSource.ImpersonationMode == ImpersonationMode.ImpersonateAccount)
-                //        {
-                //            foreach (PasswordPromptEventArgs args in argsAllConnections)
-                //            {
-                //                if (dataSource.Name == args.ConnectionName && providerDataSource.Account == args.Username)
-                //                {
-                //                    providerDataSource.Account = args.Username;
-                //                    providerDataSource.Password = args.Password;
-                //                    break;
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
 
                 //Kick off processing
                 ProcessAsyncDelegate processAsyncCaller = new ProcessAsyncDelegate(Process);
@@ -1601,6 +1598,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
             }
+            catch (InvalidOperationException exc) when (exc.Message == "Lost Connection")
+            { //Azure AS sometimes loses connection
+            } 
             catch (Exception exc)
             {
                 ShowErrorsForAllRows();

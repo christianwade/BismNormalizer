@@ -75,6 +75,17 @@ namespace BismNormalizer.TabularCompare.Core
         public virtual void OnPasswordPrompt(PasswordPromptEventArgs e) => PasswordPrompt?.Invoke(this, e);
 
         /// <summary>
+        /// Occurs during database deployment when a password is required for a blob key.
+        /// </summary>
+        public event EventHandler<BlobKeyEventArgs> BlobKeyPrompt;
+
+        /// <summary>
+        /// Invokes the BlobKeyPrompt event.
+        /// </summary>
+        /// <param name="e">ValidationMessageEventArgs object.</param>
+        public virtual void OnBlobKeyPrompt(BlobKeyEventArgs e) => BlobKeyPrompt?.Invoke(this, e);
+
+        /// <summary>
         /// Occurs when a database is ready for deployment.
         /// </summary>
         public event EventHandler<DatabaseDeploymentEventArgs> DatabaseDeployment;

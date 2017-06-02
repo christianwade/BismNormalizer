@@ -192,12 +192,19 @@
     <Compile Include="TabularCompare\DeploymentCompleteEventArgs.cs" />
     <Compile Include="TabularCompare\DeploymentMessageEventArgs.cs" />
     <Compile Include="TabularCompare\Enums.cs" />
+    <Compile Include="TabularCompare\BlobKeyEventArgs.cs" />
     <Compile Include="TabularCompare\PasswordPromptEventArgs.cs" />
     <Compile Include="TabularCompare\TabularMetadata\Expression.cs" />
     <Compile Include="TabularCompare\TabularMetadata\ExpressionCollection.cs" />
     <Compile Include="TabularCompare\TabularMetadata\CalcDependency.cs" />
     <Compile Include="TabularCompare\TabularMetadata\CalcDependencyCollection.cs" />
     <Compile Include="TabularCompare\UI\HighDpiUtils.cs" />
+    <Compile Include="TabularCompare\UI\BlobCredentials.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabularCompare\UI\BlobCredentials.Designer.cs">
+      <DependentUpon>BlobCredentials.cs</DependentUpon>
+    </Compile>
     <Compile Include="TabularCompare\ValidationMessageEventArgs.cs" />
     <Compile Include="DemoHarness.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\Action.cs" />
@@ -430,6 +437,9 @@
     <EmbeddedResource Include="TabularCompare\UI\EditorTextBox.resx">
       <DependentUpon>EditorTextBox.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabularCompare\UI\BlobCredentials.resx">
+      <DependentUpon>BlobCredentials.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabularCompare\UI\ProcessingErrorMessage.resx">
       <DependentUpon>ProcessingErrorMessage.cs</DependentUpon>

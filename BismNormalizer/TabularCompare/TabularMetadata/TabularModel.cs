@@ -1450,9 +1450,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     break;
 
                                 case "Key":
-                                    //if (structuredDataSource.ConnectionDetails.Protocol == "azure-blobs")
-                                    //{
-                                    //}
                                     BlobKeyEventArgs keyArgs = new BlobKeyEventArgs();
 
                                     //Same as impersonate account
@@ -1469,13 +1466,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                         _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Cancel, null));
                                         return;
                                     }
-                                    structuredDataSource.Credential.Password = keyArgs.AccountKey;
+                                    structuredDataSource.Credential[CredentialProperty.Key] = keyArgs.AccountKey;
                                     break;
 
                                 default:
                                     break;
                             }
                             break;
+
                         case DataSourceType.Provider:
                             ProviderDataSource providerDataSource = (ProviderDataSource)dataSource;
 

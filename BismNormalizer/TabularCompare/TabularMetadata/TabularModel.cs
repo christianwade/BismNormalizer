@@ -1596,8 +1596,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
             }
-            //catch (InvalidOperationException exc) when (exc.Message == "Lost Connection")
-            //{ //Azure AS sometimes loses connection
+            //catch (InvalidOperationException exc) when (exc.Message == "Operation is not valid due to the current state of the object.")
+            //{ //Azure AS sometimes loses connection - need extra filter for after save changes.
             //} 
             catch (Exception exc)
             {

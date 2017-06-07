@@ -662,6 +662,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #endregion
 
+            _targetTabularModel.CleanUpVariations();
+
             #region Measures / KPIs
 
             foreach (ComparisonObject comparisonObject in _comparisonObjects)

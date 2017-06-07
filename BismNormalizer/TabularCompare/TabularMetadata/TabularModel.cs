@@ -670,6 +670,74 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
+        #region Variation Cleanup
+
+        /// <summary>
+        /// Remove variations referring to objects that don't exist.
+        /// </summary>
+        public void CleanUpVariations()
+        {
+            foreach (Table table in _tables)
+            {
+                foreach (Column column in table.TomTable.Columns)
+                {
+                    List<string> variationsToRemove = new List<string>();
+
+                    foreach (Variation variation in column.Variations)
+                    {
+                        if (!_database.Model.Relationships.ContainsName(variation.Relationship.Name))
+                        {
+                            variationsToRemove.Add(variation.Name);
+                            break;
+                        }
+
+                        if (variation.DefaultColumn != null)
+                        {
+                            if (_database.Model.Tables.ContainsName(variation.DefaultColumn.Table?.Name))
+                            {
+                                //the referenced table is there, how about the referenced column?
+                                if (!_database.Model.Tables.Find(variation.DefaultColumn.Table.Name).Columns.ContainsName(variation.DefaultColumn.Name))
+                                {
+                                    variationsToRemove.Add(variation.Name);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                variationsToRemove.Add(variation.Name);
+                                break;
+                            }
+                        }
+
+                        if (variation.DefaultHierarchy != null)
+                        {
+                            if (_database.Model.Tables.ContainsName(variation.DefaultHierarchy.Table?.Name))
+                            {
+                                //the referenced table is there, how about the referenced hierarchy?
+                                if (!_database.Model.Tables.Find(variation.DefaultHierarchy.Table.Name).Hierarchies.ContainsName(variation.DefaultHierarchy.Name))
+                                {
+                                    variationsToRemove.Add(variation.Name);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                variationsToRemove.Add(variation.Name);
+                                break;
+                            }
+                        }
+                    }
+
+                    foreach (string variationToRemove in variationsToRemove)
+                    {
+                        column.Variations.Remove(variationToRemove);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region Backup / Restore
 
         /// <summary>

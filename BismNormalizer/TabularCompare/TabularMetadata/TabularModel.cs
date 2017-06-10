@@ -677,6 +677,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// </summary>
         public void CleanUpVariations()
         {
+            List<string> targetVariationTablesRemaining = new List<string>();
+
             foreach (Table table in _tables)
             {
                 foreach (Column column in table.TomTable.Columns)
@@ -707,6 +709,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 variationsToRemove.Add(variation.Name);
                                 break;
                             }
+
+                            //If we get here, the variation is valid
+                            targetVariationTablesRemaining.Add(variation.DefaultColumn.Table?.Name);
+                            break;
                         }
 
                         if (variation.DefaultHierarchy != null)
@@ -725,6 +731,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 variationsToRemove.Add(variation.Name);
                                 break;
                             }
+
+                            //If we get here, the variation is valid
+                            targetVariationTablesRemaining.Add(variation.DefaultHierarchy.Table?.Name);
+                            break;
                         }
                     }
 
@@ -732,6 +742,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     {
                         column.Variations.Remove(variationToRemove);
                     }
+                }
+            }
+
+            //Check if any tables that have ShowAsVariationsOnly = true really have variatinos pointing at them
+            foreach (Table table in _tables)
+            {
+                if (table.TomTable.ShowAsVariationsOnly == true && !targetVariationTablesRemaining.Contains(table.Name))
+                {
+                    table.TomTable.ShowAsVariationsOnly = false;
                 }
             }
         }
@@ -1495,6 +1514,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     }
                                     structuredDataSource.Credential.Username = args.Username;
                                     structuredDataSource.Credential.Password = args.Password;
+                                    structuredDataSource.Credential.PrivacySetting = args.PrivacyLevel;
                                     break;
 
                                 case "UsernamePassword":
@@ -1515,6 +1535,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                     }
                                     structuredDataSource.Credential.Username = args.Username;
                                     structuredDataSource.Credential.Password = args.Password;
+                                    structuredDataSource.Credential.PrivacySetting = args.PrivacyLevel;
                                     break;
 
                                 case "Key":
@@ -1535,6 +1556,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                         return;
                                     }
                                     structuredDataSource.Credential[CredentialProperty.Key] = keyArgs.AccountKey;
+                                    structuredDataSource.Credential.PrivacySetting = keyArgs.PrivacyLevel;
                                     break;
 
                                 default:
@@ -1550,6 +1572,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 args.AuthenticationKind = "Windows";
                                 args.DataSourceName = dataSource.Name;
                                 args.Username = providerDataSource.Account;
+                                args.PrivacyLevel = "NA";
                                 _parentComparison.OnPasswordPrompt(args);
                                 if (args.UserCancelled)
                                 {

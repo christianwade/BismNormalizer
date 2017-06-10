@@ -11,6 +11,7 @@ namespace BismNormalizer.TabularCompare.UI
         private string _connectionName;
         private string _username;
         private string _password;
+        private string _privacyLevel;
         private float _dpiScaleFactor;
 
         public string AuthenticationKind
@@ -33,7 +34,11 @@ namespace BismNormalizer.TabularCompare.UI
             get { return _password; }
             set { _password = value; }
         }
-
+        public string PrivacyLevel
+        {
+            get { return _privacyLevel; }
+            set { _privacyLevel = value; }
+        }
         public float DpiScaleFactor
         {
             get { return _dpiScaleFactor; }
@@ -47,21 +52,6 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void ImpersonationCredentials_Load(object sender, EventArgs e)
         {
-            //if (_dpiScaleFactor > 1)
-            //{
-            //    //DPI
-            //    _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
-            //    float fudgeFactor = HighDPIUtils.SecondaryFudgeFactor;
-            //    this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
-            //    this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
-            //    foreach (Control control in HighDPIUtils.GetChildInControl(this))
-            //    {
-            //        control.Font = new Font(control.Font.FontFamily,
-            //                                control.Font.Size * _dpiScaleFactor * fudgeFactor,
-            //                                control.Font.Style);
-            //    }
-            //}
-
             if (_dpiScaleFactor > 1)
             {
                 //DPI
@@ -76,7 +66,6 @@ namespace BismNormalizer.TabularCompare.UI
                                       control.Font.Style);
                 }
             }
-
 
             this.KeyPreview = true;
 
@@ -94,6 +83,13 @@ namespace BismNormalizer.TabularCompare.UI
             txtConnectionName.Text = _connectionName;
             txtUsername.Text = _username;
             txtPassword.Text = _password;
+            cboPrivacyLevel.Text = "None";
+
+            if (_privacyLevel == "NA")
+            { //Fudge for provider data sources
+                lblPrivacyLevel.Enabled = false;
+                cboPrivacyLevel.Enabled = false;
+            }
 
             this.ActiveControl = txtPassword;
         }
@@ -169,6 +165,7 @@ namespace BismNormalizer.TabularCompare.UI
 
             _username = txtUsername.Text;
             _password = txtPassword.Text;
+            _privacyLevel = cboPrivacyLevel.Text;
         }
     }
 }

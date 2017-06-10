@@ -28,6 +28,11 @@ namespace BismNormalizer.TabularCompare
         public string Password { get; set; }
 
         /// <summary>
+        /// Gets or sets the privacy level.
+        /// </summary>
+        public string PrivacyLevel { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating if the user cancelled the deployment.
         /// </summary>
         public bool UserCancelled { get; set; }

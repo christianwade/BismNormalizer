@@ -195,6 +195,7 @@ namespace BismNormalizer.TabularCompare.UI
             {
                 e.Username = credentialsForm.Username;
                 e.Password = credentialsForm.Password;
+                e.PrivacyLevel = credentialsForm.PrivacyLevel;
                 e.UserCancelled = false;
             }
             else
@@ -219,6 +220,7 @@ namespace BismNormalizer.TabularCompare.UI
             if (credentialsForm.DialogResult == DialogResult.OK)
             {
                 e.AccountKey = credentialsForm.AccountKey;
+                e.PrivacyLevel = credentialsForm.PrivacyLevel;
                 e.UserCancelled = false;
             }
             else

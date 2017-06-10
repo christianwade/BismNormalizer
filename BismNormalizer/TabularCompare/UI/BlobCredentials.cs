@@ -10,6 +10,7 @@ namespace BismNormalizer.TabularCompare.UI
         private string _authenticationKind;
         private string _connectionName;
         private string _accountKey;
+        private string _privacyLevel;
         private float _dpiScaleFactor;
 
         public string AuthenticationKind
@@ -27,7 +28,11 @@ namespace BismNormalizer.TabularCompare.UI
             get { return _accountKey; }
             set { _accountKey = value; }
         }
-
+        public string PrivacyLevel
+        {
+            get { return _privacyLevel; }
+            set { _privacyLevel = value; }
+        }
         public float DpiScaleFactor
         {
             get { return _dpiScaleFactor; }
@@ -41,21 +46,6 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void BlobCredentials_Load(object sender, EventArgs e)
         {
-            //if (_dpiScaleFactor > 1)
-            //{
-            //    //DPI
-            //    _dpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
-            //    float fudgeFactor = HighDPIUtils.SecondaryFudgeFactor;
-            //    this.Scale(new SizeF(_dpiScaleFactor, _dpiScaleFactor * fudgeFactor));
-            //    this.Width = Convert.ToInt32(this.Width * _dpiScaleFactor);
-            //    foreach (Control control in HighDPIUtils.GetChildInControl(this))
-            //    {
-            //        control.Font = new Font(control.Font.FontFamily,
-            //                                control.Font.Size * _dpiScaleFactor * fudgeFactor,
-            //                                control.Font.Style);
-            //    }
-            //}
-
             if (_dpiScaleFactor > 1)
             {
                 //DPI
@@ -71,11 +61,11 @@ namespace BismNormalizer.TabularCompare.UI
                 }
             }
 
-
             this.KeyPreview = true;
 
             txtConnectionName.Text = _connectionName;
             txtAccountKey.Text = _accountKey;
+            cboPrivacyLevel.Text = "None";
 
             this.ActiveControl = txtAccountKey;
         }
@@ -88,6 +78,7 @@ namespace BismNormalizer.TabularCompare.UI
                 return;
             }
             _accountKey = txtAccountKey.Text;
+            _privacyLevel = cboPrivacyLevel.Text;
         }
     }
 }

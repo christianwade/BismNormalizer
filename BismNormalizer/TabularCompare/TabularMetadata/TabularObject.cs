@@ -34,15 +34,25 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             _objectDefinition = Tom.JsonSerializer.SerializeObject(namedMetaDataObject, options);
 
             //Remove annotations
-            JToken token = JToken.Parse(_objectDefinition);
-            RemoveAnnotationsFromObjectDefinition(token);
-            _objectDefinition = token.ToString(Formatting.Indented);
+            {
+                JToken token = JToken.Parse(_objectDefinition);
+                RemovePropertyFromObjectDefinition(token, "annotations");
+                _objectDefinition = token.ToString(Formatting.Indented);
+            }
 
             //Order table columns
             if (namedMetaDataObject is Tom.Table)
             {
                 _objectDefinition = SortArray(_objectDefinition, "columns");
                 _objectDefinition = SortArray(_objectDefinition, "partitions");
+            }
+
+            //Hide privacy setting on structured data sources
+            if (namedMetaDataObject is Tom.StructuredDataSource)
+            {
+                JToken token = JToken.Parse(_objectDefinition);
+                RemovePropertyFromObjectDefinition(token, "PrivacySetting");
+                _objectDefinition = token.ToString(Formatting.Indented);
             }
         }
 
@@ -65,18 +75,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             return jObj.ToString(Formatting.Indented);
         }
 
-        private void RemoveAnnotationsFromObjectDefinition(JToken token)
+        private void RemovePropertyFromObjectDefinition(JToken token, string propertyName)
         {
             //child object annotations
             List<JToken> removeList = new List<JToken>();
             foreach (JToken childToken in token.Children())
             {
                 JProperty property = childToken as JProperty;
-                if (property != null && property.Name == "annotations")
+                if (property != null && property.Name == propertyName)
                 {
                     removeList.Add(childToken);
                 }
-                RemoveAnnotationsFromObjectDefinition(childToken);
+                RemovePropertyFromObjectDefinition(childToken, propertyName);
             }
             foreach (JToken tokenToRemove in removeList)
             {
@@ -87,11 +97,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// Explicitly remove a JSON property from definition. An example of this is removing parititions from table definitions.
         /// </summary>
-        /// <param name="propertyToRemove"></param>
-        public void RemovePropertyFromObjectDefinition(string propertyToRemove)
+        /// <param name="propertyName">The property to remove</param>
+        public void RemovePropertyFromObjectDefinition(string propertyName)
         {
             JObject jObj = JObject.Parse(_objectDefinition);
-            jObj.Remove(propertyToRemove);
+            jObj.Remove(propertyName);
             _objectDefinition = jObj.ToString(Formatting.Indented);
         }
 

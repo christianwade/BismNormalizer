@@ -75,7 +75,7 @@ namespace BismNormalizer.TabularCompare.UI
         private ComparisonObjectType FindComparisonObjectType(string lookupType)
         {
             ComparisonObjectType returnObjType;
-            switch (lookupType)
+            switch (lookupType.TrimStart()) //trim start to remove indent
             {
                 case "Data Source":
                     returnObjType = ComparisonObjectType.DataSource;
@@ -215,48 +215,51 @@ namespace BismNormalizer.TabularCompare.UI
             node.Cells[10].Value = comparisonObject.SourceObjectDefinition;
             node.Cells[11].Value = comparisonObject.TargetObjectDefinition;
 
+            string treeIndentLevel1 = new String(' ', 13);
+            string treeIndentLevel2 = new String(' ', 20);
+
             switch (comparisonObject.ComparisonObjectType)
             {
                 // Tabular objecs
                 case ComparisonObjectType.DataSource:
                     node.ImageIndex = 0;
-                    node.Cells[0].Value = "Data Source";
+                    node.Cells[0].Value = treeIndentLevel1 + "Data Source";
                     break;
                 case ComparisonObjectType.Table:
                     node.ImageIndex = 1;
-                    node.Cells[0].Value = "Table";
+                    node.Cells[0].Value = treeIndentLevel1 + "Table";
                     break;
                 case ComparisonObjectType.Relationship:
                     node.ImageIndex = 2;
-                    node.Cells[0].Value = "Relationship";
+                    node.Cells[0].Value = treeIndentLevel2 + "Relationship";
                     break;
                 case ComparisonObjectType.Measure:
                     node.ImageIndex = 3;
-                    node.Cells[0].Value = "Measure";
+                    node.Cells[0].Value = treeIndentLevel2 + "Measure";
                     break;
                 case ComparisonObjectType.Kpi:
                     node.ImageIndex = 4;
-                    node.Cells[0].Value = "KPI";
+                    node.Cells[0].Value = treeIndentLevel2 + "KPI";
                     break;
                 case ComparisonObjectType.Expression:
                     node.ImageIndex = 22;
-                    node.Cells[0].Value = "Expression";
+                    node.Cells[0].Value = treeIndentLevel1 + "Expression";
                     break;
                 case ComparisonObjectType.Perspective:
                     node.ImageIndex = 15;
-                    node.Cells[0].Value = "Perspective";
+                    node.Cells[0].Value = treeIndentLevel1 + "Perspective";
                     break;
                 case ComparisonObjectType.Culture:
                     node.ImageIndex = 21;
-                    node.Cells[0].Value = "Culture";
+                    node.Cells[0].Value = treeIndentLevel1 + "Culture";
                     break;
                 case ComparisonObjectType.Role:
                     node.ImageIndex = 14;
-                    node.Cells[0].Value = "Role";
+                    node.Cells[0].Value = treeIndentLevel1 + "Role";
                     break;
                 case ComparisonObjectType.Action:
                     node.ImageIndex = 16;
-                    node.Cells[0].Value = "Action";
+                    node.Cells[0].Value = treeIndentLevel1 + "Action";
                     break;
 
                 default:

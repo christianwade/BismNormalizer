@@ -83,20 +83,21 @@ namespace BismNormalizer.TabularCompare.UI
 				_imageHeight = 0;
 			}
 
-			// TO_DO: Make this cleaner
-			if (preferredSize.Height < _imageHeight)
-			{
+            //Commented out after found KPI Lake performance issue
+			//// TO_DO: Make this cleaner
+			//if (preferredSize.Height < _imageHeight)
+			//{
 
-				this.Style.Padding = new Padding(p.Left + (level * INDENT_WIDTH) + _imageWidth + INDENT_MARGIN,
-												 p.Top + (_imageHeight / 2), p.Right, p.Bottom + (_imageHeight / 2));
-				_imageHeightOffset = 2;// (_imageHeight - preferredSize.Height) / 2;
-			}
-			else
-			{
-				this.Style.Padding = new Padding(p.Left + (level * INDENT_WIDTH) + _imageWidth + INDENT_MARGIN,
-												 p.Top , p.Right, p.Bottom );
+			//	this.Style.Padding = new Padding(p.Left + (level * INDENT_WIDTH) + _imageWidth + INDENT_MARGIN,
+			//									 p.Top + (_imageHeight / 2), p.Right, p.Bottom + (_imageHeight / 2));
+			//	_imageHeightOffset = 2;// (_imageHeight - preferredSize.Height) / 2;
+			//}
+			//else
+			//{
+			//	this.Style.Padding = new Padding(p.Left + (level * INDENT_WIDTH) + _imageWidth + INDENT_MARGIN,
+			//									 p.Top , p.Right, p.Bottom );
 
-			}
+			//}
 
 			calculatedLeftPadding = ((level - 1) * glyphWidth) + _imageWidth + INDENT_MARGIN;
 		}
@@ -231,24 +232,25 @@ namespace BismNormalizer.TabularCompare.UI
 				}
 			}
 
-            if (dpiFactor > 1) dpiFactor = dpiFactor * HighDPIUtils.PrimaryFudgeFactor;
-            float size = 10 * dpiFactor;
+            //Commented out after found KPI Lake performance issue
+   //         if (dpiFactor > 1) dpiFactor = dpiFactor * HighDPIUtils.PrimaryFudgeFactor;
+   //         float size = 10 * dpiFactor;
 
-			if (node.HasChildren || node._grid.VirtualNodes)
-			{
-				if (((TreeGridView)this.DataGridView).ImageList.Images.Count > 0)
-				{
-                    // Paint node glyphs
-                    if (node.IsExpanded)
-                    {
-                        graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[10], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
-                    }
-                    else
-                    {
-                        graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[9], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
-                    }
-                }
-			}
+			//if (node.HasChildren || node._grid.VirtualNodes)
+			//{
+			//	if (((TreeGridView)this.DataGridView).ImageList.Images.Count > 0)
+			//	{
+   //                 // Paint node glyphs
+   //                 if (node.IsExpanded)
+   //                 {
+   //                     graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[10], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
+   //                 }
+   //                 else
+   //                 {
+   //                     graphics.DrawImage(((TreeGridView)this.DataGridView).ImageList.Images[9], glyphRect.X, glyphRect.Y + (glyphRect.Height / 2) - 4, size, size);
+   //                 }
+   //             }
+			//}
 
 
 		}

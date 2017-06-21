@@ -219,6 +219,7 @@ namespace BismNormalizer.TabularCompare.UI
                 //Didn't find match, so need to create new node
                 particularTypeNode = topLevelNodeForHandle.Nodes.Add();
                 particularTypeNode.Tag = particularType;
+                particularTypeNode.Cells[0].Value = new String(' ', 28);
                 particularTypeNode.Cells[1].Value = particularType;
                 particularTypeNode.Cells[1].Style.Font = new Font(Font.SystemFontName, 8, FontStyle.Bold);
                 particularTypeNode.Visible = false;

@@ -14,7 +14,7 @@ namespace BismNormalizer.TabularCompare
     {
         // Factory pattern: https://msdn.microsoft.com/en-us/library/orm-9780596527730-01-05.aspx 
 
-        private static List<int> _supportedCompatibilityLevels = new List<int>() { 1100, 1103, 1200, 1400 };
+        private static List<int> _supportedCompatibilityLevels = new List<int>() { 1100, 1103, 1200 }; //, 1400 };
 
         /// <summary>
         /// Uses factory design pattern to return an object of type Core.Comparison, which is instantiated using MultidimensionalMetadata.Comparison or TabularMeatadata.Comparison depending on SSAS compatibility level. Use this overload when running in Visual Studio.

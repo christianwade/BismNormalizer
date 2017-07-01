@@ -1,5 +1,4 @@
-## Relocated repo to:
-## https://github.com/Microsoft/Analysis-Services/tree/master/BismNormalizer
+## Relocated repo to https://github.com/Microsoft/Analysis-Services/tree/master/BismNormalizer
 
 
 

@@ -1,3 +1,10 @@
+## Relocated repo to:
+## https://github.com/Microsoft/Analysis-Services/tree/master/BismNormalizer
+
+
+
+
+
 ### General Usage
 
 Download from the BISM Normalizer 3 [Visual Studio Gallery page](https://visualstudiogallery.msdn.microsoft.com/f7ebe632-878c-4640-b035-a143d1dd1cf3). New releases will be uploaded to this page.

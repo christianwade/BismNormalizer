@@ -209,37 +209,60 @@ namespace BismNormalizer.TabularCompare.UI
             node.Cells[1].Value = comparisonObject.SourceObjectName;
             node.Cells[2].Value = comparisonObject.SourceObjectInternalName;
             //node.Cells[8].Value = comparisonObject.MergeAction.ToString();  //set below instead
+            node.Cells[9].Value = comparisonObject.ComparisonObjectType.ToString();
             node.Cells[5].Value = comparisonObject.TargetObjectName;
             node.Cells[6].Value = comparisonObject.TargetObjectInternalName;
-            node.Cells[9].Value = comparisonObject.ComparisonObjectType.ToString();
             node.Cells[10].Value = comparisonObject.SourceObjectDefinition;
             node.Cells[11].Value = comparisonObject.TargetObjectDefinition;
 
+            bool isMdMetadata = (comparisonObject is MultidimensionalMetadata.ComparisonObject);
+
             string treeIndentLevel1 = new String(' ', 13);
             string treeIndentLevel2 = new String(' ', 20);
+            string treeIndentLevel3 = new String(' ', 27);
 
             switch (comparisonObject.ComparisonObjectType)
             {
                 // Tabular objecs
+                case ComparisonObjectType.Model:
+                    node.ImageIndex = 25;
+                    node.Cells[0].Value = treeIndentLevel1 + "Model";
+                    break;
                 case ComparisonObjectType.DataSource:
                     node.ImageIndex = 0;
                     node.Cells[0].Value = treeIndentLevel1 + "Data Source";
                     break;
                 case ComparisonObjectType.Table:
-                    node.ImageIndex = 1;
-                    node.Cells[0].Value = treeIndentLevel1 + "Table";
+                    if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table &&
+                       (
+                            (comparisonObject.Status != ComparisonObjectStatus.MissingInSource && comparisonObject.SourceObjectDefinition.Contains("\"calculationGroup\":")) ||
+                            (comparisonObject.Status == ComparisonObjectStatus.MissingInSource && comparisonObject.TargetObjectDefinition.Contains("\"calculationGroup\":"))
+                       ))
+                    {
+                        node.ImageIndex = 23;
+                        node.Cells[0].Value = treeIndentLevel1 + "Calculation Group";
+                    }
+                    else
+                    {
+                        node.ImageIndex = 1;
+                        node.Cells[0].Value = (isMdMetadata ? treeIndentLevel2 : treeIndentLevel1) + "Table";
+                    }
                     break;
                 case ComparisonObjectType.Relationship:
                     node.ImageIndex = 2;
-                    node.Cells[0].Value = treeIndentLevel2 + "Relationship";
+                    node.Cells[0].Value = (isMdMetadata ? treeIndentLevel3 : treeIndentLevel2) + "Relationship";
                     break;
                 case ComparisonObjectType.Measure:
                     node.ImageIndex = 3;
-                    node.Cells[0].Value = treeIndentLevel2 + "Measure";
+                    node.Cells[0].Value = (isMdMetadata ? treeIndentLevel3 : treeIndentLevel2) + "Measure";
                     break;
                 case ComparisonObjectType.Kpi:
                     node.ImageIndex = 4;
-                    node.Cells[0].Value = treeIndentLevel2 + "KPI";
+                    node.Cells[0].Value = (isMdMetadata ? treeIndentLevel3 : treeIndentLevel2) + "KPI";
+                    break;
+                case ComparisonObjectType.CalculationItem:
+                    node.ImageIndex = 24;
+                    node.Cells[0].Value = treeIndentLevel2 + "Calculation Item";
                     break;
                 case ComparisonObjectType.Expression:
                     node.ImageIndex = 22;
@@ -261,7 +284,6 @@ namespace BismNormalizer.TabularCompare.UI
                     node.ImageIndex = 16;
                     node.Cells[0].Value = treeIndentLevel1 + "Action";
                     break;
-
                 default:
                     break;
             };

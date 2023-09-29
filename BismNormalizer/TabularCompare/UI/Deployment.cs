@@ -27,15 +27,15 @@ namespace BismNormalizer.TabularCompare.UI
                 //DPI
                 if (_dpiScaleFactor > 1)
                 {
-                    float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+                    float fudgedDpiScaleFactor = _dpiScaleFactor * Utils.PrimaryFudgeFactor;
 
                     this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
                     picStatus.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
-                    gridProcessing.Scale(new SizeF(fudgedDpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor, fudgedDpiScaleFactor * HighDPIUtils.SecondaryFudgeFactor));
+                    gridProcessing.Scale(new SizeF(fudgedDpiScaleFactor * Utils.SecondaryFudgeFactor, fudgedDpiScaleFactor * Utils.SecondaryFudgeFactor));
                     this.Font = new Font(this.Font.FontFamily,
                                      this.Font.Size * fudgedDpiScaleFactor,
                                      this.Font.Style);
-                    foreach (Control control in HighDPIUtils.GetChildInControl(this)) //.OfType<Button>())
+                    foreach (Control control in Utils.GetChildInControl(this)) //.OfType<Button>())
                     {
                         if (control is DataGridView || control is Button)
                         {
@@ -48,7 +48,7 @@ namespace BismNormalizer.TabularCompare.UI
                     {
                         col.Width = Convert.ToInt32(col.Width * fudgedDpiScaleFactor * 1.5f);
                     }
-                    HighDPIUtils.ScaleStreamedImageListByDpi(DeployImageList);
+                    Utils.ScaleStreamedImageListByDpi(DeployImageList);
                 }
 
                 this.KeyPreview = true;
@@ -64,10 +64,21 @@ namespace BismNormalizer.TabularCompare.UI
                 btnClose.Enabled = false;
                 _errorMessageForm = new ProcessingErrorMessage();
 
-                ProcessingTableCollection tablesToProcess = _comparison.GetTablesToProcess();
-                foreach (ProcessingTable table in tablesToProcess)
+                ProcessingTableCollection tablesToProcess = null;
+                if (_comparisonInfo.OptionsInfo.OptionProcessingOption == ProcessingOption.Recalc)
                 {
-                    AddRow(table.Name, "Processing in progress ...");
+                    string dbName = _comparisonInfo.ConnectionInfoTarget.DatabaseName;
+                    tablesToProcess = new ProcessingTableCollection();
+                    tablesToProcess.Add(new ProcessingTable(dbName, dbName));
+                    AddRow(dbName, "Processing in progress ...");
+                }
+                else
+                {
+                    tablesToProcess = _comparison.GetTablesToProcess();
+                    foreach (ProcessingTable table in tablesToProcess)
+                    {
+                        AddRow(table.Name, "Processing in progress ...");
+                    }
                 }
                 if (tablesToProcess.Count > 0)
                 {
@@ -78,7 +89,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, "BISM Normalizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _comparisonInfo.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -101,13 +112,13 @@ namespace BismNormalizer.TabularCompare.UI
             switch (e.DeploymentStatus)
             {
                 case DeploymentStatus.Success:
-                    picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressSuccess) : Resources.ProgressSuccess);
+                    picStatus.Image = (_dpiScaleFactor > 1 ? Utils.ScaleByDpi(Resources.ProgressSuccess) : Resources.ProgressSuccess);
                     lblStatus.Text = "Success";
                     _deployStatus = DeploymentStatus.Success;
                     break;
 
                 case DeploymentStatus.Cancel:
-                    picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressCancel) : Resources.ProgressCancel);
+                    picStatus.Image = (_dpiScaleFactor > 1 ? Utils.ScaleByDpi(Resources.ProgressCancel) : Resources.ProgressCancel);
                     lblStatus.Text = "Cancelled";
                     _deployStatus = DeploymentStatus.Cancel;
                     break;
@@ -122,7 +133,7 @@ namespace BismNormalizer.TabularCompare.UI
 
             btnStopProcessing.Enabled = false;
             btnClose.Enabled = true;
-            btnClose.Select();
+            //btnClose.Select();
         }
 
         private delegate void SetErrorStatusDelegate(string errorMessage);
@@ -136,7 +147,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             else
             {
-                picStatus.Image = (_dpiScaleFactor > 1 ? HighDPIUtils.ScaleByDpi(Resources.ProgressError) : Resources.ProgressError);
+                picStatus.Image = (_dpiScaleFactor > 1 ? Utils.ScaleByDpi(Resources.ProgressError) : Resources.ProgressError);
                 lblStatus.Text = "Error";
                 _deployStatus = DeploymentStatus.Error;
 
@@ -169,7 +180,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void btnStopProcessing_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to attempt to stop processing?", "BISM Normalizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to attempt to stop processing?", _comparisonInfo.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }

@@ -24,7 +24,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="parentTable">Table object that the measure belongs to.</param>
         /// <param name="tomMeasure">Tabular Object Model Measure object abtstracted by the Measure class.</param>
         /// <param name="isKpi">Indicates whether the measure is a KPI.</param>
-        public Measure(Table parentTable, Tom.Measure tomMeasure, bool isKpi) : base(tomMeasure)
+        public Measure(Table parentTable, Tom.Measure tomMeasure, bool isKpi) : base(tomMeasure, parentTable.ParentTabularModel)
         {
             _parentTable = parentTable;
             _tomMeasure = tomMeasure;
@@ -75,19 +75,23 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         //Todo2: still need to parse for /* blah */ type comments.  Currently can show missing dependency that doesn't apply if within a comment
 
                         string whatsRemainingOfLine = line;
+                        int openSquareBracketPosition = 0;
+                        int closeSquareBracketPosition = 0;
 
-                        while (whatsRemainingOfLine.Contains('[') && whatsRemainingOfLine.Contains(']'))
+                        while (whatsRemainingOfLine.Contains('[') && whatsRemainingOfLine.Contains(']') && openSquareBracketPosition != -1 && closeSquareBracketPosition != -1)
                         {
-                            int openSquareBracketPosition = whatsRemainingOfLine.IndexOf('[', 0);
-                            //brilliant person at microsoft has ]] instead of ]
-                            int closeSquareBracketPosition = whatsRemainingOfLine.Replace("]]", "  ").IndexOf(']', openSquareBracketPosition + 1);
+                            openSquareBracketPosition = whatsRemainingOfLine.IndexOf('[', 0);
+                            //someone has ]] instead of ]
+                            closeSquareBracketPosition = whatsRemainingOfLine.Replace("]]", "  ").IndexOf(']', openSquareBracketPosition + 1);
 
                             if (openSquareBracketPosition < closeSquareBracketPosition - 1)
                             {
                                 string potentialDependency = whatsRemainingOfLine.Substring(openSquareBracketPosition + 1, closeSquareBracketPosition - openSquareBracketPosition - 1);
-                                if (!potentialDependency.Contains('"') && !dependencies.Contains(potentialDependency))
+                                if (!potentialDependency.Contains('"') &&
+                                    !_tomMeasure.Expression.Contains($"\"{potentialDependency}\"") && //it's possible the measure itself is deriving the column name from an ADDCOLUMNS for example
+                                    !dependencies.Contains(potentialDependency))
                                 {
-                                    //unbelievable: some genius at m$ did a replace on ] with ]]
+                                    //someone did a replace on ] with ]]
                                     dependencies.Add(potentialDependency);
                                 }
                             }
@@ -106,7 +110,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Table table in _parentTable.ParentTabularModel.Tables)
                 {
                     //Check if another measure or column has same name
-                    if (table.Measures.ContainsName(dependency) || table.TomTable.Columns.ContainsName(dependency))
+                    if (table.Measures.ContainsNameCaseInsensitive(dependency) || table.ColumnsContainsNameCaseInsensitive(dependency))
                     {
                         foundDependency = true;
                         break;

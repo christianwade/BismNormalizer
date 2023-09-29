@@ -65,9 +65,9 @@ namespace BismNormalizer.TabularCompare.UI
         private float _dpiScaleFactor = 1;
         private void Rescale()
         {
-            this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
+            this._dpiScaleFactor = Utils.GetDpiFactor();
             if (this._dpiScaleFactor == 1) return;
-            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+            float fudgedDpiScaleFactor = _dpiScaleFactor * Utils.PrimaryFudgeFactor;
 
             this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
             
@@ -106,7 +106,7 @@ namespace BismNormalizer.TabularCompare.UI
             txtTargetObjectDefinition.Width = scObjectDefinitions.Panel2.Width;
             txtTargetObjectDefinition.Height = Convert.ToInt32(Convert.ToDouble(scObjectDefinitions.Panel2.Height) * 0.86);
 
-            if (_dpiScaleFactor > 1) HighDPIUtils.ScaleStreamedImageListByDpi(TreeGridImageList);
+            if (_dpiScaleFactor > 1) Utils.ScaleStreamedImageListByDpi(TreeGridImageList);
 
             treeGridComparisonResults.ResetColumnWidths(fudgedDpiScaleFactor);
             if (_comparison != null && _bismNormalizerPackage.ValidationOutput != null)
@@ -131,7 +131,7 @@ namespace BismNormalizer.TabularCompare.UI
                     //Blank file not saved to yet
                     return;
                 }
-                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName, "BISM Normalizer");
 
                 PopulateSourceTargetTextBoxes();
             }
@@ -261,7 +261,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void SetAutoComplete()
         {
-            if (!_comparisonInfo.ConnectionInfoSource.UseProject)
+            if (!_comparisonInfo.ConnectionInfoSource.UseProject && !_comparisonInfo.ConnectionInfoSource.UseBimFile)
             {
                 if (Settings.Default.SourceServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoSource.ServerName + "|") > -1)
                 {
@@ -277,7 +277,7 @@ namespace BismNormalizer.TabularCompare.UI
                 GetFromAutoCompleteSource();
             }
 
-            if (!_comparisonInfo.ConnectionInfoTarget.UseProject)
+            if (!_comparisonInfo.ConnectionInfoTarget.UseProject && !_comparisonInfo.ConnectionInfoTarget.UseBimFile)
             {
                 if (Settings.Default.TargetServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoTarget.ServerName + "|") > -1)
                 {
@@ -772,9 +772,31 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void PopulateSourceTargetTextBoxes()
         {
-            txtSource.Text = (_comparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName);
-            txtTarget.Text = (_comparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName);
+            if (_comparisonInfo.ConnectionInfoSource.UseProject)
+            {
+                txtSource.Text = "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName;
+            }
+            else if (_comparisonInfo.ConnectionInfoSource.UseBimFile)
+            {
+                txtSource.Text = "File: " + _comparisonInfo.ConnectionInfoSource.BimFile;
+            }
+            else
+            {
+                txtSource.Text = "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName;
+            }
 
+            if (_comparisonInfo.ConnectionInfoTarget.UseProject)
+            {
+                txtTarget.Text = "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName;
+            }
+            else if (_comparisonInfo.ConnectionInfoTarget.UseBimFile)
+            {
+                txtTarget.Text = "File: " + _comparisonInfo.ConnectionInfoTarget.BimFile;
+            }
+            else
+            {
+                txtTarget.Text = "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName;
+            }
         }
 
         #region UI click handlers
@@ -881,7 +903,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show($"Are you sure you want to update target {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project" : "database")}?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show($"Are you sure you want to update target?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }
@@ -903,7 +925,7 @@ namespace BismNormalizer.TabularCompare.UI
                 }
 
                 SetNotComparedState();
-                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (update && MessageBox.Show($"Updated the target.\n\nDo you want to refresh the comparison?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     this.CompareTabularModels();
                 }

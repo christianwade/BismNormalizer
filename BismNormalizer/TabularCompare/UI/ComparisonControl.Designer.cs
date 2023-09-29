@@ -58,9 +58,9 @@
             this.btnOptions = new System.Windows.Forms.ToolStripButton();
             this.btnReportDifferences = new System.Windows.Forms.ToolStripButton();
             this.scDifferenceResults = new System.Windows.Forms.SplitContainer();
-            this.pnlProgressBar = new System.Windows.Forms.Panel();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.lblProgressBar = new System.Windows.Forms.Label();
+            this.pnlProgressBar = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.treeGridComparisonResults = new BismNormalizer.TabularCompare.UI.TreeGridViewComparison();
             this.TreeGridImageList = new System.Windows.Forms.ImageList(this.components);
             this.scObjectDefinitions = new System.Windows.Forms.SplitContainer();
@@ -93,14 +93,14 @@
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(653, 55);
+            this.pnlHeader.Size = new System.Drawing.Size(653, 74);
             this.pnlHeader.TabIndex = 46;
             // 
             // spltSourceTarget
             // 
             this.spltSourceTarget.Dock = System.Windows.Forms.DockStyle.Fill;
             this.spltSourceTarget.IsSplitterFixed = true;
-            this.spltSourceTarget.Location = new System.Drawing.Point(0, 25);
+            this.spltSourceTarget.Location = new System.Drawing.Point(0, 39);
             this.spltSourceTarget.Name = "spltSourceTarget";
             // 
             // spltSourceTarget.Panel1
@@ -112,8 +112,8 @@
             // 
             this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
             this.spltSourceTarget.Panel2.Controls.Add(this.label2);
-            this.spltSourceTarget.Size = new System.Drawing.Size(653, 30);
-            this.spltSourceTarget.SplitterDistance = 321;
+            this.spltSourceTarget.Size = new System.Drawing.Size(653, 35);
+            this.spltSourceTarget.SplitterDistance = 320;
             this.spltSourceTarget.TabIndex = 45;
             // 
             // label1
@@ -133,7 +133,7 @@
             this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSource.Location = new System.Drawing.Point(49, 7);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(269, 20);
+            this.txtSource.Size = new System.Drawing.Size(267, 20);
             this.txtSource.TabIndex = 41;
             this.txtSource.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
@@ -145,7 +145,7 @@
             this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTarget.Location = new System.Drawing.Point(45, 7);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(272, 20);
+            this.txtTarget.Size = new System.Drawing.Size(270, 20);
             this.txtTarget.TabIndex = 42;
             this.txtTarget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
@@ -162,6 +162,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnCompareTabularModels,
             this.ddSelectActions,
@@ -173,7 +174,7 @@
             this.btnReportDifferences});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(653, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(653, 39);
             this.toolStrip1.TabIndex = 46;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -182,7 +183,7 @@
             this.btnCompareTabularModels.Image = ((System.Drawing.Image)(resources.GetObject("btnCompareTabularModels.Image")));
             this.btnCompareTabularModels.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompareTabularModels.Name = "btnCompareTabularModels";
-            this.btnCompareTabularModels.Size = new System.Drawing.Size(85, 22);
+            this.btnCompareTabularModels.Size = new System.Drawing.Size(101, 36);
             this.btnCompareTabularModels.Text = "Compare...";
             this.btnCompareTabularModels.ToolTipText = "Compare (Shift+Alt+C)";
             this.btnCompareTabularModels.Click += new System.EventHandler(this.btnCompareTabularModels_Click);
@@ -204,7 +205,7 @@
             this.ddSelectActions.Image = ((System.Drawing.Image)(resources.GetObject("ddSelectActions.Image")));
             this.ddSelectActions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ddSelectActions.Name = "ddSelectActions";
-            this.ddSelectActions.Size = new System.Drawing.Size(110, 22);
+            this.ddSelectActions.Size = new System.Drawing.Size(126, 36);
             this.ddSelectActions.Text = "Select Actions";
             // 
             // mnuHideSkipObjects
@@ -281,7 +282,7 @@
             this.btnValidateSelection.Image = ((System.Drawing.Image)(resources.GetObject("btnValidateSelection.Image")));
             this.btnValidateSelection.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnValidateSelection.Name = "btnValidateSelection";
-            this.btnValidateSelection.Size = new System.Drawing.Size(119, 22);
+            this.btnValidateSelection.Size = new System.Drawing.Size(135, 36);
             this.btnValidateSelection.Text = "Validate Selection";
             this.btnValidateSelection.Click += new System.EventHandler(this.btnValidateSelection_Click);
             // 
@@ -291,7 +292,7 @@
             this.btnUpdate.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Image")));
             this.btnUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(65, 22);
+            this.btnUpdate.Size = new System.Drawing.Size(81, 36);
             this.btnUpdate.Text = "Update";
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
@@ -301,21 +302,21 @@
             this.btnGenerateScript.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerateScript.Image")));
             this.btnGenerateScript.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGenerateScript.Name = "btnGenerateScript";
-            this.btnGenerateScript.Size = new System.Drawing.Size(107, 22);
+            this.btnGenerateScript.Size = new System.Drawing.Size(123, 36);
             this.btnGenerateScript.Text = "Generate Script";
             this.btnGenerateScript.Click += new System.EventHandler(this.btnGenerateScript_Click);
             // 
             // toolStripButton1
             // 
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 39);
             // 
             // btnOptions
             // 
             this.btnOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnOptions.Image")));
             this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(69, 22);
+            this.btnOptions.Size = new System.Drawing.Size(85, 36);
             this.btnOptions.Text = "Options";
             this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
@@ -325,14 +326,14 @@
             this.btnReportDifferences.Image = ((System.Drawing.Image)(resources.GetObject("btnReportDifferences.Image")));
             this.btnReportDifferences.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnReportDifferences.Name = "btnReportDifferences";
-            this.btnReportDifferences.Size = new System.Drawing.Size(124, 20);
+            this.btnReportDifferences.Size = new System.Drawing.Size(140, 36);
             this.btnReportDifferences.Text = "Report Differences";
             this.btnReportDifferences.Click += new System.EventHandler(this.btnReportDifferences_Click);
             // 
             // scDifferenceResults
             // 
             this.scDifferenceResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.scDifferenceResults.Location = new System.Drawing.Point(0, 55);
+            this.scDifferenceResults.Location = new System.Drawing.Point(0, 74);
             this.scDifferenceResults.Name = "scDifferenceResults";
             this.scDifferenceResults.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -344,37 +345,32 @@
             // scDifferenceResults.Panel2
             // 
             this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
-            this.scDifferenceResults.Size = new System.Drawing.Size(653, 510);
-            this.scDifferenceResults.SplitterDistance = 371;
+            this.scDifferenceResults.Size = new System.Drawing.Size(653, 491);
+            this.scDifferenceResults.SplitterDistance = 356;
             this.scDifferenceResults.TabIndex = 2;
             // 
             // pnlProgressBar
             // 
-            this.pnlProgressBar.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlProgressBar.Controls.Add(this.progressBar);
-            this.pnlProgressBar.Controls.Add(this.lblProgressBar);
-            this.pnlProgressBar.Location = new System.Drawing.Point(60, 21);
+            this.pnlProgressBar.ImageScalingSize = new System.Drawing.Size(36, 36);
+            this.pnlProgressBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.progressBar});
+            this.pnlProgressBar.Location = new System.Drawing.Point(0, 356);
             this.pnlProgressBar.Name = "pnlProgressBar";
-            this.pnlProgressBar.Size = new System.Drawing.Size(280, 54);
-            this.pnlProgressBar.TabIndex = 1;
+            this.pnlProgressBar.Size = new System.Drawing.Size(653, 14);
+            this.pnlProgressBar.TabIndex = 49;
+            this.pnlProgressBar.Text = "Comparison Status";
             this.pnlProgressBar.Visible = false;
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 9);
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(120, 16);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(137, 18);
-            this.progressBar.Step = 1;
-            this.progressBar.TabIndex = 1;
-            // 
-            // lblProgressBar
-            // 
-            this.lblProgressBar.AutoSize = true;
-            this.lblProgressBar.Location = new System.Drawing.Point(12, 16);
-            this.lblProgressBar.Name = "lblProgressBar";
-            this.lblProgressBar.Size = new System.Drawing.Size(101, 13);
-            this.lblProgressBar.TabIndex = 0;
-            this.lblProgressBar.Text = "Generating report ...";
+            this.progressBar.Size = new System.Drawing.Size(100, 8);
             // 
             // treeGridComparisonResults
             // 
@@ -406,8 +402,9 @@
             this.treeGridComparisonResults.Location = new System.Drawing.Point(0, 0);
             this.treeGridComparisonResults.Name = "treeGridComparisonResults";
             this.treeGridComparisonResults.RowHeadersVisible = false;
+            this.treeGridComparisonResults.RowHeadersWidth = 82;
             this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 371);
+            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 356);
             this.treeGridComparisonResults.TabIndex = 0;
             this.treeGridComparisonResults.Unloading = false;
             this.treeGridComparisonResults.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.treeGridComparisonResults_DataError);
@@ -440,6 +437,10 @@
             this.TreeGridImageList.Images.SetKeyName(20, "CreateActionGrey.png");
             this.TreeGridImageList.Images.SetKeyName(21, "Culture.png");
             this.TreeGridImageList.Images.SetKeyName(22, "Expression.png");
+            this.TreeGridImageList.Images.SetKeyName(23, "CalculationGroup.png");
+            this.TreeGridImageList.Images.SetKeyName(24, "CalculationItem.png");
+            this.TreeGridImageList.Images.SetKeyName(25, "Model.png");
+            this.TreeGridImageList.Images.SetKeyName(26, "RefreshPolicy.png");
             // 
             // scObjectDefinitions
             // 
@@ -458,8 +459,8 @@
             this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
             this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
-            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 135);
-            this.scObjectDefinitions.SplitterDistance = 331;
+            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 131);
+            this.scObjectDefinitions.SplitterDistance = 330;
             this.scObjectDefinitions.TabIndex = 0;
             // 
             // txtSourceObjectDefinition
@@ -472,7 +473,7 @@
             this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 16);
             this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
             this.txtSourceObjectDefinition.ReadOnly = true;
-            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(331, 119);
+            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(330, 115);
             this.txtSourceObjectDefinition.TabIndex = 1;
             this.txtSourceObjectDefinition.Text = "";
             this.txtSourceObjectDefinition.WordWrap = false;
@@ -498,7 +499,7 @@
             this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 16);
             this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
             this.txtTargetObjectDefinition.ReadOnly = true;
-            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(313, 119);
+            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(311, 115);
             this.txtTargetObjectDefinition.TabIndex = 2;
             this.txtTargetObjectDefinition.Text = "";
             this.txtTargetObjectDefinition.WordWrap = false;
@@ -534,6 +535,7 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.scDifferenceResults.Panel1.ResumeLayout(false);
+            this.scDifferenceResults.Panel1.PerformLayout();
             this.scDifferenceResults.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.scDifferenceResults)).EndInit();
             this.scDifferenceResults.ResumeLayout(false);
@@ -559,9 +561,6 @@
         private System.Windows.Forms.Label label4;
         private SynchronizedScrollRichTextBox txtTargetObjectDefinition;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Panel pnlProgressBar;
-        private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.Label lblProgressBar;
         private System.Windows.Forms.Panel pnlHeader;
         public System.Windows.Forms.ImageList TreeGridImageList;
         private System.Windows.Forms.SplitContainer spltSourceTarget;
@@ -588,5 +587,8 @@
         private System.Windows.Forms.ToolStripButton btnOptions;
         private System.Windows.Forms.ToolStripButton btnReportDifferences;
         private System.Windows.Forms.ToolStripMenuItem hideSkipObjectsWithSameDefinitionToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip pnlProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar progressBar;
     }
 }

@@ -16,22 +16,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
     {
         private string _objectDefinition;
         private string _name;
+        private TabularModel _parentTabularModel;
 
         /// <summary>
         /// Initializes a new instance of the TabularObject class.
         /// </summary>
         /// <param name="namedMetaDataObject">The Tabular Object Model supertype of the class being abstracted.</param>
-        public TabularObject(NamedMetadataObject namedMetaDataObject)
+        public TabularObject(NamedMetadataObject namedMetaDataObject, TabularModel parentTabularModel)
         {
             _name = namedMetaDataObject.Name;
-            
+            if (namedMetaDataObject is Tom.Model) return; //Model has custom JSON string
+
+            _parentTabularModel = parentTabularModel;
+
             //Serialize json
             SerializeOptions options = new SerializeOptions();
             options.IgnoreInferredProperties = true;
             options.IgnoreInferredObjects = true;
             options.IgnoreTimestamps = true;
             options.SplitMultilineStrings = true;
-            _objectDefinition = Tom.JsonSerializer.SerializeObject(namedMetaDataObject, options);
+
+            _objectDefinition = Tom.JsonSerializer.SerializeObject(namedMetaDataObject, options, parentTabularModel.ConnectionInfo.CompatibilityLevel, parentTabularModel.ConnectionInfo.CompatibilityMode);
 
             //Remove annotations
             {
@@ -40,11 +45,40 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 _objectDefinition = token.ToString(Formatting.Indented);
             }
 
+            //Remove lineageTag if required
+            if (_parentTabularModel != null && _parentTabularModel.ComparisonInfo != null &&
+                !_parentTabularModel.ComparisonInfo.OptionsInfo.OptionLineageTag)
+            {
+                JToken token = JToken.Parse(_objectDefinition);
+                RemovePropertyFromObjectDefinition(token, "lineageTag");
+                _objectDefinition = token.ToString(Formatting.Indented);
+            }
+
+            ////todo: remove with Giri's fix
+            ////Remove return characters
+            //if (namedMetaDataObject is Tom.NamedExpression || namedMetaDataObject is Tom.Table)
+            //{
+            //    _objectDefinition = _objectDefinition.Replace("\\r", "");
+            //}
+
             //Order table columns
             if (namedMetaDataObject is Tom.Table)
             {
+                if (((Tom.Table)namedMetaDataObject).CalculationGroup != null)
+                {
+                    JToken token = JToken.Parse(_objectDefinition);
+                    RemovePropertyFromObjectDefinition(token, "calculationItems");
+                    _objectDefinition = token.ToString(Formatting.Indented);
+                }
+
                 _objectDefinition = SortArray(_objectDefinition, "columns");
                 _objectDefinition = SortArray(_objectDefinition, "partitions");
+            }
+
+            //Order role members
+            if (namedMetaDataObject is Tom.ModelRole)
+            {
+                _objectDefinition = SortArray(_objectDefinition, "members");
             }
 
             //Hide privacy setting on structured data sources
@@ -66,7 +100,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     var vals = prop.Values()
                         .OfType<JObject>()
-                        .OrderBy(x => x.Property("name").Value.ToString())
+                        .OrderBy(x => x.Property((arrayName == "members" ? "memberName" : "name")).Value.ToString())
                         .ToList();
                     prop.Value = JContainer.FromObject(vals);
                 }
@@ -103,6 +137,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             JObject jObj = JObject.Parse(_objectDefinition);
             jObj.Remove(propertyName);
             _objectDefinition = jObj.ToString(Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Set a custom JSON string. An example is for the model class which contains properties that cannot be set.
+        /// </summary>
+        public void SetCustomObjectDefinition(string customObjectDefinition)
+        {
+            _objectDefinition = JToken.Parse(customObjectDefinition).ToString();
         }
 
         /// <summary>

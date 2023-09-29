@@ -72,6 +72,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             _comparisonObjectCount = 0;
 
+            #region Model
+
+            if (_comparisonInfo.TargetCompatibilityLevel >= 1460) //Target compat level is always >= source one.
+            {
+                // check if Model object definition is different
+                ComparisonObject comparisonObjectModel;
+                if (_sourceTabularModel.Model.ObjectDefinition != _targetTabularModel.Model.ObjectDefinition)
+                {
+                    comparisonObjectModel = new ComparisonObject(ComparisonObjectType.Model, ComparisonObjectStatus.DifferentDefinitions, _sourceTabularModel.Model, _targetTabularModel.Model, MergeAction.Update);
+                    _comparisonObjects.Add(comparisonObjectModel);
+                    _comparisonObjectCount += 1;
+                }
+                else
+                {
+                    // they are equal, ...
+                    comparisonObjectModel = new ComparisonObject(ComparisonObjectType.Model, ComparisonObjectStatus.SameDefinition, _sourceTabularModel.Model, _targetTabularModel.Model, MergeAction.Skip);
+                    _comparisonObjects.Add(comparisonObjectModel);
+                    _comparisonObjectCount += 1;
+                }
+            }
+
+            #endregion
+
             #region DataSources
 
             foreach (DataSource dataSourceSource in _sourceTabularModel.DataSources)
@@ -151,6 +174,18 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         ComparisonObjectType comparisonObjectType = measureSource.IsKpi ? ComparisonObjectType.Kpi : ComparisonObjectType.Measure;
                         ComparisonObject comparisonObjectMeasure = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInTarget, measureSource, null, MergeAction.Create);
                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
+                        _comparisonObjectCount += 1;
+                    }
+
+                    #endregion
+
+                    #region CalculationItems for Table that is Missing in Target
+
+                    foreach (CalculationItem calculationItemSource in tblSource.CalculationItems.FilterByTableName(tblSource.Name))
+                    {
+                        ComparisonObjectType comparisonObjectType = ComparisonObjectType.CalculationItem;
+                        ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInTarget, calculationItemSource, null, MergeAction.Create);
+                        comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
                         _comparisonObjectCount += 1;
                     }
 
@@ -269,6 +304,53 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
 
                     #endregion
+
+                    #region CalculationItems (table in source and target)
+
+                    // see if matching calculationItem in source and target
+                    foreach (CalculationItem calculationItemSource in tblSource.CalculationItems.FilterByTableName(tblSource.Name))
+                    {
+                        ComparisonObjectType comparisonObjectType = ComparisonObjectType.CalculationItem;
+
+                        if (tblTarget.CalculationItems.FilterByTableName(tblTarget.Name).ContainsName(calculationItemSource.Name))
+                        {
+                            //CalculationItem in source and target, so check definition
+                            CalculationItem calculationItemTarget = tblTarget.CalculationItems.FilterByTableName(tblTarget.Name).FindByName(calculationItemSource.Name);
+                            if (calculationItemSource.ObjectDefinition == calculationItemTarget.ObjectDefinition)
+                            {
+                                //CalculationItem has same definition
+                                ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.SameDefinition, calculationItemSource, calculationItemTarget, MergeAction.Skip);
+                                comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
+                                _comparisonObjectCount += 1;
+                            }
+                            else
+                            {
+                                //CalculationItem has different definition
+                                ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.DifferentDefinitions, calculationItemSource, calculationItemTarget, MergeAction.Update);
+                                comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
+                                _comparisonObjectCount += 1;
+                            }
+                        }
+                        else
+                        {
+                            ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInTarget, calculationItemSource, null, MergeAction.Create);
+                            comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
+                            _comparisonObjectCount += 1;
+                        }
+                    }
+                    //now check if target contains calculationItems Missing in Source
+                    foreach (CalculationItem calculationItemTarget in tblTarget.CalculationItems.FilterByTableName(tblTarget.Name))
+                    {
+                        ComparisonObjectType comparisonObjectType = ComparisonObjectType.CalculationItem;
+                        if (!tblSource.CalculationItems.FilterByTableName(tblSource.Name).ContainsName(calculationItemTarget.Name))
+                        {
+                            ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInSource, null, calculationItemTarget, MergeAction.Delete);
+                            comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
+                            _comparisonObjectCount += 1;
+                        }
+                    }
+
+                    #endregion
                 }
             }
 
@@ -298,8 +380,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     foreach (Measure measureTarget in tblTarget.Measures.FilterByTableName(tblTarget.Name))
                     {
                         ComparisonObjectType comparisonObjectType = measureTarget.IsKpi ? ComparisonObjectType.Kpi : ComparisonObjectType.Measure;
-                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(ComparisonObjectType.Measure, ComparisonObjectStatus.MissingInSource, null, measureTarget, MergeAction.Delete);
+                        ComparisonObject comparisonObjectMeasure = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInSource, null, measureTarget, MergeAction.Delete);
                         comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectMeasure);
+                        _comparisonObjectCount += 1;
+                    }
+
+                    #endregion
+
+                    #region CalculationItems for Table that is Missing in Source
+
+                    foreach (CalculationItem calculationItemTarget in tblTarget.CalculationItems.FilterByTableName(tblTarget.Name))
+                    {
+                        ComparisonObjectType comparisonObjectType = ComparisonObjectType.CalculationItem;
+                        ComparisonObject comparisonObjectCalculationItem = new ComparisonObject(comparisonObjectType, ComparisonObjectStatus.MissingInSource, null, calculationItemTarget, MergeAction.Delete);
+                        comparisonObjectTable.ChildComparisonObjects.Add(comparisonObjectCalculationItem);
                         _comparisonObjectCount += 1;
                     }
 
@@ -427,10 +521,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         Culture cultureTarget = _targetTabularModel.Cultures.FindByName(cultureSource.Name);
                         ComparisonObject comparisonObjectCulture;
 
+                        string sourceLinguisticMetadata = String.Empty;
+                        string targetLinguisticMetadata = String.Empty;
+                        if (cultureSource.TomCulture?.LinguisticMetadata?.Content != null)
+                            sourceLinguisticMetadata = Newtonsoft.Json.Linq.JToken.Parse(cultureSource.TomCulture.LinguisticMetadata.Content).ToString();
+                        if (cultureTarget.TomCulture?.LinguisticMetadata?.Content != null)
+                            targetLinguisticMetadata = Newtonsoft.Json.Linq.JToken.Parse(cultureTarget.TomCulture.LinguisticMetadata.Content).ToString();
+
                         // check if culture object definition is different
                         //if (cultureSource.ObjectDefinition != cultureTarget.ObjectDefinition)
-                        if ((_comparisonInfo.OptionsInfo.OptionMergeCultures && cultureTarget.ContainsOtherCultureTranslations(cultureSource)) ||
-                             (!_comparisonInfo.OptionsInfo.OptionMergeCultures && cultureTarget.ContainsOtherCultureTranslations(cultureSource) && cultureSource.ContainsOtherCultureTranslations(cultureTarget)))
+                        if ( (
+                                 (_comparisonInfo.OptionsInfo.OptionMergeCultures && cultureTarget.ContainsOtherCultureTranslations(cultureSource)) ||
+                                 (!_comparisonInfo.OptionsInfo.OptionMergeCultures && cultureTarget.ContainsOtherCultureTranslations(cultureSource) && cultureSource.ContainsOtherCultureTranslations(cultureTarget))
+                             ) &&
+                             (sourceLinguisticMetadata == targetLinguisticMetadata)
+                           )
                         {
                             // they are equal, ...
                             comparisonObjectCulture = new ComparisonObject(ComparisonObjectType.Culture, ComparisonObjectStatus.SameDefinition, cultureSource, cultureTarget, MergeAction.Skip);
@@ -538,18 +643,25 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             #region Refresh/reconnect source and target dbs to check if server definition has changed
 
-            if (_uncommitedChanges)
+            bool reconnect = false;
+            try
+            {
+                if (!_sourceTabularModel.ConnectionInfo.UseBimFile) _sourceTabularModel.TomDatabase.Refresh();
+                if (!_targetTabularModel.ConnectionInfo.UseBimFile) _targetTabularModel.TomDatabase.Refresh();
+            }
+            catch (Exception)
+            {
+                reconnect = true;
+            }
+
+            if (reconnect || _uncommitedChanges)
             {
                 // Reconnect to re-initialize
                 _sourceTabularModel = new TabularModel(this, _comparisonInfo.ConnectionInfoSource, _comparisonInfo);
                 _sourceTabularModel.Connect();
+
                 _targetTabularModel = new TabularModel(this, _comparisonInfo.ConnectionInfoTarget, _comparisonInfo);
                 _targetTabularModel.Connect();
-            }
-            else
-            {
-                _sourceTabularModel.TomDatabase.Refresh();
-                _targetTabularModel.TomDatabase.Refresh();
             }
 
             if (!_sourceTabularModel.ConnectionInfo.UseProject && _sourceTabularModel.TomDatabase.LastSchemaUpdate > _lastSourceSchemaUpdate)
@@ -614,6 +726,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #endregion
 
+            #region Model1
+
+            //Doing before tables in case need to set DiscourageImplicitMeasures=true to create calc groups downstream
+            bool updatedModel = false;
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                if (UpdateModel(comparisonObject, true))
+                {
+                    updatedModel = true;
+                    break;
+                }
+            }
+
+            #endregion
+
             #region Tables
 
             // do deletions first to minimize chance of conflict
@@ -663,6 +790,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
+            
+            #region Model2
+
+            //Doing model after tables in case there are calc group tables created so cannot set DisableImplictMeasures=false
+            if (!updatedModel)
+            {
+                foreach (ComparisonObject comparisonObject in _comparisonObjects)
+                {
+                    if (UpdateModel(comparisonObject, false))
+                        break;
+                }
+            }
+
+            #endregion
 
             #region Measures / KPIs
 
@@ -687,6 +828,34 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                 {
                     UpdateMeasure(childComparisonObject, comparisonObject.SourceObjectName); //Measure, Table
+                }
+            }
+
+            #endregion
+
+            #region CalculationItems
+
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
+                {
+                    DeleteCalculationItem(childComparisonObject, comparisonObject.SourceObjectName); //CalculationItem, Table
+                }
+            }
+
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
+                {
+                    CreateCalculationItem(childComparisonObject, comparisonObject.SourceObjectName); //CalculationItem, Table
+                }
+            }
+
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
+                {
+                    UpdateCalculationItem(childComparisonObject, comparisonObject.SourceObjectName); //CalculationItem, Table
                 }
             }
 
@@ -759,6 +928,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #endregion
 
+            _targetTabularModel.CleanUpAggregations();
+
             #region Cultures
 
             //Restore cultures that were backed up earlier. Having done this there won't be any dependency issues, so can start comparison changes.
@@ -805,7 +976,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     {
                         foreach (string missingDependency in measure.FindMissingMeasureDependencies())
                         {
-                            OnValidationMessage(new ValidationMessageEventArgs($"Measure [{measure.InternalName}] in table '{table.Name}' contains dependency on measure/column [{missingDependency}], which (considering changes to target) cannot be found in target model.", ValidationMessageType.MeasureCalculationDependency, ValidationMessageStatus.Warning));
+                            OnValidationMessage(new ValidationMessageEventArgs($"Measure [{measure.InternalName}] in table '{table.Name}' contains dependency on measure/column [{missingDependency}], which (considering changes to target) cannot be found in target model.", ValidationMessageType.MeasureCalculationDependency, ValidationMessageStatus.Informational));
                         }
                     }
                 }
@@ -820,13 +991,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #region Calc dependencies validation
 
-        private bool HasBlockingToDependenciesInTarget(string targetObjectName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
+        private bool HasBlockingToDependenciesInTarget(string targetObjectName, string referencedTableName, CalcDependencyObjectType targetObjectType, ref List<string> warningObjectList)
         {
             //For deletion.
             //Check any objects in target that depend on this object are also going to be deleted or updated.
 
             bool returnVal = false;
-            CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(targetObjectType, targetObjectName);
+            CalcDependencyCollection targetToDepdendencies = _targetTabularModel.MDependencies.DependenciesReferenceTo(targetObjectType, targetObjectName, referencedTableName);
             foreach (CalcDependency targetToDependency in targetToDepdendencies)
             {
                 foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -872,7 +1043,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                             _targetTabularModel.CanRetainPartitions(                 //But also check if doing retain partitions on this table (if so, dependency will remain).
                                                 _sourceTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
                                                 _targetTabularModel.Tables.FindByName(comparisonObjectToCheck.TargetObjectName),
-                                                out string retainPartitionsMessage)
+                                                out string retainPartitionsMessage,
+                                                out PartitionSourceType partitionSourceTypeSource,
+                                                out PartitionSourceType partitionSourceTypeTarget)
                                         )
                                     )                                                                //Create table is not possible to have a dependency on this object about to be deleted. Delete table is fine.
                                 )
@@ -917,9 +1090,28 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedObjectName &&
                                 comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&  //Creates being skipped (dependency will be missing).
                                 comparisonObjectToCheck.MergeAction == MergeAction.Skip)
-                                //Deletes are impossible for this object to depend on, so don't need to detect. Other Skips can assume are fine, so don't need to detect.
+                            //Deletes are impossible for this object to depend on, so don't need to detect. Other Skips can assume are fine, so don't need to detect.
                             {
                                 string warningObject = $"Expression {comparisonObjectToCheck.SourceObjectName}";
+                                if (!warningObjectList.Contains(warningObject))
+                                {
+                                    warningObjectList.Add(warningObject);
+                                }
+                                returnVal = true;
+                            }
+
+                            break;
+                        case CalcDependencyObjectType.Partition:
+                            //Does the object about to be created/updated (sourceObjectName) have a source dependency on this table (comparisonObjectToCheck)?
+
+                            if (!_targetTabularModel.Tables.ContainsName(sourceFromDependency.ReferencedTableName) &&
+                                comparisonObjectToCheck.ComparisonObjectType == ComparisonObjectType.Table &&
+                                comparisonObjectToCheck.SourceObjectName == sourceFromDependency.ReferencedTableName &&
+                                comparisonObjectToCheck.Status == ComparisonObjectStatus.MissingInTarget &&  //Creates being skipped (dependency will be missing).
+                                comparisonObjectToCheck.MergeAction == MergeAction.Skip)
+                            //Deletes are impossible for this object to depend on, so don't need to detect. Other Skips can assume are fine, so don't need to detect.
+                            {
+                                string warningObject = $"Table {comparisonObjectToCheck.SourceObjectName}";
                                 if (!warningObjectList.Contains(warningObject))
                                 {
                                     warningObjectList.Add(warningObject);
@@ -1026,22 +1218,76 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
-        //DataSources
+        #region Model
+
+        private bool UpdateModel(ComparisonObject comparisonObject, bool beforeTables)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Model && comparisonObject.MergeAction == MergeAction.Update)
+            {
+                Model sourceModel = _sourceTabularModel.Model;
+                Model targetModel = _targetTabularModel.Model;
+
+                bool targetHasCalcGroups = false;
+                foreach (Table table in _targetTabularModel.Tables)
+                {
+                    if (table.IsCalculationGroup)
+                    {
+                        targetHasCalcGroups = true;
+                        break;
+                    }
+                }
+
+                if (beforeTables)
+                {
+                    //In this case, may need to create calc groups downstream, so may need to set DiscourageImplicitMeasures to true
+                    if (!targetHasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures)
+                    {
+                        _targetTabularModel.UpdateModel(sourceModel, targetModel);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                        return true;
+                    }
+                }
+                else
+                {
+                    //In this case, have already had chance to create/delete calc groups, so OK to disable implicit measures if able
+                    if (targetHasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures == false)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update model because (considering changes) the target has calculation group(s) and the source has DiscourageImplicitMeasures set to false.", ValidationMessageType.Model, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        _targetTabularModel.UpdateModel(sourceModel, targetModel);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region DataSources
 
         private void DeleteDataSource(ComparisonObject comparisonObject)
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Delete)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.DataSource))
+                {
+                    return;
+                };
+
                 //Check any objects in target that depend on the DataSource are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                bool toDependencies = HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.DataSource, ref warningObjectList);
+                bool toDependencies = HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, "", CalcDependencyObjectType.DataSource, ref warningObjectList);
 
                 //For old non-M partitions, check if any such tables have reference to this DataSource, and will not be deleted
                 foreach (Table table in _targetTabularModel.Tables)
                 {
                     foreach (Partition partition in table.TomTable.Partitions)
                     {
-                        if (partition.SourceType == PartitionSourceType.Query && 
+                        if (partition.SourceType == PartitionSourceType.Query &&
                             table.DataSourceName == comparisonObject.TargetObjectName)
                         {
                             foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
@@ -1094,6 +1340,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Create)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.DataSource))
+                {
+                    return;
+                };
+
                 _targetTabularModel.CreateDataSource(_sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName));
                 OnValidationMessage(new ValidationMessageEventArgs($"Create data source [{comparisonObject.SourceObjectName}].", ValidationMessageType.DataSource, ValidationMessageStatus.Informational));
             }
@@ -1103,6 +1354,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.DataSource && comparisonObject.MergeAction == MergeAction.Update)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.DataSource))
+                {
+                    return;
+                };
+
                 DataSource sourceDataSource = _sourceTabularModel.DataSources.FindByName(comparisonObject.SourceObjectName);
                 DataSource targetDataSource = _targetTabularModel.DataSources.FindByName(comparisonObject.TargetObjectName);
 
@@ -1118,15 +1374,49 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        //Expressions
+        #endregion
+
+        #region Expressions
 
         private void DeleteExpression(ComparisonObject comparisonObject)
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Delete)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.Expression))
+                {
+                    return;
+                };
+
+                //Check if incremental refresh param and there is an incremental refresh table in the model
+                if (comparisonObject.TargetObjectName == "RangeStart" || comparisonObject.TargetObjectName == "RangeEnd")
+                {
+                    foreach (Table table in _targetTabularModel.Tables)
+                    {
+                        if (table.TomTable.RefreshPolicy != null)
+                        {
+                            //Confirm the table with incremental refresh policy isn't going to be deleted anyway
+                            bool tableBeingDeletedAnyway = false;
+                            foreach (ComparisonObject comparisonObjectToCheck in _comparisonObjects)
+                            {
+                                if (comparisonObjectToCheck.TargetObjectName == table.Name && comparisonObjectToCheck.MergeAction == MergeAction.Delete)
+                                {
+                                    tableBeingDeletedAnyway = true;
+                                    break;
+                                }
+                            }
+
+                            if (!tableBeingDeletedAnyway)
+                            {
+                                OnValidationMessage(new ValidationMessageEventArgs($"Unable to delete expression {comparisonObject.TargetObjectName} because it is an incremental-refresh parameter and table {table.Name} contains an incremental-refresh policy.", ValidationMessageType.Expression, ValidationMessageStatus.Warning));
+                                return;
+                            }
+                        }
+                    }
+                }
+
                 //Check any objects in target that depend on the expression are also going to be deleted
                 List<string> warningObjectList = new List<string>();
-                if (!HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, CalcDependencyObjectType.Expression, ref warningObjectList))
+                if (!HasBlockingToDependenciesInTarget(comparisonObject.TargetObjectName, "", CalcDependencyObjectType.Expression, ref warningObjectList))
                 {
                     _targetTabularModel.DeleteExpression(comparisonObject.TargetObjectName);
                     OnValidationMessage(new ValidationMessageEventArgs($"Delete expression [{comparisonObject.TargetObjectName}].", ValidationMessageType.Expression, ValidationMessageStatus.Informational));
@@ -1134,7 +1424,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 else
                 {
                     string message = $"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.";
-                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions && !_comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions)
                     {
                         message += " Note: the option to retain partitions is on, which may be affecting this.";
                     }
@@ -1147,6 +1437,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Create)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.Expression))
+                {
+                    return;
+                };
+
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
                 if (!HasBlockingFromDependenciesInSource(
@@ -1177,6 +1472,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Expression && comparisonObject.MergeAction == MergeAction.Update)
             {
+                if (!DesktopHardened(comparisonObject, ValidationMessageType.Expression))
+                {
+                    return;
+                };
+
                 //Check any objects in source that this expression depends on are also going to be created if not already in target
                 List<string> warningObjectList = new List<string>();
                 if (!HasBlockingFromDependenciesInSource(
@@ -1203,14 +1503,44 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        //Tables
+        #endregion
+
+        #region Tables
 
         private void DeleteTable(ComparisonObject comparisonObject)
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Delete)
             {
-                _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                Table targetTable = _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName);
+                bool isCalculationGroup = false;
+                bool isCalcTable = false;
+
+                if (targetTable != null)
+                {
+                    isCalculationGroup = targetTable.IsCalculationGroup;
+                    isCalcTable = (targetTable.TomTable.Partitions.Count > 0 && targetTable.TomTable.Partitions[0].SourceType == PartitionSourceType.Calculated);
+                }
+                if (!isCalculationGroup && !isCalcTable && !DesktopHardened(comparisonObject, ValidationMessageType.Table))
+                {
+                    return;
+                };
+
+                //Check any objects in target that depend on the table expression are also going to be deleted
+                List<string> warningObjectList = new List<string>();
+                if (!HasBlockingToDependenciesInTarget("", comparisonObject.TargetObjectName, CalcDependencyObjectType.Partition, ref warningObjectList))
+                {
+                    _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Delete {(isCalculationGroup ? "calculation group" : "table")} '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                }
+                else
+                {
+                    string message = $"Unable to delete table {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.";
+                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions && !_comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions)
+                    {
+                        message += " Note: the option to retain partitions is on, which may be affecting this.";
+                    }
+                    OnValidationMessage(new ValidationMessageEventArgs(message, ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                }
             }
         }
 
@@ -1223,25 +1553,49 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 bool fromDependencies = false;
                 bool nonStructuredDataSourceLocal = false;
 
-                foreach (Partition partition in sourceTable.TomTable.Partitions)
+                if (!sourceTable.IsCalculationGroup)
                 {
-                    //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    foreach (Partition partition in sourceTable.TomTable.Partitions)
                     {
-                        fromDependencies = true;
-                        if (nonStructuredDataSource)
-                            nonStructuredDataSourceLocal = true;
-                    }
+                        //Check any objects in source that this partition depends on are also going to be created if not already in target
+                        if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                        {
+                            fromDependencies = true;
+                            if (nonStructuredDataSource)
+                                nonStructuredDataSourceLocal = true;
+                        }
 
-                    //For old non-M partitions, check if data source references exist
-                    if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
-                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                        //For old non-M partitions, check if data source references exist
+                        if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
+                            fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                    }
                 }
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.CreateTable(sourceTable);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    if (sourceTable.IsCalculationGroup)
+                    {
+                        if (_targetTabularModel.Model.TomModel.DiscourageImplicitMeasures != true)
+                        {
+                            OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation group {comparisonObject.SourceObjectName} because the target model doesn't have DiscourageImplicitMeasures set to true.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                        }
+                        else
+                        {
+                            _targetTabularModel.CreateTable(sourceTable);
+                            OnValidationMessage(new ValidationMessageEventArgs($"Create calculation group '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                        }
+                    }
+                    else
+                    {
+                        bool isCalcTable = (sourceTable.TomTable.Partitions.Count > 0 && sourceTable.TomTable.Partitions[0].SourceType == PartitionSourceType.Calculated);
+
+                        if (!isCalcTable && !DesktopHardened(comparisonObject, ValidationMessageType.Table))
+                        {
+                            return;
+                        };
+                        _targetTabularModel.CreateTable(sourceTable);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    }
                 }
                 else
                 {
@@ -1266,9 +1620,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 List<string> warningObjectList = new List<string>();
                 bool fromDependencies = false;
                 bool nonStructuredDataSourceLocal = false;
+                bool canRetainPartitions = 
+                    _targetTabularModel.CanRetainPartitions(
+                    tableSource, tableTarget, 
+                    out string retainPartitionsMessageTemp,
+                    out PartitionSourceType partitionSourceTypeSource,
+                    out PartitionSourceType partitionSourceTypeTarget);
 
                 //Will this table retain partitions? If yes, don't need to bother with source dependency (target dependency checking will cover for deletes).
-                if (!_targetTabularModel.CanRetainPartitions(tableSource, tableTarget, out string retainPartitionsMessageTemp))
+                if (!canRetainPartitions)
                 {
                     //Check any objects in source that this table depends on are also going to be created/updated if not already in target
                     foreach (Partition partition in tableSource.TomTable.Partitions)
@@ -1288,8 +1648,33 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.UpdateTable(tableSource, tableTarget, out string retainPartitionsMessage);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    if (tableSource.IsCalculationGroup != tableTarget.IsCalculationGroup)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because either source or target is a calculation group (but not both).", (tableSource.IsCalculationGroup ? ValidationMessageType.CalculationGroup : ValidationMessageType.Table), ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        bool isCalcTable = (tableSource.TomTable.Partitions.Count > 0 && tableSource.TomTable.Partitions[0].SourceType == PartitionSourceType.Calculated);
+
+                        if (!tableSource.IsCalculationGroup && !isCalcTable && !DesktopHardened(comparisonObject, ValidationMessageType.Table))
+                        {
+                            return;
+                        };
+
+                        //Check if, based on options selected, check if target table would contain policy based partitions with no refresh policy
+                        if (
+                            (canRetainPartitions && !_comparisonInfo.OptionsInfo.OptionRetainRefreshPolicy && partitionSourceTypeTarget == PartitionSourceType.PolicyRange && tableSource.TomTable.RefreshPolicy == null) ||
+                            (!canRetainPartitions && _comparisonInfo.OptionsInfo.OptionRetainRefreshPolicy && partitionSourceTypeSource == PartitionSourceType.PolicyRange && tableTarget.TomTable.RefreshPolicy == null)
+                           )
+                        {
+                            OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because, based on options selected, the resulting table would contain policy based partitions with no refresh policy, which is not allowed.", (tableSource.IsCalculationGroup ? ValidationMessageType.CalculationGroup : ValidationMessageType.Table), ValidationMessageStatus.Warning));
+                        }
+                        else
+                        {
+                            _targetTabularModel.UpdateTable(tableSource, tableTarget, out string retainPartitionsMessage);
+                            OnValidationMessage(new ValidationMessageEventArgs($"Update {(tableSource.IsCalculationGroup ? "calculation group" : "table")} '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                        }
+                    }
                 }
                 else
                 {
@@ -1305,7 +1690,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        //Relationships
+        #endregion
+
+        #region Relationships
 
         private void DeleteRelationship(ComparisonObject comparisonObject)
         {
@@ -1369,7 +1756,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
         }
 
-        //Measures / KPIs
+        #endregion
+
+        #region Measures / KPIs
 
         private void DeleteMeasure(ComparisonObject comparisonObject)
         {
@@ -1439,6 +1828,86 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         #endregion
+
+        #region CalculationItems
+
+        private void DeleteCalculationItem(ComparisonObject comparisonObject, string tableName)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem && comparisonObject.MergeAction == MergeAction.Delete)
+            {
+                Table tableTarget = _targetTabularModel.Tables.FindByName(tableName);
+                if (tableTarget != null)
+                {
+                    CalculationItem calculationItemTarget = tableTarget.CalculationItems.FindByName(comparisonObject.TargetObjectInternalName);
+                    if (calculationItemTarget != null)
+                    {
+                        // CalculationItem may have already been deleted if parent table was deleted
+                        tableTarget.DeleteCalculationItem(comparisonObject.TargetObjectInternalName);
+                    }
+                }
+
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete calculation item {comparisonObject.TargetObjectInternalName}.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Informational));
+            }
+        }
+
+        private void CreateCalculationItem(ComparisonObject comparisonObject, string tableName)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem && comparisonObject.MergeAction == MergeAction.Create)
+            {
+                Table tableSource = _sourceTabularModel.Tables.FindByName(tableName);
+                Table tableTarget = _targetTabularModel.Tables.FindByName(tableName);
+
+                if (tableTarget == null)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation item {comparisonObject.SourceObjectInternalName} because (considering changes) target table {tableName} does not exist.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Warning));
+                    return;
+                }
+                else if (!tableTarget.IsCalculationGroup)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation item {comparisonObject.SourceObjectInternalName} because the target table {tableName} is not a calculation group table.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Warning));
+                    return;
+                }
+
+                //If we get here, can create calculationItem/kpi
+                CalculationItem calculationItemSource = tableSource.CalculationItems.FindByName(comparisonObject.SourceObjectInternalName);
+                tableTarget.CreateCalculationItem(calculationItemSource.TomCalculationItem);
+                OnValidationMessage(new ValidationMessageEventArgs($"Create calculation item {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Informational));
+            }
+        }
+
+        private void UpdateCalculationItem(ComparisonObject comparisonObject, string tableName)
+        {
+            if (comparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem && comparisonObject.MergeAction == MergeAction.Update)
+            {
+                Table tableSource = _sourceTabularModel.Tables.FindByName(tableName);
+                Table tableTarget = _targetTabularModel.Tables.FindByName(tableName);
+                CalculationItem calculationItemSource = tableSource.CalculationItems.FindByName(comparisonObject.SourceObjectInternalName);
+
+                tableTarget.UpdateCalculationItem(calculationItemSource.TomCalculationItem);
+                OnValidationMessage(new ValidationMessageEventArgs($"Update calculation item {comparisonObject.SourceObjectInternalName}.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Informational));
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        private bool DesktopHardened(ComparisonObject comparisonObject, ValidationMessageType validationMessageType)
+        {
+            if (
+                  (_targetTabularModel.ConnectionInfo.UseDesktop && _targetTabularModel.ConnectionInfo.ServerMode == Microsoft.AnalysisServices.ServerMode.SharePoint) ||
+                  (_targetTabularModel.ConnectionInfo.UseBimFile && _targetTabularModel.ConnectionInfo.BimFile != null && _targetTabularModel.ConnectionInfo.IsPbit)
+               )
+            {
+                //V3 hardening
+                OnValidationMessage(new ValidationMessageEventArgs($"Unable to {comparisonObject.MergeAction.ToString().ToLower()} {comparisonObject.ComparisonObjectType.ToString()} {comparisonObject.TargetObjectName} because target is Power BI Desktop or .PBIT, which does not yet support modifications for this object type.", validationMessageType, ValidationMessageStatus.Warning));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 
         /// <summary>
         /// Update target tabular model with changes defined by actions in ComparisonObject instances.

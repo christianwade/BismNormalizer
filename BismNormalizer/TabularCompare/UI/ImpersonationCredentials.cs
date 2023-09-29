@@ -55,15 +55,40 @@ namespace BismNormalizer.TabularCompare.UI
             if (_dpiScaleFactor > 1)
             {
                 //DPI
-                float dpiScaleFactorFudged = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+                float dpiScaleFactorFudged = _dpiScaleFactor * Utils.PrimaryFudgeFactor;
 
-                this.Scale(new SizeF(dpiScaleFactorFudged * 0.44f, dpiScaleFactorFudged * 0.38f));
-                this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged * 0.6f);
-                foreach (Control control in HighDPIUtils.GetChildInControl(this))
+                if (Settings.Default.OptionHighDpiLocal)
                 {
-                    control.Font = new Font(control.Font.FontFamily,
-                                      control.Font.Size * dpiScaleFactorFudged * HighDPIUtils.PrimaryFudgeFactor,
-                                      control.Font.Style);
+                    this.Scale(new SizeF(dpiScaleFactorFudged * 0.44f, dpiScaleFactorFudged * 0.35f));
+                    this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged * 0.6f);
+
+                    foreach (Control control in Utils.GetChildInControl(this))
+                    {
+                        if (control is Button)
+                        {
+                            control.Font = new Font(control.Font.FontFamily,
+                                              control.Font.Size * dpiScaleFactorFudged * 1.1f * Utils.PrimaryFudgeFactor,
+                                              control.Font.Style);
+                        }
+                        else
+                        {
+                            control.Font = new Font(control.Font.FontFamily,
+                                            //cbw todo check * 1.4f works on remote desktop setting
+                                            control.Font.Size * dpiScaleFactorFudged * 1.4f * Utils.PrimaryFudgeFactor,
+                                            control.Font.Style);
+                        }
+                    }
+                }
+                else
+                {
+                    this.Scale(new SizeF(dpiScaleFactorFudged * 0.44f, dpiScaleFactorFudged * 0.38f));
+                    this.Width = Convert.ToInt32(this.Width * dpiScaleFactorFudged * 0.6f);
+                    foreach (Control control in Utils.GetChildInControl(this))
+                    {
+                        control.Font = new Font(control.Font.FontFamily,
+                                          control.Font.Size * dpiScaleFactorFudged * Utils.PrimaryFudgeFactor,
+                                          control.Font.Style);
+                    }
                 }
             }
 

@@ -3,6 +3,18 @@ using System.Collections.Generic;
 
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
+    [Serializable]
+    public class CalcDependenciesInfiniteRecursionException : Exception
+    {
+        public CalcDependenciesInfiniteRecursionException() { }
+
+        public CalcDependenciesInfiniteRecursionException(string message)
+            : base(message) { }
+
+        public CalcDependenciesInfiniteRecursionException(string message, Exception inner)
+            : base(message, inner) { }
+    }
+
     /// <summary>
     /// Represents a collection of CalcDependency objects.
     /// </summary>
@@ -17,12 +29,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public CalcDependencyCollection DependenciesReferenceFrom(CalcDependencyObjectType objectType, string tableName, string objectName)
         {
             CalcDependencyCollection returnVal = new CalcDependencyCollection();
-            LookUpDependenciesReferenceFrom(objectType, tableName, objectName, returnVal);
+            recursionCounter = 0;
+            try
+            { 
+                LookUpDependenciesReferenceFrom(objectType, tableName, objectName, returnVal);
+            }
+            catch (CalcDependenciesInfiniteRecursionException)
+            {   //Some M is not parsable
+            }
             return returnVal;
         }
 
+        private const int RecursionCounterMax = 1000;
+        static int recursionCounter = 0;
         private void LookUpDependenciesReferenceFrom(CalcDependencyObjectType objectType, string tableName, string objectName, CalcDependencyCollection returnVal)
         {
+            recursionCounter++;
+            if (recursionCounter >= RecursionCounterMax)
+            {
+                Exception infRecursion = new CalcDependenciesInfiniteRecursionException($"Calc dependencies infinite recursion detected for type \"{objectType}\", table \"{tableName}\", name \"{objectName}\".");
+                Telemetry.TrackException(infRecursion);
+                throw infRecursion;
+            }
+
             foreach (CalcDependency calcDependency in this)
             {
                 if (calcDependency.ObjectType == objectType && calcDependency.TableName == tableName && calcDependency.ObjectName == objectName)
@@ -39,20 +68,23 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <param name="objectType">Type of the object to look up dependencies.</param>
         /// <param name="objectName">Name of the object to look up dependencies.</param>
         /// <returns></returns>
-        public CalcDependencyCollection DependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName)
+        public CalcDependencyCollection DependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName, string referencedTableName)
         {
             CalcDependencyCollection returnVal = new CalcDependencyCollection();
-            LookUpDependenciesReferenceTo(referencedObjectType, referencedObjectName, returnVal);
+            LookUpDependenciesReferenceTo(referencedObjectType, referencedObjectName, referencedTableName, returnVal);
             return returnVal;
         }
 
-        private void LookUpDependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName, CalcDependencyCollection returnVal)
+        private void LookUpDependenciesReferenceTo(CalcDependencyObjectType referencedObjectType, string referencedObjectName, string referencedTableName, CalcDependencyCollection returnVal)
         {
             foreach (CalcDependency calcDependency in this)
             {
-                if (calcDependency.ReferencedObjectType == referencedObjectType && calcDependency.ReferencedObjectName == referencedObjectName)
+                if (
+                      (calcDependency.ReferencedObjectType == referencedObjectType && referencedObjectType != CalcDependencyObjectType.Partition && calcDependency.ReferencedObjectName == referencedObjectName) ||
+                      (calcDependency.ReferencedObjectType == referencedObjectType && referencedObjectType == CalcDependencyObjectType.Partition && calcDependency.ReferencedTableName == referencedTableName) //References to table-partition expressions are by table name, not partition name
+                   )
                 {
-                    LookUpDependenciesReferenceTo(calcDependency.ObjectType, calcDependency.ObjectName, returnVal);
+                    LookUpDependenciesReferenceTo(calcDependency.ObjectType, calcDependency.ObjectName, calcDependency.TableName, returnVal);
                     returnVal.Add(calcDependency);
                 }
             }

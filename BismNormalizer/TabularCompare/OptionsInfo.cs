@@ -17,9 +17,14 @@ namespace BismNormalizer.TabularCompare
         private bool _optionCultures;
         private bool _optionMergeCultures;
         private bool _optionRoles;
+        private bool _optionRetainRoleMembers;
         private bool _optionActions;
         private bool _optionPartitions;
+        private bool _optionLineageTag;
         private bool _optionRetainPartitions;
+        private bool _optionRetainPolicyPartitions;
+        private bool _optionRetainRefreshPolicy;
+        private bool _optionRetainStorageMode;
         private bool _optionMeasureDependencies;
         private ProcessingOption _optionProcessingOption;
         private bool _optionTransaction;
@@ -35,9 +40,14 @@ namespace BismNormalizer.TabularCompare
             _optionCultures = Settings.Default.OptionCultures;
             _optionMergeCultures = Settings.Default.OptionMergeCultures;
             _optionRoles = Settings.Default.OptionRoles;
+            _optionRetainRoleMembers = Settings.Default.OptionRetainRoleMembers;
             _optionActions = Settings.Default.OptionActions;
             _optionPartitions = Settings.Default.OptionPartitions;
+            _optionLineageTag = Settings.Default.OptionLineageTag;
             _optionRetainPartitions = Settings.Default.OptionRetainPartitions;
+            _optionRetainPolicyPartitions = Settings.Default.OptionRetainPolicyPartitions;
+            _optionRetainRefreshPolicy = Settings.Default.OptionRetainRefreshPolicy;
+            _optionRetainStorageMode = Settings.Default.OptionRetainStorageMode;
             _optionMeasureDependencies = Settings.Default.OptionMeasureDependencies;
             _optionProcessingOption = (ProcessingOption)Enum.Parse(typeof(ProcessingOption), Settings.Default.OptionProcessingOption);
             _optionTransaction = Settings.Default.OptionTransaction;
@@ -88,6 +98,12 @@ namespace BismNormalizer.TabularCompare
             set { _optionRoles = value; }
         }
 
+        public bool OptionRetainRoleMembers 
+        {
+            get { return _optionRetainRoleMembers; }
+            set { _optionRetainRoleMembers = value; }
+        }
+
         /// <summary>
         /// A Boolean specifying whether to include actions in the comparison.
         /// </summary>
@@ -109,12 +125,48 @@ namespace BismNormalizer.TabularCompare
         }
 
         /// <summary>
+        /// A Boolean specifying whether to consider LineageTag when comparing objects.
+        /// </summary>
+        public bool OptionLineageTag
+        {
+            get { return _optionLineageTag; }
+            set { _optionLineageTag = value; }
+        }
+
+        /// <summary>
         /// A Boolean specifying whether to retain partitions for table updates.
         /// </summary>
         public bool OptionRetainPartitions
         {
             get { return _optionRetainPartitions; }
             set { _optionRetainPartitions = value; }
+        }
+
+        /// <summary>
+        /// A Boolean specifying whether to retain refresh-policy partitions for table updates.
+        /// </summary>
+        public bool OptionRetainPolicyPartitions
+        {
+            get { return _optionRetainPolicyPartitions; }
+            set { _optionRetainPolicyPartitions = value; }
+        }
+
+        /// <summary>
+        /// A Boolean specifying whether to retain incremental refresh policy.
+        /// </summary>
+        public bool OptionRetainRefreshPolicy
+        {
+            get { return _optionRetainRefreshPolicy; }
+            set { _optionRetainRefreshPolicy = value; }
+        }
+
+        /// <summary>
+        /// A Boolean specifying whether to retain storage for table updates on composite models.
+        /// </summary>
+        public bool OptionRetainStorageMode
+        {
+            get { return _optionRetainStorageMode; }
+            set { _optionRetainStorageMode = value; }
         }
 
         /// <summary>
@@ -165,9 +217,14 @@ namespace BismNormalizer.TabularCompare
             Settings.Default.OptionCultures = _optionCultures;
             Settings.Default.OptionMergeCultures = _optionMergeCultures;
             Settings.Default.OptionRoles = _optionRoles;
+            Settings.Default.OptionRetainRoleMembers = _optionRetainRoleMembers;
             Settings.Default.OptionActions = _optionActions;
             Settings.Default.OptionPartitions = _optionPartitions;
+            Settings.Default.OptionLineageTag = _optionLineageTag;
             Settings.Default.OptionRetainPartitions = _optionRetainPartitions;
+            Settings.Default.OptionRetainPolicyPartitions = _optionRetainPolicyPartitions;
+            Settings.Default.OptionRetainRefreshPolicy = _optionRetainRefreshPolicy;
+            Settings.Default.OptionRetainStorageMode = _optionRetainStorageMode;
             Settings.Default.OptionMeasureDependencies = _optionMeasureDependencies;
             Settings.Default.OptionProcessingOption = _optionProcessingOption.ToString();
             Settings.Default.OptionTransaction = _optionTransaction;

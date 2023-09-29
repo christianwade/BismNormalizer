@@ -1,3 +1,5 @@
+9/20/2023: split out ALM Toolkit from the BISM Normalizer VS extension. Find the ALM Toolkit codebase at https://github.com/microsoft/Analysis-Services
+
 ### General Usage
 
 Download from the BISM Normalizer [Visual Studio Marketplace page](https://marketplace.visualstudio.com/items?itemName=ChristianWade.BISMNormalizer3). New releases will be uploaded to this page.
